@@ -85,14 +85,19 @@ def save_queue():
 
 @app.route("/api/post/approve", methods=["POST"])
 def approve_post():
-    """Move a post from pending list to approved list."""
-    idx = int(request.json.get("index", 0))
-    queue = mem.load_posts_queue()
+    """Move a post from pending list to approved list, applying optional text updates first."""
+    data = request.json
+    idx = int(data.get("index", 0))
+    edited_text = data.get("post_text", "").strip()
     
+    queue = mem.load_posts_queue()
     if idx < 0 or idx >= len(queue["pending"]):
         return jsonify({"status": "error", "message": "Invalid draft index."}), 400
 
     approved_item = queue["pending"].pop(idx)
+    if edited_text:
+        approved_item["post_text"] = edited_text
+        
     queue["approved"].append(approved_item)
     
     # Save the updated queue

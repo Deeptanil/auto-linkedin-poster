@@ -717,12 +717,13 @@
         }
 
         async function approvePost(index) {
+            const postText = document.getElementById(`text-pending-${index}`).value.trim();
             showLoader("Approving post...");
             try {
                 const res = await fetch('/api/post/approve', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ index })
+                    body: JSON.stringify({ index, post_text: postText })
                 });
                 const result = await res.json();
                 if (result.status === 'success') {
