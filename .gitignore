@@ -19,3 +19,5 @@ screenshots/
 .vscode/
 .idea/
 *.swp
+memory/dashboard.log
+memory/dashboard.log
