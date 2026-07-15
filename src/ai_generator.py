@@ -11,6 +11,7 @@ Upgraded Gemini-powered post generator with:
 
 import sys
 import re
+import json
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))

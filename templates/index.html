@@ -7,28 +7,28 @@
     <!-- Modern Typography from Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     
     <style>
-        /* ─── Premium CSS Variables & Tokens ────────────────────────────────── */
+        /* ─── Premium Flat Tokens (No Gradients) ────────────────────────────── */
         :root {
             --bg-base: #0b0c10;
-            --bg-surface: rgba(31, 40, 51, 0.4);
-            --bg-glass: rgba(15, 22, 36, 0.6);
-            --accent-glow: hsla(180, 100%, 50%, 0.15);
+            --bg-surface: #151821;
+            --bg-card: #1c1f2b;
+            --bg-console: #07090e;
             --color-primary: #66fcf1;
             --color-secondary: #45f3ff;
             --color-text-main: #f5f7fa;
             --color-text-muted: #8b9bb4;
-            --color-card-border: rgba(102, 252, 241, 0.15);
-            --color-card-hover: rgba(102, 252, 241, 0.25);
+            --color-card-border: #282d3d;
+            --color-card-hover: #66fcf1;
             --color-danger: #ff4757;
             --color-success: #2ed573;
             --color-warning: #ffa502;
             --font-display: 'Outfit', sans-serif;
             --font-sans: 'Inter', sans-serif;
-            --blur-size: 20px;
-            --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --font-mono: 'Fira Code', monospace;
+            --transition-smooth: all 0.2s ease-in-out;
         }
 
         /* ─── Core Styles ───────────────────────────────────────────────────── */
@@ -48,10 +48,6 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            overflow-x: hidden;
-            background-image: 
-                radial-gradient(circle at 10% 20%, rgba(102, 252, 241, 0.05) 0%, transparent 40%),
-                radial-gradient(circle at 90% 80%, rgba(69, 243, 255, 0.05) 0%, transparent 40%);
         }
 
         .container {
@@ -59,18 +55,17 @@
             max-width: 1200px;
             display: grid;
             grid-template-columns: 1fr;
-            gap: 2.5rem;
+            gap: 2rem;
         }
 
         /* ─── Header ────────────────────────────────────────────────────────── */
         header {
             width: 100%;
-            max-width: 1200px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding-bottom: 1.5rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            border-bottom: 1px solid var(--color-card-border);
             margin-bottom: 1rem;
         }
 
@@ -78,9 +73,7 @@
             font-family: var(--font-display);
             font-size: 2.2rem;
             font-weight: 800;
-            background: linear-gradient(135deg, var(--color-primary), #fff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: var(--color-primary);
             letter-spacing: -0.5px;
         }
 
@@ -93,7 +86,7 @@
         .layout-grid {
             display: grid;
             grid-template-columns: 1fr 350px;
-            gap: 2.5rem;
+            gap: 2rem;
         }
 
         @media (max-width: 900px) {
@@ -102,21 +95,17 @@
             }
         }
 
-        /* ─── Glassmorphism Cards ───────────────────────────────────────────── */
+        /* ─── Cards ─────────────────────────────────────────────────────────── */
         .card {
-            background: var(--bg-glass);
-            backdrop-filter: blur(var(--blur-size));
-            -webkit-backdrop-filter: blur(var(--blur-size));
+            background: var(--bg-surface);
             border: 1px solid var(--color-card-border);
-            border-radius: 16px;
+            border-radius: 12px;
             padding: 2rem;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
             transition: var(--transition-smooth);
         }
 
         .card:hover {
-            border-color: rgba(102, 252, 241, 0.25);
-            box-shadow: 0 8px 32px 0 var(--accent-glow);
+            border-color: rgba(102, 252, 241, 0.4);
         }
 
         .card h2 {
@@ -126,8 +115,9 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid var(--color-card-border);
             padding-bottom: 0.8rem;
+            color: var(--color-text-main);
         }
 
         /* ─── Buttons ───────────────────────────────────────────────────────── */
@@ -136,56 +126,55 @@
             align-items: center;
             justify-content: center;
             padding: 0.75rem 1.5rem;
-            border-radius: 8px;
+            border-radius: 6px;
             font-family: var(--font-sans);
             font-weight: 600;
             font-size: 0.95rem;
             cursor: pointer;
             transition: var(--transition-smooth);
-            border: none;
+            border: 1px solid transparent;
             gap: 0.5rem;
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+            background-color: var(--color-primary);
             color: #0b0c10;
         }
 
         .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(102, 252, 241, 0.4);
+            background-color: #52e5db;
         }
 
         .btn-secondary {
-            background: rgba(255, 255, 255, 0.08);
+            background-color: transparent;
             color: var(--color-text-main);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--color-card-border);
         }
 
         .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.15);
-            border-color: rgba(255, 255, 255, 0.2);
+            background-color: rgba(255, 255, 255, 0.05);
+            border-color: var(--color-primary);
         }
 
         .btn-danger {
-            background: rgba(255, 71, 87, 0.1);
+            background-color: transparent;
             color: var(--color-danger);
-            border: 1px solid rgba(255, 71, 87, 0.2);
+            border: 1px solid rgba(255, 71, 87, 0.3);
         }
 
         .btn-danger:hover {
-            background: rgba(255, 71, 87, 0.25);
+            background-color: rgba(255, 71, 87, 0.1);
             border-color: var(--color-danger);
         }
 
         .btn-success {
-            background: rgba(46, 213, 115, 0.1);
+            background-color: transparent;
             color: var(--color-success);
-            border: 1px solid rgba(46, 213, 115, 0.2);
+            border: 1px solid rgba(46, 213, 115, 0.3);
         }
 
         .btn-success:hover {
-            background: rgba(46, 213, 115, 0.25);
+            background-color: rgba(46, 213, 115, 0.1);
             border-color: var(--color-success);
         }
 
@@ -198,7 +187,6 @@
             opacity: 0.5;
             cursor: not-allowed;
             transform: none !important;
-            box-shadow: none !important;
         }
 
         /* ─── Tabs / Section Control ────────────────────────────────────────── */
@@ -244,9 +232,9 @@
         }
 
         .post-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--color-card-border);
+            border-radius: 8px;
             padding: 1.5rem;
             display: flex;
             flex-direction: column;
@@ -255,8 +243,7 @@
         }
 
         .post-card:hover {
-            border-color: rgba(102, 252, 241, 0.15);
-            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(102, 252, 241, 0.3);
         }
 
         .post-header {
@@ -272,7 +259,7 @@
             color: var(--color-primary);
             background: rgba(102, 252, 241, 0.08);
             padding: 0.25rem 0.75rem;
-            border-radius: 20px;
+            border-radius: 4px;
             border: 1px solid rgba(102, 252, 241, 0.2);
         }
 
@@ -285,12 +272,12 @@
         .post-textarea {
             width: 100%;
             background: #0f121d;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--color-card-border);
             color: var(--color-text-main);
             font-family: var(--font-sans);
             font-size: 0.95rem;
             padding: 1rem;
-            border-radius: 8px;
+            border-radius: 6px;
             resize: vertical;
             min-height: 120px;
             outline: none;
@@ -299,7 +286,6 @@
 
         .post-textarea:focus {
             border-color: var(--color-primary);
-            box-shadow: 0 0 8px rgba(102, 252, 241, 0.25);
         }
 
         .post-actions {
@@ -319,10 +305,10 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: rgba(255, 255, 255, 0.03);
+            background: var(--bg-card);
             padding: 0.75rem 1rem;
-            border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 6px;
+            border: 1px solid var(--color-card-border);
             font-size: 0.9rem;
         }
 
@@ -339,9 +325,9 @@
             width: 100%;
             min-height: 150px;
             background: #0f121d;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--color-card-border);
             color: var(--color-text-main);
-            border-radius: 8px;
+            border-radius: 6px;
             padding: 0.8rem;
             font-family: var(--font-sans);
             font-size: 0.9rem;
@@ -354,6 +340,61 @@
             border-color: var(--color-primary);
         }
 
+        /* ─── Console Logs Card ─────────────────────────────────────────────── */
+        .console-card {
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .console-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--bg-card);
+            border: 1px solid var(--color-card-border);
+            border-bottom: none;
+            padding: 0.75rem 1.5rem;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+        }
+
+        .console-title {
+            font-family: var(--font-display);
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--color-text-main);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .console-status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--color-success);
+        }
+
+        .console-window {
+            background-color: var(--bg-console);
+            border: 1px solid var(--color-card-border);
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+            padding: 1.2rem;
+            min-height: 250px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .console-pre {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            color: #d1d8e0;
+            white-space: pre-wrap;
+            word-break: break-all;
+            line-height: 1.4;
+        }
+
         /* ─── Toast Alerts ────────────────────────────────────────────────── */
         .toast {
             position: fixed;
@@ -363,7 +404,7 @@
             border-left: 4px solid var(--color-primary);
             color: #fff;
             padding: 1rem 1.5rem;
-            border-radius: 6px;
+            border-radius: 4px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.5);
             z-index: 1000;
             transform: translateY(150%);
@@ -386,8 +427,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(11, 12, 16, 0.85);
-            backdrop-filter: blur(5px);
+            background: rgba(11, 12, 16, 0.9);
             z-index: 2000;
             display: none;
             align-items: center;
@@ -397,8 +437,8 @@
         }
 
         .loader-spinner {
-            width: 50px;
-            height: 50px;
+            width: 40px;
+            height: 40px;
             border: 3px solid rgba(102, 252, 241, 0.1);
             border-top-color: var(--color-primary);
             border-radius: 50%;
@@ -438,8 +478,8 @@
                 <p style="color: var(--color-text-muted); font-size: 0.9rem;">Human-in-the-Loop Content & Compaction Manager</p>
             </div>
             <div class="header-actions">
-                <button class="btn btn-secondary" onclick="replenishQueue()">🔄 Generate Drafts</button>
-                <button class="btn btn-primary" onclick="syncGitHub()">🚀 Sync to GitHub</button>
+                <button class="btn btn-secondary" onclick="replenishQueue()">[Generate Drafts]</button>
+                <button class="btn btn-primary" onclick="syncGitHub()">[Sync to GitHub]</button>
             </div>
         </header>
 
@@ -486,10 +526,24 @@
                         Paste your raw developer thoughts, wins, or voice-to-text transcripts. The compactor will merge it into your database.
                     </p>
                     <textarea id="memoryInput" class="memory-textarea" placeholder="E.g. Shipped medusa coupon custom loyalty program today. Took 1 week of data migrations. Users can redeem codes instantly at check-out."></textarea>
-                    <button class="btn btn-primary btn-sm" style="width: 100%; margin-top: 1rem;" onclick="addMemory()">💾 Compact & Save Memory</button>
+                    <button class="btn btn-primary btn-sm" style="width: 100%; margin-top: 1rem;" onclick="addMemory()">[Compact & Save Memory]</button>
                 </div>
             </div>
 
+        </div>
+
+        <!-- Full Width Bottom Console Logs -->
+        <div class="console-card">
+            <div class="console-header">
+                <div class="console-title">
+                    <div class="console-status-indicator"></div>
+                    System Console Logs
+                </div>
+                <button class="btn btn-secondary btn-sm" onclick="copyConsoleLogs()">[Copy Logs]</button>
+            </div>
+            <div class="console-window" id="consoleWindow">
+                <pre class="console-pre" id="consolePre">Loading log feed...</pre>
+            </div>
         </div>
     </div>
 
@@ -529,6 +583,26 @@
             }
         }
 
+        async function fetchLogs() {
+            try {
+                const response = await fetch('/api/logs');
+                const data = await response.json();
+                const logPre = document.getElementById('consolePre');
+                const consoleWindow = document.getElementById('consoleWindow');
+                
+                // Keep track of scroll position to auto-scroll if user is at the bottom
+                const isScrolledToBottom = consoleWindow.scrollHeight - consoleWindow.clientHeight <= consoleWindow.scrollTop + 30;
+                
+                logPre.innerText = data.logs;
+                
+                if (isScrolledToBottom) {
+                    consoleWindow.scrollTop = consoleWindow.scrollHeight;
+                }
+            } catch (err) {
+                console.error("Failed to fetch console logs", err);
+            }
+        }
+
         // ─── Rendering ───────────────────────────────────────────────────────
         
         function renderPosts() {
@@ -541,7 +615,7 @@
                 listContainer.innerHTML = `
                     <div style="text-align: center; padding: 3rem; color: var(--color-text-muted);">
                         <p style="font-size: 1.1rem; margin-bottom: 0.5rem;">No posts in this section.</p>
-                        <p style="font-size: 0.9rem;">${currentTab === 'pending' ? 'Click "Generate Drafts" above to query Gemini.' : 'Approve some drafts from the Pending tab to fill your queue.'}</p>
+                        <p style="font-size: 0.9rem;">${currentTab === 'pending' ? 'Click "[Generate Drafts]" above to query Gemini.' : 'Approve some drafts from the Pending tab to fill your queue.'}</p>
                     </div>
                 `;
                 return;
@@ -554,14 +628,14 @@
                 let actionButtons = '';
                 if (currentTab === 'pending') {
                     actionButtons = `
-                        <button class="btn btn-danger btn-sm" onclick="rejectPost(${index})">❌ Decline</button>
-                        <button class="btn btn-secondary btn-sm" onclick="saveDraftText(${index}, '${currentTab}')">💾 Save Edit</button>
-                        <button class="btn btn-success btn-sm" onclick="approvePost(${index})">✅ Approve</button>
+                        <button class="btn btn-danger btn-sm" onclick="rejectPost(${index})">[Decline]</button>
+                        <button class="btn btn-secondary btn-sm" onclick="saveDraftText(${index}, '${currentTab}')">[Save Edit]</button>
+                        <button class="btn btn-success btn-sm" onclick="approvePost(${index})">[Approve]</button>
                     `;
                 } else {
                     actionButtons = `
-                        <button class="btn btn-danger btn-sm" onclick="removeApproved(${index})">🗑️ Delete</button>
-                        <button class="btn btn-secondary btn-sm" onclick="saveDraftText(${index}, '${currentTab}')">💾 Save Edit</button>
+                        <button class="btn btn-danger btn-sm" onclick="removeApproved(${index})">[Delete]</button>
+                        <button class="btn btn-secondary btn-sm" onclick="saveDraftText(${index}, '${currentTab}')">[Save Edit]</button>
                     `;
                 }
 
@@ -589,9 +663,8 @@
         }
 
         async function saveDraftText(index, tab) {
-            const newText = document.getElementById(`text-${tab}-${index}`).value.strip ? 
-                            document.getElementById(`text-${tab}-${index}`).value.strip() : 
-                            document.getElementById(`text-${tab}-${index}`).value;
+            const textarea = document.getElementById(`text-${tab}-${index}`);
+            const newText = textarea.value.trim();
             
             queueData[tab][index].post_text = newText;
             
@@ -695,6 +768,8 @@
                 showToast("Generation failed: " + err.message, "error");
             } finally {
                 hideLoader();
+                // Fetch logs right after to capture any API errors in console immediately
+                setTimeout(fetchLogs, 500);
             }
         }
 
@@ -724,11 +799,12 @@
                 showToast("Memory addition failed: " + err.message, "error");
             } finally {
                 hideLoader();
+                setTimeout(fetchLogs, 500);
             }
         }
 
         async function syncGitHub() {
-            showLoader("Pushed updates... committing & pushing to GitHub Remote Actions...");
+            showLoader("Syncing updates... committing & pushing to GitHub Remote Actions...");
             try {
                 const res = await fetch('/api/github/sync', { method: 'POST' });
                 const result = await res.json();
@@ -741,7 +817,17 @@
                 showToast("Sync failed: " + err.message, "error");
             } finally {
                 hideLoader();
+                setTimeout(fetchLogs, 500);
             }
+        }
+
+        function copyConsoleLogs() {
+            const logsText = document.getElementById('consolePre').innerText;
+            navigator.clipboard.writeText(logsText).then(() => {
+                showToast("Console logs copied to clipboard!", "success");
+            }).catch(err => {
+                showToast("Failed to copy logs: " + err.message, "error");
+            });
         }
 
         // ─── UI Helpers ──────────────────────────────────────────────────────
@@ -764,9 +850,13 @@
             }, 3500);
         }
 
-        // Init
+        // Init & Periodic Log Polling
         fetchQueue();
         fetchStatus();
+        fetchLogs();
+        
+        // Poll console logs every 3 seconds
+        setInterval(fetchLogs, 3000);
     </script>
 </body>
 </html>
