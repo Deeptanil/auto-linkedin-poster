@@ -101,6 +101,32 @@ class MemoryManager:
             encoding="utf-8"
         )
 
+    def load_posts_queue(self) -> list[dict]:
+        """Load the cached posts queue."""
+        path = self.memory_dir / "posts_queue.json"
+        if not path.exists():
+            return []
+        try:
+            return json.loads(path.read_text(encoding="utf-8"))
+        except Exception:
+            return []
+
+    def save_posts_queue(self, queue: list[dict]) -> None:
+        """Save the cached posts queue."""
+        path = self.memory_dir / "posts_queue.json"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(
+            json.dumps(queue, indent=2, ensure_ascii=False),
+            encoding="utf-8"
+        )
+
+    def load_recent_posts_history_text(self, limit: int = 15) -> list[str]:
+        """Load the text content of the last N posted updates for anti-repetition constraint."""
+        history = self.load_post_history()
+        # Filter for actual published posts and get their content/preview
+        actual_posts = [h.get("preview", "") for h in history if not h.get("dry_run") and h.get("preview")]
+        return actual_posts[-limit:]
+
     def build_full_context_summary(self) -> dict:
         """
         Return a dict with all memory pieces loaded.
@@ -114,6 +140,7 @@ class MemoryManager:
             "has_context":      bool(self.load_recent_context()),
             "has_voice":        bool(self.load_voice_profile()),
             "has_achievements": bool(self.load_achievements()),
+            "queue_count":      len(self.load_posts_queue()),
         }
 
     # ─── Helpers ──────────────────────────────────────────────────────────────
@@ -130,3 +157,4 @@ class MemoryManager:
             return content
         except Exception:
             return ""
+

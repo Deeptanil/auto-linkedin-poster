@@ -96,12 +96,13 @@ jobs:
           FORCE:       ${{ github.event.inputs.force || 'false' }}
         run: python src/run.py
 
-      # 5. Commit post_history.json and any new context files back to repo
-      - name: "💾 Commit post history"
+      # 5. Commit post_history.json, posts_queue.json, and any new context files back to repo
+      - name: "💾 Commit post history & queue"
         if: always()
         run: |
           git config user.name  "linkedin-poster[bot]"
           git config user.email "linkedin-poster[bot]@users.noreply.github.com"
-          git add memory/post_history.json memory/contexts/ || true
-          git diff --staged --quiet || git commit -m "chore: update post history [skip ci]"
+          git add memory/post_history.json memory/posts_queue.json memory/contexts/ || true
+          git diff --staged --quiet || git commit -m "chore: update post history & queue [skip ci]"
           git push || true
+
