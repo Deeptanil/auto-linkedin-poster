@@ -10,7 +10,7 @@ from rich.syntax import Syntax
 from rich.table import Table
 
 import config
-from ai_generator import AIGenerator
+from src.ai_generator import AIGenerator
 from poster import LinkedInPoster
 
 console = Console()
