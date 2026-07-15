@@ -22,6 +22,31 @@ from src.ai_generator import AIGenerator
 from src.compactor import MemoryCompactor
 from src.post_history import PostHistory
 
+class DualLogger:
+    def __init__(self, log_path):
+        self.terminal = sys.stdout
+        self.log_path = Path(log_path)
+        self.log_path.parent.mkdir(parents=True, exist_ok=True)
+        # Clear log file on server start
+        with open(self.log_path, "w", encoding="utf-8") as f:
+            f.write(f"--- Dashboard Local Server Log Started: {__import__('datetime').datetime.now()} ---\n")
+
+    def write(self, message):
+        self.terminal.write(message)
+        try:
+            with open(self.log_path, "a", encoding="utf-8") as f:
+                f.write(message)
+        except Exception:
+            pass
+
+    def flush(self):
+        self.terminal.flush()
+
+# Redirect output streams
+log_file = Path("memory/dashboard.log")
+sys.stdout = DualLogger(log_file)
+sys.stderr = sys.stdout
+
 app = Flask(__name__)
 mem = MemoryManager()
 compactor = MemoryCompactor()
@@ -207,6 +232,24 @@ def sync_github():
         })
     except Exception as e:
         return jsonify({"status": "error", "message": f"Sync process encountered an error: {e}"}), 500
+
+
+@app.route("/api/logs", methods=["GET"])
+def get_logs():
+    """Retrieve the log file text output."""
+    log_path = Path("memory/dashboard.log")
+    if not log_path.exists():
+        return jsonify({"logs": "No log file found."})
+    try:
+        # Read last 1000 lines for efficiency
+        with open(log_path, "r", encoding="utf-8", errors="replace") as f:
+            lines = f.readlines()
+            # return only the last 200 lines to keep request lightweight
+            last_lines = "".join(lines[-200:])
+            return jsonify({"logs": last_lines})
+    except Exception as e:
+        return jsonify({"logs": f"Error reading log file: {e}"})
+
 
 
 # ─── Launcher Helper ──────────────────────────────────────────────────────────
