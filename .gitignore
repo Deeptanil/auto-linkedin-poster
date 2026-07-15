@@ -1,2 +1,21 @@
-/.env
-/.env.example
+# Secrets
+.env
+
+# Playwright session (contains login cookies — never commit)
+.playwright_session/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Temp files
+temp_draft.txt
+screenshots/
+
+# IDE
+.vscode/
+.idea/
+*.swp

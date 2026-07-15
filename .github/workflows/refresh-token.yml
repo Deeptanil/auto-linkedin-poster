@@ -1,0 +1,86 @@
+name: "🔑 Token Health Check & Refresh"
+
+# ─── Triggers ─────────────────────────────────────────────────────────────────
+on:
+  # Run every Monday at 8:00 AM IST (2:30 AM UTC) — weekly health check
+  schedule:
+    - cron: "30 2 * * 1"
+
+  # Also allow manual trigger for testing
+  workflow_dispatch:
+    inputs:
+      force_refresh:
+        description: "Force refresh even if not near expiry"
+        required: false
+        type: boolean
+        default: false
+
+# ─── Permissions ──────────────────────────────────────────────────────────────
+permissions:
+  contents: read
+  secrets: write   # to update LINKEDIN_ACCESS_TOKEN secret
+
+# ─── Jobs ─────────────────────────────────────────────────────────────────────
+jobs:
+  token-health:
+    name: "Check & Refresh LinkedIn Token"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: "⬇️ Checkout repository"
+        uses: actions/checkout@v4
+
+      - name: "🐍 Setup Python 3.11"
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: "📦 Install dependencies"
+        run: pip install -r requirements.txt
+
+      - name: "🔍 Run token health check"
+        env:
+          LINKEDIN_ACCESS_TOKEN:         ${{ secrets.LINKEDIN_ACCESS_TOKEN }}
+          LINKEDIN_REFRESH_TOKEN:        ${{ secrets.LINKEDIN_REFRESH_TOKEN }}
+          LINKEDIN_TOKEN_EXPIRY:         ${{ secrets.LINKEDIN_TOKEN_EXPIRY }}
+          LINKEDIN_REFRESH_TOKEN_EXPIRY: ${{ secrets.LINKEDIN_REFRESH_TOKEN_EXPIRY }}
+          LINKEDIN_CLIENT_ID:            ${{ secrets.LINKEDIN_CLIENT_ID }}
+          LINKEDIN_CLIENT_SECRET:        ${{ secrets.LINKEDIN_CLIENT_SECRET }}
+          DISCORD_WEBHOOK_URL:           ${{ secrets.DISCORD_WEBHOOK_URL }}
+          GITHUB_TOKEN:                  ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY:             ${{ github.repository }}
+          FORCE_REFRESH:                 ${{ github.event.inputs.force_refresh || 'false' }}
+        run: |
+          python - << 'EOF'
+          import os
+          import sys
+          sys.path.insert(0, ".")
+          from src.token_manager import TokenManager
+          import config
+
+          # Override refresh threshold if forcing
+          if os.getenv("FORCE_REFRESH", "false").lower() == "true":
+              config.REFRESH_DAYS_BEFORE_EXPIRY = 9999  # Always refresh
+
+          tm = TokenManager()
+          result = tm.check_and_refresh()
+
+          print("\n=== Token Health Report ===")
+          print(f"Days until expiry:  {result.get('days_until_expiry', 'unknown')}")
+          print(f"Auto-refreshed:     {result['refreshed']}")
+          print(f"Warnings sent:      {result['warnings_sent']}")
+
+          if result["errors"]:
+              print("\nErrors:")
+              for err in result["errors"]:
+                  print(f"  ❌ {err}")
+              sys.exit(1)
+          else:
+              print("\n✅ Token health check passed.")
+          EOF
+
+      - name: "📊 Report"
+        if: always()
+        run: echo "Token health check complete. Check logs above for details."
