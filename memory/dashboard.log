@@ -371,3 +371,10 @@ Press CTRL+C to quit
 127.0.0.1 - - [16/Jul/2026 01:11:09] "GET /api/logs HTTP/1.1" 200 -
 127.0.0.1 - - [16/Jul/2026 01:11:13] "GET /api/logs HTTP/1.1" 200 -
 127.0.0.1 - - [16/Jul/2026 01:11:15] "GET /api/logs HTTP/1.1" 200 -
+127.0.0.1 - - [16/Jul/2026 01:11:19] "GET /api/logs HTTP/1.1" 200 -
+127.0.0.1 - - [16/Jul/2026 01:11:22] "GET /api/logs HTTP/1.1" 200 -
+127.0.0.1 - - [16/Jul/2026 01:11:23] "POST /api/github/sync HTTP/1.1" 200 -
+127.0.0.1 - - [16/Jul/2026 01:11:24] "GET /api/logs HTTP/1.1" 200 -
+127.0.0.1 - - [16/Jul/2026 01:11:25] "GET /api/logs HTTP/1.1" 200 -
+127.0.0.1 - - [16/Jul/2026 01:11:28] "GET /api/logs HTTP/1.1" 200 -
+127.0.0.1 - - [16/Jul/2026 01:11:31] "GET /api/logs HTTP/1.1" 200 -
