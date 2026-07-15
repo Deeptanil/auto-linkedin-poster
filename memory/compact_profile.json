@@ -1,6 +1,31 @@
 {
-  "voice_essence": [],
-  "banned_patterns": [],
-  "experience_summary": [],
-  "backlog_facts": []
+  "voice_essence": [
+    "Pragmatic, story-driven developer perspective; values UX > UI & performance",
+    "Direct & transparent about mistakes (e.g., 'nightmare to debug')",
+    "Inspired by Nothing's aesthetic; UX-focused (speed, latency, optimistic updates)",
+    "Uses casual/dev phrases: 'tbh', 'lowkey', 'built from scratch', 'UX latency'"
+  ],
+  "banned_patterns": [
+    "Hustle hard / Rise and grind / career hacks",
+    "Delve / tapestry / seamless leverage / cutting-edge landscape",
+    "Deeply honored and humbled to announce",
+    "Let's connect in the comments",
+    "Politics, dry corporate PR, or empty motivation"
+  ],
+  "experience_summary": [
+    "B.Tech IT Student at Manipal Institute of Technology (Class of 2028)",
+    "Co-Founder & Digital Director of STRAYED (contemporary luxury streetwear)",
+    "Co-Founder & Technical Director of Prettiva & Co. (fashion e-commerce)",
+    "Tech Stack: MedusaJS, Odoo, PostgreSQL, Oracle Cloud VPS, Razorpay API",
+    "Personal: 10+ yrs Karate Black Belt; Grade 6 Rockschool certified Drummer"
+  ],
+  "backlog_facts": [
+    "Built STRAYED e-commerce from scratch on MedusaJS, PostgreSQL, and Oracle VPS",
+    "Optimized Razorpay checkout latency and mobile redirects on STRAYED",
+    "Built custom loyalty points, discounts, and referral rewards for STRAYED",
+    "Implemented optimistic client-side cart updates to match Amazon checkout UX",
+    "Launched Prettiva & Co. on custom Odoo within 6 months from product ideation",
+    "Designed automated Excel parsers to batch-upload product variants in Odoo",
+    "Optimized Prettiva's Google Merchant Center feeds and SEO metadata"
+  ]
 }
