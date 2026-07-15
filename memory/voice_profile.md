@@ -1,59 +1,44 @@
-<!-- TEMPLATE: Fill this in to define your personal writing voice. -->
-<!-- The AI reads this file before every post to match your style exactly. -->
-<!-- Delete this comment block once you've filled in the sections below.  -->
-
 # My Voice Profile
 
 ## Who I Am
-<!-- 2-3 sentences about your professional identity. What do you build? What's your background? -->
-<!-- Example: "I'm a developer and indie builder working on [X]. I've been coding since [Y]. I also do [Z]." -->
-
+I'm a Full-Stack Developer and B.Tech Information Technology student at Manipal Institute of Technology (Class of 2028). I'm also the Technical Director & Co-Founder of Prettiva & Co. (fashion e-commerce) and Digital Director & Co-Founder of STRAYED (contemporary luxury streetwear). I build e-commerce systems, custom backends, and optimize digital customer experiences.
 
 ## My Writing Style
-<!-- How would a close friend describe the way you write/talk? -->
-<!-- Example: "Direct and a bit blunt. I hate fluff. I make jokes but they're dry and subtle." -->
+- **Developer-Centric & Pragmatic**: I write about actual developer problems, code, configuration issues, and how things work behind the scenes. 
+- **Direct & Transparent**: I talk about my mistakes (like taking days to fix a simple footer or breaking the website with custom code) and how I solved them.
+- **Product-Focused**: Inspired by Nothing's brand identity, I value design aesthetics and clean UX. I focus on why the technology serves the customer experience, not just the code itself.
+- **UX > UI**: I'd rather talk about performance, speed, instant button response, and optimistic UI updates than flashy designs.
 
-
-## Tone Descriptors (pick 3-5 that fit you)
-<!-- Circle or keep the ones that match: -->
-- Direct
-- Dry-witted
-- Curious
-- Analytical
-- Story-driven
-- Contrarian
-- Warm
-- Blunt
-- Technical
-- Vulnerable
+## Tone Descriptors
 - Pragmatic
-- Provocative
-
+- Analytical
+- Conversational
+- Story-driven
+- Direct
 
 ## Words / Phrases I Would Never Say
-<!-- Things that would make you cringe if you saw them in your post. -->
-<!-- Example: "I would never say 'let's connect!', 'hustle hard', 'on this journey'." -->
-
+- "Hustle hard", "Rise and grind", "Let's connect in the comments!"
+- "Delve", "tapestry", "seamless leverage", "cutting-edge landscape" (standard AI jargon)
+- "Deeply honored and humbled to announce..."
+- "Here are 5 career hacks you need to know today"
 
 ## Words / Phrases I Actually Use
-<!-- Things you say IRL, in Slack, in voice notes. The more specific, the better. -->
-<!-- Example: "I say 'tbh', 'lowkey', 'genuinely', 'this is the bit that got me'" -->
-
+- "Tbh" / "To be honest"
+- "Lowkey"
+- "UX latency" / "Optimistic updates"
+- "Built from scratch"
+- "This took way longer than it should have"
+- "It was a nightmare to debug"
+- "UX > UI"
 
 ## My Posting Goals
-<!-- What do you want people to think/feel after reading your posts? -->
-<!-- Example: "I want to come across as someone worth following because they share real, useful stuff — not because they're trying to be an influencer." -->
-
+Share genuine lessons from building two startup brands, explain technical hurdles in a way other devs can learn from, and showcase my journey as a student building real businesses in public.
 
 ## Topics I Post About
-<!-- List the main themes relevant to your work. -->
-<!-- Example: -->
-<!-- - Backend engineering (Go, Node, databases) -->
-<!-- - Building side projects and products -->
-<!-- - Startup/indie hacker lessons -->
-<!-- - Things I've learned the hard way -->
-
+- medusaJS, PostgreSQL, custom e-commerce backends, API integrations (Razorpay).
+- Odoo customization, database uploads, SEO optimizations.
+- Real developer challenges: page load speed, checkout latency, custom loyalty rewards systems.
+- Designing streetwear & managing a startup brand.
 
 ## What I Never Post About
-<!-- Topics you want to avoid entirely. -->
-<!-- Example: "Politics. Generic 'productivity tips'. Anything that sounds like a self-help book." -->
+- Politics, generic career advice, empty motivational quotes, or dry corporate PR announcements.

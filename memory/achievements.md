@@ -1,32 +1,37 @@
-<!-- TEMPLATE: Add your achievements and background here.                          -->
-<!-- The AI uses this as credibility context — it won't mention everything,        -->
-<!-- but it will draw from it when relevant to the post topic.                     -->
-<!-- Update this whenever you hit a significant milestone.                         -->
-<!-- Delete this comment block once you've added your first entries.               -->
-
 # Achievements & Background
 
-## Projects Built
-<!-- List projects you've built, shipped, or are currently building. -->
-<!-- Be specific: what does it do, what tech, what stage is it at? -->
-<!-- Example: -->
-<!-- - Built [ProjectName] — a [description]. Tech: [stack]. Stage: [beta/launched/WIP]. -->
+## Projects & Startups Built
 
+### STRAYED ( street-wear brand, Luxury Streetwear )
+*Digital Director & Co-Founder (Apr 2026 - Present)*
+- Streetwear brand focused on contemporary design and self-expression (hoodies, T-shirts, tote bags, tube tops, skirts).
+- Built the e-commerce store completely from scratch.
+- **Backend**: Custom node backend using MedusaJS.
+- **Frontend**: Custom designed and developed frontend, built from scratch out of my own designs.
+- **Database**: PostgreSQL database.
+- **Hosting**: Oracle Cloud Free Tier VPS instance.
+- **Custom Features Built**: 
+  - Integrated Razorpay payment gateway (handled intense mobile redirection, confirmation triggers, and check-out speed optimizations).
+  - Built a custom loyalty points redemption system, mystery gift additions, discount coupon logic, and referral reward mechanisms.
+  - Implemented UX-driven performance optimizations (optimistic client-side updates where cart lists and wishlists change instantly on the screen before the backend resolves, mirroring Amazon/Flipkart checkout experiences).
 
-## Professional Experience
-<!-- Roles, companies, or notable work experiences. -->
+### Prettiva & Co. ( fashion e-commerce brand )
+*Technical Director & Co-Founder (Dec 2025 - Present)*
+- Co-founded a female-oriented luxury e-commerce fashion brand. It took about 6 months from product ideation to manufacturing and website launch.
+- Designed, built, and maintain the company's e-commerce platform.
+- **Tech Stack**: Built on Odoo (utilizing custom code adjustments over standard themes, custom top bars, menu adjustments, advertisements layout, and product detail views).
+- **Core Integrations**: Set up Google Merchant Center feed integrations, SEO metadata optimization, and custom image hosting platforms for asset stability.
+- **Optimizations Built**: Developed workflow using Excel templates and automated image link parsers to upload dozens of product variants at once, decreasing upload overhead from days of manual labor to a structured data import.
 
+---
 
-## Technical Skills & Stack
-<!-- What are you genuinely good at? What tools do you use daily? -->
+## Skills & Stack
+- **Languages**: Python, Java, C, HTML/CSS.
+- **Frameworks & Databases**: MedusaJS, PostgreSQL, Odoo custom themes.
+- **Tools & Infrastructure**: Oracle Cloud (VPS), Android Studio, Google Merchant Center, Git, Razorpay API.
 
+---
 
-## Learning / Certifications
-<!-- Courses, certifications, or self-learning milestones. -->
-
-
-## Notable Wins (add with date)
-<!-- Running log — add new ones at the top. -->
-<!-- Example: -->
-<!-- - [2026-07-15] Got first paying customer for [product] -->
-<!-- - [2026-06-01] Open-sourced [tool], 50 stars in first week -->
+## Hobbies & Personal Milestones
+- **Martial Arts**: Black Belt in Karate (10+ years of active training in Bangalore).
+- **Music**: Grade 6 Rockschool Certification in Drums.
