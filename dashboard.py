@@ -1,0 +1,222 @@
+"""
+dashboard.py
+─────────────
+Local web server for the human-in-the-loop LinkedIn review dashboard.
+Run this script locally to approve, edit, reject, and sync posts to GitHub.
+
+Technology Stack: Flask, HTML, CSS, JavaScript.
+Launch via run_dashboard.bat.
+"""
+
+import sys
+import os
+import subprocess
+import webbrowser
+from pathlib import Path
+from flask import Flask, jsonify, request, render_template
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import config
+from src.memory_manager import MemoryManager
+from src.ai_generator import AIGenerator
+from src.compactor import MemoryCompactor
+from src.post_history import PostHistory
+
+app = Flask(__name__)
+mem = MemoryManager()
+compactor = MemoryCompactor()
+
+
+# ─── API Routes ───────────────────────────────────────────────────────────────
+
+@app.route("/")
+def index():
+    return render_template("index.html")
+
+
+@app.route("/api/status", methods=["GET"])
+def get_status():
+    summary = mem.build_full_context_summary()
+    compact = mem.load_compact_profile()
+    history = mem.load_post_history()
+    return jsonify({
+        "summary": summary,
+        "compact": compact,
+        "history": history[-5:]  # last 5 logs
+    })
+
+
+@app.route("/api/queue", methods=["GET"])
+def get_queue():
+    return jsonify(mem.load_posts_queue())
+
+
+@app.route("/api/queue/save", methods=["POST"])
+def save_queue():
+    data = request.json
+    mem.save_posts_queue(data)
+    return jsonify({"status": "success", "message": "Queue updated."})
+
+
+@app.route("/api/post/approve", methods=["POST"])
+def approve_post():
+    """Move a post from pending list to approved list."""
+    idx = int(request.json.get("index", 0))
+    queue = mem.load_posts_queue()
+    
+    if idx < 0 or idx >= len(queue["pending"]):
+        return jsonify({"status": "error", "message": "Invalid draft index."}), 400
+
+    approved_item = queue["pending"].pop(idx)
+    queue["approved"].append(approved_item)
+    
+    # Save the updated queue
+    mem.save_posts_queue(queue)
+    return jsonify({"status": "success", "message": "Post approved."})
+
+
+@app.route("/api/post/reject", methods=["POST"])
+def reject_post():
+    """Discard a pending draft and immediately generate a replacement draft."""
+    idx = int(request.json.get("index", 0))
+    queue = mem.load_posts_queue()
+    
+    if idx < 0 or idx >= len(queue["pending"]):
+        return jsonify({"status": "error", "message": "Invalid draft index."}), 400
+
+    # Pop/Discard it
+    queue["pending"].pop(idx)
+    mem.save_posts_queue(queue)
+
+    # Immediately replenish it to maintain buffer count
+    replenished = False
+    error_msg = ""
+    try:
+        summary = mem.build_full_context_summary()
+        topic = "See the recent context below — extract the most compelling story or insight." if summary["recent_context"] else "Share an insight from my professional background and achievements."
+        past_posts_text = mem.load_recent_posts_history_text(limit=15)
+        compact_data = mem.load_compact_profile()
+        
+        ai = AIGenerator()
+        batch = ai.generate_post_batch(
+            topic=topic,
+            compact_profile=compact_data,
+            recent_context=summary["recent_context"],
+            past_posts=past_posts_text,
+            batch_size=1
+        )
+        if batch:
+            queue = mem.load_posts_queue() # reload
+            queue["pending"].append(batch[0])
+            mem.save_posts_queue(queue)
+            replenished = True
+    except Exception as e:
+        error_msg = str(e)
+
+    return jsonify({
+        "status": "success",
+        "replenished": replenished,
+        "error": error_msg,
+        "message": "Draft rejected and replacement triggered." if replenished else f"Draft rejected, replacement generation failed: {error_msg}"
+    })
+
+
+@app.route("/api/post/replenish", methods=["POST"])
+def replenish_queue():
+    """Replenish the pending drafts list back up to a target size of 10."""
+    queue = mem.load_posts_queue()
+    pending = queue.get("pending", [])
+    target = 10
+    needed = target - len(pending)
+    
+    if needed <= 0:
+        return jsonify({"status": "success", "message": "Pending queue is already full."})
+
+    try:
+        summary = mem.build_full_context_summary()
+        topic = "See the recent context below — extract the most compelling story or insight." if summary["recent_context"] else "Share an insight from my professional background and achievements."
+        past_posts_text = mem.load_recent_posts_history_text(limit=15)
+        compact_data = mem.load_compact_profile()
+        
+        ai = AIGenerator()
+        batch = ai.generate_post_batch(
+            topic=topic,
+            compact_profile=compact_data,
+            recent_context=summary["recent_context"],
+            past_posts=past_posts_text,
+            batch_size=needed
+        )
+        if batch:
+            pending.extend(batch)
+            queue["pending"] = pending
+            mem.save_posts_queue(queue)
+            return jsonify({"status": "success", "message": f"Generated {len(batch)} new drafts."})
+        else:
+            return jsonify({"status": "error", "message": "AI generation returned an empty batch."}), 500
+    except Exception as e:
+        return jsonify({"status": "error", "message": f"Replenish generation failed: {e}"}), 500
+
+
+@app.route("/api/memory/add", methods=["POST"])
+def add_memory():
+    """
+    Accepts raw voice note text or thoughts, saves it as context,
+    runs the compaction engine, and updates compact_profile.json.
+    """
+    data = request.json
+    text = data.get("text", "").strip()
+    
+    if not text:
+        return jsonify({"status": "error", "message": "No memory text provided."}), 400
+
+    try:
+        # 1. Save new text as context file YYYY-MM-DD
+        mem.save_context(text)
+        
+        # 2. Trigger Memory Compacter
+        compactor.compact_all(new_raw_input=text)
+        
+        return jsonify({"status": "success", "message": "Memory added and compacted successfully."})
+    except Exception as e:
+        return jsonify({"status": "error", "message": f"Memory compaction failed: {e}"}), 500
+
+
+@app.route("/api/github/sync", methods=["POST"])
+def sync_github():
+    """Runs git commands to commit queues & memory, and pushes to GitHub Actions."""
+    try:
+        # Check if it's a git repo
+        if not Path(".git").exists():
+            return jsonify({"status": "error", "message": "Project is not initialized as a Git Repository."}), 400
+
+        # Stage files
+        subprocess.run(["git", "add", "memory/"], check=True)
+        
+        # Commit (silently ignore if nothing to commit)
+        result = subprocess.run(["git", "commit", "-m", "chore: sync approved queue from dashboard [skip ci]"], capture_output=True, text=True)
+        
+        # Push to remote branch
+        push_res = subprocess.run(["git", "push"], capture_output=True, text=True)
+        
+        if push_res.returncode != 0:
+            return jsonify({"status": "error", "message": f"Git Push failed: {push_res.stderr}"}), 500
+
+        return jsonify({
+            "status": "success",
+            "message": "Approved updates committed and pushed to GitHub Actions successfully!"
+        })
+    except Exception as e:
+        return jsonify({"status": "error", "message": f"Sync process encountered an error: {e}"}), 500
+
+
+# ─── Launcher Helper ──────────────────────────────────────────────────────────
+
+def launch_server():
+    # Attempt to start the server on localhost:5000
+    # Auto-open browser
+    webbrowser.open("http://localhost:5000")
+    app.run(host="127.0.0.1", port=5000, debug=False)
+
+
+if __name__ == "__main__":
+    launch_server()

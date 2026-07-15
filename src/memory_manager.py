@@ -101,22 +101,50 @@ class MemoryManager:
             encoding="utf-8"
         )
 
-    def load_posts_queue(self) -> list[dict]:
-        """Load the cached posts queue."""
+    def load_posts_queue(self) -> dict:
+        """Load the cached posts queue. Returns dict with 'approved' and 'pending' lists."""
         path = self.memory_dir / "posts_queue.json"
+        default = {"approved": [], "pending": []}
         if not path.exists():
-            return []
+            return default
         try:
-            return json.loads(path.read_text(encoding="utf-8"))
+            data = json.loads(path.read_text(encoding="utf-8"))
+            if not isinstance(data, dict):
+                return default
+            if "approved" not in data:
+                data["approved"] = []
+            if "pending" not in data:
+                data["pending"] = []
+            return data
         except Exception:
-            return []
+            return default
 
-    def save_posts_queue(self, queue: list[dict]) -> None:
+    def save_posts_queue(self, queue: dict) -> None:
         """Save the cached posts queue."""
         path = self.memory_dir / "posts_queue.json"
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(
             json.dumps(queue, indent=2, ensure_ascii=False),
+            encoding="utf-8"
+        )
+
+    def load_compact_profile(self) -> dict:
+        """Load the compacted voice and facts profile json."""
+        path = self.memory_dir / "compact_profile.json"
+        default = {"voice_essence": [], "banned_patterns": [], "experience_summary": [], "backlog_facts": []}
+        if not path.exists():
+            return default
+        try:
+            return json.loads(path.read_text(encoding="utf-8"))
+        except Exception:
+            return default
+
+    def save_compact_profile(self, profile: dict) -> None:
+        """Save the compacted voice and facts profile json."""
+        path = self.memory_dir / "compact_profile.json"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(
+            json.dumps(profile, indent=2, ensure_ascii=False),
             encoding="utf-8"
         )
 
@@ -132,6 +160,7 @@ class MemoryManager:
         Return a dict with all memory pieces loaded.
         This is the single object passed around the app.
         """
+        q = self.load_posts_queue()
         return {
             "voice_profile":    self.load_voice_profile(),
             "achievements":     self.load_achievements(),
@@ -140,7 +169,8 @@ class MemoryManager:
             "has_context":      bool(self.load_recent_context()),
             "has_voice":        bool(self.load_voice_profile()),
             "has_achievements": bool(self.load_achievements()),
-            "queue_count":      len(self.load_posts_queue()),
+            "approved_count":   len(q.get("approved", [])),
+            "pending_count":    len(q.get("pending", [])),
         }
 
     # ─── Helpers ──────────────────────────────────────────────────────────────

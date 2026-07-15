@@ -1,225 +1,89 @@
-# LinkedIn AI Auto-Poster
+# LinkedIn AI Auto-Poster (Human-in-the-Loop & Memory Compactor)
 
-> Post high-quality, human-sounding LinkedIn content daily — AI-generated from *your* voice, *your* recent context, *your* achievements. Runs on GitHub Actions. 100% free.
-
----
-
-## What This Does
-
-- **Daily automated post** to your LinkedIn profile at 9:00 AM IST
-- **AI-powered** (Gemini 2.5 Flash) — generates posts that don't sound like AI
-- **You stay in control** — feed it your raw thoughts, it structures them
-- **Persistent memory** — remembers your voice, achievements, and recent wins
-- **Discord alerts** — warns you before tokens expire, notifies every post
-- **Auto token refresh** — handles LinkedIn's 60-day access token expiry automatically
+> Post high-quality, authentic-sounding LinkedIn updates daily. Content is generated from your voice/background and compiled into a **token-efficient memory database** to optimize costs. Posts only publish after you manually approve them in your local visual dashboard.
 
 ---
 
-## Architecture
+## Key Features
+
+- **🛡️ 100% Control (Human-in-the-Loop)**: Posts are *never* published automatically without your manual approval. The schedule loop *only* posts updates you have reviewed and moved to the Approved Queue.
+- **⚡ Token-Compact Memory (Cost Saving)**: Consolidates voice styles and achievements from `voice_profile.md` and `achievements.md` into a structured, highly compressed JSON database (`memory/compact_profile.json`). Reduces API prompt sizes from 1,500+ tokens to ~200 tokens, saving **80%+ on API credits**.
+- **💻 Local Review Dashboard**: A beautiful local web application (Vanilla CSS dark theme) to review, edit, approve, reject, replenish drafts, add context wins, and sync code to GitHub with 1 click.
+- **📅 Daily Automated Post**: Pushes the next approved post from your queue to LinkedIn daily at 9:00 AM IST (3:30 AM UTC). If your approved list is empty, it skips posting and alerts you on Discord.
+- **🔄 Auto Expiry Alerts**: Warns you on Discord 14 and 7 days before your 60-day LinkedIn API key expires, so you only have to re-auth once every 2 months.
+
+---
+
+## Visual Dashboard Setup
+
+We've developed a local launcher for you. To open and start editing:
+
+### Step 1: Open the Dashboard locally
+Double-click **`run_dashboard.bat`** in the project root. This will:
+1. Activate your virtual environment automatically.
+2. Verify you have `flask` installed (it will auto-install if missing).
+3. Start the server on `http://localhost:5000/`.
+4. Open the dashboard in your default browser.
+
+---
+
+## How to use the Dashboard
+
+### 1. Add Context & Compile Memory
+On the right sidebar of the Dashboard:
+- Write or paste raw voice-to-text transcriptions, notes, or recent wins into the **Add Context / Wins** text area.
+- Click **Compact & Save Memory**.
+- **What happens:** The system updates your date-stamped context and invokes the AI Compactor to compress your style guidelines, startups, and backlog achievements into the token-efficient `compact_profile.json` database.
+
+### 2. Review and Regenerate Drafts
+On the main panel under **Pending Drafts**:
+- The AI will always keep a list of **10 drafts** available for you.
+- Read through the drafts:
+  - **Approve**: Moves the draft into the **Approved Queue** (which the daily poster reads from).
+  - **Edit**: Make quick adjustments directly in the text card and click **Save Edit**.
+  - **Decline**: Discards the draft. The dashboard will automatically trigger Gemini to generate a fresh replacement draft at the bottom of the list.
+
+### 3. Sync to GitHub
+When you are happy with your approved queue:
+- Click the **🚀 Sync to GitHub** button at the top right of the dashboard.
+- This will automatically stage your queues, commit them, and push them to your repository remote branch.
+- Your daily GitHub Actions workflow will instantly see the new approved queue.
+
+---
+
+## Code/Repo Architecture
 
 ```
-You (GitHub UI)
-    │
-    ├── [Add Context workflow]  → memory/contexts/YYYY-MM-DD.md
-    ├── [Daily Post workflow]   → reads memory/ → Gemini → LinkedIn API
-    └── [Token Refresh workflow] → auto-refreshes + updates GitHub Secrets
+linkedin-poster/
+├── .github/workflows/
+│   ├── daily-post.yml         # Scheduled runner (posts only approved drafts)
+│   └── refresh-token.yml      # Expiry checks & warning alerts
+│
+├── src/
+│   ├── run.py                 # Action entrypoint (posts one approved draft)
+│   ├── ai_generator.py        # Prompts Gemini utilizing compact profile
+│   ├── compactor.py           # Compresses memories to compact_profile.json
+│   ├── memory_manager.py      # App queue & profile database controller
+│   └── discord_notifier.py    # Discord webhooks (success/failure/expiry alerts)
+│
+├── memory/
+│   ├── compact_profile.json   # Token-compressed facts and voice rules
+│   ├── posts_queue.json       # Holds approved and pending post content lists
+│   ├── voice_profile.md       # Raw voice definition
+│   └── achievements.md        # Raw achievements list
+│
+├── dashboard.py               # Local Flask server
+├── run_dashboard.bat          # 1-click Windows launcher
+└── scripts/setup_token.py     # OAuth token setup utility
 ```
 
 ---
 
-## Setup Guide
-
-### Prerequisites
-- A GitHub account with this repo (public or private)
-- A [Google AI Studio](https://aistudio.google.com/app/apikey) API key (Gemini — free)
-- A Discord server with a webhook URL (for notifications)
-
----
-
-### Step 1: Create a LinkedIn Developer App
-
-1. Go to [developer.linkedin.com](https://developer.linkedin.com/) → **Create App**
-2. Give it a name (e.g. "My Auto Poster") and link to any company page
-3. Under **Products** tab → add:
-   - ✅ **Share on LinkedIn**
-   - ✅ **Sign In with LinkedIn using OpenID Connect**
-4. Under **Auth** tab → scroll to **OAuth 2.0 Settings** → add this redirect URI:
+## Token Expiry Cycle
+Standard LinkedIn API applications do not receive programmatic refresh tokens. To keep the project 100% free:
+1. The system alerts you via Discord **14 days** and **7 days** before your access token expires.
+2. When warned, run the script locally to get a fresh 60-day token:
+   ```bash
+   python scripts/setup_token.py
    ```
-   http://localhost:8765/callback
-   ```
-5. Note down your **Client ID** and **Client Secret**
-
----
-
-### Step 2: Run the OAuth Setup Script (once)
-
-On your local machine:
-
-```bash
-# Clone the repo
-git clone https://github.com/YOUR_USERNAME/linkedin-poster.git
-cd linkedin-poster
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Run the setup script
-python scripts/setup_token.py
-```
-
-The script will:
-1. Ask for your Client ID and Client Secret
-2. Open your browser to LinkedIn's auth page
-3. Catch the callback automatically
-4. Print all the values you need to add as GitHub Secrets
-
----
-
-### Step 3: Add GitHub Secrets
-
-Go to your repo → **Settings** → **Secrets and variables** → **Actions** → **New repository secret**
-
-Add ALL of these:
-
-| Secret Name | Value |
-|---|---|
-| `GEMINI_API_KEY` | From [aistudio.google.com](https://aistudio.google.com/app/apikey) |
-| `LINKEDIN_CLIENT_ID` | From your LinkedIn App |
-| `LINKEDIN_CLIENT_SECRET` | From your LinkedIn App |
-| `LINKEDIN_ACCESS_TOKEN` | From `setup_token.py` output |
-| `LINKEDIN_REFRESH_TOKEN` | From `setup_token.py` output |
-| `LINKEDIN_TOKEN_EXPIRY` | From `setup_token.py` output (ISO datetime) |
-| `LINKEDIN_REFRESH_TOKEN_EXPIRY` | From `setup_token.py` output |
-| `LINKEDIN_MEMBER_URN` | From `setup_token.py` output (e.g. `urn:li:person:XXXX`) |
-| `DISCORD_WEBHOOK_URL` | From Discord → Server Settings → Integrations → Webhooks |
-
----
-
-### Step 4: Fill In Your Voice Profile
-
-Edit `memory/voice_profile.md` — this is the most important file.
-It defines how the AI writes *as you*. Fill in:
-- Who you are professionally
-- Your writing style (3-5 descriptors)
-- Words/phrases you'd never say
-- Words/phrases you actually use
-- What topics you post about
-
-The more specific, the better. See the template for guidance.
-
----
-
-### Step 5: Fill In Your Achievements
-
-Edit `memory/achievements.md` with:
-- Projects you've built
-- Your professional background
-- Notable wins (with dates)
-
-The AI uses this as background credibility. Update it when you hit new milestones.
-
----
-
-### Step 6: Test with a Dry Run
-
-Go to **GitHub Actions** → **"📅 Daily LinkedIn Post"** → **Run workflow**
-
-Set `dry_run = true` and optionally add some context. This generates a post but **doesn't publish it** — you'll see it in the Action logs.
-
----
-
-## Daily Usage
-
-### Option A: Add Context (Most Common)
-Go to **Actions** → **"🧠 Add Context / Memory"** → **Run workflow**
-
-Fill in the text box with whatever you've been up to:
-```
-Just shipped the authentication system for my app.
-Took 3 weeks of debugging JWT refresh tokens.
-The key lesson: silent token rotation is the way.
-Also got 2 new beta users today.
-```
-
-The AI will pick this up and post about it tomorrow morning.
-
-### Option B: Post Right Now
-Go to **Actions** → **"📅 Daily LinkedIn Post"** → **Run workflow**
-
-Fill in:
-- `context`: what you want to post about
-- `tone`: Storytelling / Technical / Professional / etc.
-- `extra_notes`: any specific instructions
-
-### Option C: Fully Automatic
-Just leave it. Every day at 9:00 AM IST, the workflow runs automatically.
-It picks up the most recent context file you've added and generates a post from it.
-
----
-
-## Token Management
-
-LinkedIn access tokens expire every **60 days**. The system handles this automatically:
-
-1. **Weekly health check** (every Monday) — `refresh-token.yml` runs automatically
-2. If the token is within 14 days of expiry → Discord warning sent
-3. If within 10 days → access token auto-refreshed using refresh token
-4. **Refresh token** (365 days) → Discord warning sent 30 days before expiry
-5. When refresh token expires, run `python scripts/setup_token.py` again (once per year)
-
-> **You never need to think about tokens** — just watch for Discord alerts.
-
----
-
-## Memory Structure
-
-```
-memory/
-├── voice_profile.md      ← Your personal writing style (fill this in)
-├── achievements.md       ← Your background and wins (fill this in)
-├── contexts/
-│   ├── 2026-07-15.md    ← Context you added on July 15
-│   └── 2026-07-16.md    ← Context you added on July 16
-└── post_history.json     ← Auto-generated log of all posts
-```
-
----
-
-## Cost
-
-| Service | Cost |
-|---|---|
-| GitHub Actions | Free (2,000 min/month on private repos — this uses ~2 min/day) |
-| Gemini 2.5 Flash | Free tier (1M tokens/day) |
-| LinkedIn API | Free |
-| Discord Webhooks | Free |
-| **Total** | **$0** |
-
----
-
-## Local CLI
-
-The original interactive CLI (`main.py`) still works for local use:
-
-```bash
-python main.py
-```
-
-Options:
-1. Authenticate & setup session (Playwright browser)
-2. Generate post with AI
-3. Post custom text
-
----
-
-## LinkedIn Best Practices (Built In)
-
-The AI is pre-configured with all current best practices:
-
-- ✅ **Hooks under 15 words** — uses tension/numbers, not questions
-- ✅ **No links in post body** — links go in the first comment
-- ✅ **1-3 hashtags only** — no spam
-- ✅ **Short paragraphs** — mobile-optimized
-- ✅ **No AI buzzwords** — "leverage", "delve", "tapestry" etc. are banned
-- ✅ **Specificity injection** — real dates, numbers, names make posts unique
-- ✅ **Burstiness** — varied sentence lengths for human-sounding rhythm
+3. Copy the output values and update your Repository Secrets.
