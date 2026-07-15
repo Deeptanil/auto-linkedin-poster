@@ -88,8 +88,7 @@ class AIGenerator:
         topic: str,
         tone: str = "Auto",
         extra_instructions: str = "",
-        voice_profile: str = "",
-        achievements: str = "",
+        compact_profile: dict = None,
         recent_context: str = "",
         past_posts: list[str] = None,
         batch_size: int = 5,
@@ -113,7 +112,7 @@ class AIGenerator:
 
         prompt = self._build_batch_prompt(
             topic, tone, extra_instructions,
-            voice_profile, achievements, recent_context,
+            compact_profile, recent_context,
             history_blacklist, batch_size
         )
 
@@ -181,13 +180,16 @@ class AIGenerator:
         achievements: str = "",
         recent_context: str = "",
     ) -> str:
-        """Helper to generate a single post (used by local CLI)."""
+        """Helper to generate a single post (used by local CLI). Loads compact profile internally."""
+        from src.memory_manager import MemoryManager
+        mem = MemoryManager()
+        compact = mem.load_compact_profile()
+        
         batch = self.generate_post_batch(
             topic=topic,
             tone=tone,
             extra_instructions=extra_instructions,
-            voice_profile=voice_profile,
-            achievements=achievements,
+            compact_profile=compact,
             recent_context=recent_context,
             batch_size=1
         )
@@ -224,8 +226,7 @@ class AIGenerator:
         topic: str,
         tone: str,
         extra_instructions: str,
-        voice_profile: str,
-        achievements: str,
+        compact_profile: dict,
         recent_context: str,
         history_blacklist: str,
         batch_size: int,
@@ -244,24 +245,23 @@ class AIGenerator:
             "and has a distinct voice. You never write generic career content."
         )
 
-        # 2. Voice profile (if available)
-        if voice_profile:
-            parts.append(
-                f"=== AUTHOR VOICE PROFILE ===\n"
-                f"{voice_profile}\n"
-                f"Follow this voice closely. It overrides any default style you would apply."
-            )
+        # 2. Compact Profile Facts & Voice (Highly Token-Efficient)
+        if compact_profile:
+            essence = "\n".join(f"- {item}" for item in compact_profile.get("voice_essence", []))
+            banned = ", ".join(compact_profile.get("banned_patterns", []))
+            summary = "\n".join(f"- {item}" for item in compact_profile.get("experience_summary", []))
+            facts = "\n".join(f"- {item}" for item in compact_profile.get("backlog_facts", []))
 
-        # 3. Achievements (if available)
-        if achievements:
-            parts.append(
-                f"=== AUTHOR ACHIEVEMENTS & BACKGROUND ===\n"
-                f"{achievements}\n"
-                f"Use this as background credibility. Reference specific items naturally "
-                f"if they're relevant to the topic."
+            profile_block = (
+                "=== COMPACT AUTHOR BLUEPRINT ===\n"
+                f"Writing Style Guidelines:\n{essence}\n\n"
+                f"Banned Words / Buzzwords to Avoid: {banned or 'None'}\n\n"
+                f"Startup & Tech Background:\n{summary}\n\n"
+                f"Backlog of Key Achievements & Experiences (Use for post inspiration):\n{facts}"
             )
+            parts.append(profile_block)
 
-        # 4. Recent context (if available)
+        # 3. Recent context (if available)
         if recent_context:
             parts.append(
                 f"=== RECENT CONTEXT (raw thoughts from the author) ===\n"
@@ -270,7 +270,7 @@ class AIGenerator:
                 f"This is the most important input — build the posts around it."
             )
 
-        # 5. Anti-Repetition constraint
+        # 4. Anti-Repetition constraint
         if history_blacklist:
             parts.append(
                 f"=== RECENTLY POSTED CONTENT (DO NOT REPEAT OR REWRITE THESE TOPICS) ===\n"

@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinkedIn AI Poster Dashboard</title>
+    <!-- Modern Typography from Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ─── Premium CSS Variables & Tokens ────────────────────────────────── */
+        :root {
+            --bg-base: #0b0c10;
+            --bg-surface: rgba(31, 40, 51, 0.4);
+            --bg-glass: rgba(15, 22, 36, 0.6);
+            --accent-glow: hsla(180, 100%, 50%, 0.15);
+            --color-primary: #66fcf1;
+            --color-secondary: #45f3ff;
+            --color-text-main: #f5f7fa;
+            --color-text-muted: #8b9bb4;
+            --color-card-border: rgba(102, 252, 241, 0.15);
+            --color-card-hover: rgba(102, 252, 241, 0.25);
+            --color-danger: #ff4757;
+            --color-success: #2ed573;
+            --color-warning: #ffa502;
+            --font-display: 'Outfit', sans-serif;
+            --font-sans: 'Inter', sans-serif;
+            --blur-size: 20px;
+            --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* ─── Core Styles ───────────────────────────────────────────────────── */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--color-text-main);
+            font-family: var(--font-sans);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(102, 252, 241, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(69, 243, 255, 0.05) 0%, transparent 40%);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2.5rem;
+        }
+
+        /* ─── Header ────────────────────────────────────────────────────────── */
+        header {
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            margin-bottom: 1rem;
+        }
+
+        h1 {
+            font-family: var(--font-display);
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--color-primary), #fff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        /* ─── Layout Grid ───────────────────────────────────────────────────── */
+        .layout-grid {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 2.5rem;
+        }
+
+        @media (max-width: 900px) {
+            .layout-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ─── Glassmorphism Cards ───────────────────────────────────────────── */
+        .card {
+            background: var(--bg-glass);
+            backdrop-filter: blur(var(--blur-size));
+            -webkit-backdrop-filter: blur(var(--blur-size));
+            border: 1px solid var(--color-card-border);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            transition: var(--transition-smooth);
+        }
+
+        .card:hover {
+            border-color: rgba(102, 252, 241, 0.25);
+            box-shadow: 0 8px 32px 0 var(--accent-glow);
+        }
+
+        .card h2 {
+            font-family: var(--font-display);
+            font-size: 1.4rem;
+            margin-bottom: 1.2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 0.8rem;
+        }
+
+        /* ─── Buttons ───────────────────────────────────────────────────────── */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-family: var(--font-sans);
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            border: none;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+            color: #0b0c10;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 252, 241, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--color-text-main);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-danger {
+            background: rgba(255, 71, 87, 0.1);
+            color: var(--color-danger);
+            border: 1px solid rgba(255, 71, 87, 0.2);
+        }
+
+        .btn-danger:hover {
+            background: rgba(255, 71, 87, 0.25);
+            border-color: var(--color-danger);
+        }
+
+        .btn-success {
+            background: rgba(46, 213, 115, 0.1);
+            color: var(--color-success);
+            border: 1px solid rgba(46, 213, 115, 0.2);
+        }
+
+        .btn-success:hover {
+            background: rgba(46, 213, 115, 0.25);
+            border-color: var(--color-success);
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        /* ─── Tabs / Section Control ────────────────────────────────────────── */
+        .tab-bar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            color: var(--color-text-muted);
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            position: relative;
+            transition: var(--transition-smooth);
+        }
+
+        .tab-btn.active {
+            color: var(--color-primary);
+        }
+
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 1rem;
+            right: 1rem;
+            height: 2px;
+            background-color: var(--color-primary);
+            border-radius: 2px;
+        }
+
+        /* ─── E-commerce Post Cards Grid ────────────────────────────────────── */
+        .post-list {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        .post-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            transition: var(--transition-smooth);
+        }
+
+        .post-card:hover {
+            border-color: rgba(102, 252, 241, 0.15);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .post-index-tag {
+            font-family: var(--font-display);
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--color-primary);
+            background: rgba(102, 252, 241, 0.08);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            border: 1px solid rgba(102, 252, 241, 0.2);
+        }
+
+        .post-reasoning {
+            font-size: 0.85rem;
+            color: var(--color-text-muted);
+            font-style: italic;
+        }
+
+        .post-textarea {
+            width: 100%;
+            background: #0f121d;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--color-text-main);
+            font-family: var(--font-sans);
+            font-size: 0.95rem;
+            padding: 1rem;
+            border-radius: 8px;
+            resize: vertical;
+            min-height: 120px;
+            outline: none;
+            transition: var(--transition-smooth);
+        }
+
+        .post-textarea:focus {
+            border-color: var(--color-primary);
+            box-shadow: 0 0 8px rgba(102, 252, 241, 0.25);
+        }
+
+        .post-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+
+        /* ─── Sidebar elements ──────────────────────────────────────────────── */
+        .sidebar-section {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .status-pill {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.9rem;
+        }
+
+        .status-label {
+            color: var(--color-text-muted);
+        }
+
+        .status-value {
+            font-weight: 600;
+            color: var(--color-primary);
+        }
+
+        .memory-textarea {
+            width: 100%;
+            min-height: 150px;
+            background: #0f121d;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--color-text-main);
+            border-radius: 8px;
+            padding: 0.8rem;
+            font-family: var(--font-sans);
+            font-size: 0.9rem;
+            resize: vertical;
+            outline: none;
+            transition: var(--transition-smooth);
+        }
+
+        .memory-textarea:focus {
+            border-color: var(--color-primary);
+        }
+
+        /* ─── Toast Alerts ────────────────────────────────────────────────── */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: #1e272e;
+            border-left: 4px solid var(--color-primary);
+            color: #fff;
+            padding: 1rem 1.5rem;
+            border-radius: 6px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            z-index: 1000;
+            transform: translateY(150%);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-size: 0.95rem;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+        }
+
+        .toast.success { border-color: var(--color-success); }
+        .toast.error { border-color: var(--color-danger); }
+        .toast.warning { border-color: var(--color-warning); }
+
+        /* ─── Loader ────────────────────────────────────────────────────────── */
+        .loader-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(11, 12, 16, 0.85);
+            backdrop-filter: blur(5px);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .loader-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(102, 252, 241, 0.1);
+            border-top-color: var(--color-primary);
+            border-radius: 50%;
+            animation: spin 1s infinite linear;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loader-text {
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            color: var(--color-primary);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Loading overlay -->
+    <div id="loader" class="loader-overlay">
+        <div class="loader-spinner"></div>
+        <div id="loaderText" class="loader-text">Loading Dashboard Data...</div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast">Action Success!</div>
+
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <div>
+                <h1>LinkedIn AI Content Dashboard</h1>
+                <p style="color: var(--color-text-muted); font-size: 0.9rem;">Human-in-the-Loop Content & Compaction Manager</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-secondary" onclick="replenishQueue()">🔄 Generate Drafts</button>
+                <button class="btn btn-primary" onclick="syncGitHub()">🚀 Sync to GitHub</button>
+            </div>
+        </header>
+
+        <!-- Layout Grid -->
+        <div class="layout-grid">
+            
+            <!-- Left Side: Queue Boards -->
+            <div class="card">
+                <div class="tab-bar">
+                    <button id="tabPending" class="tab-btn active" onclick="switchTab('pending')">Pending Drafts (<span id="countPending">0</span>)</button>
+                    <button id="tabApproved" class="tab-btn" onclick="switchTab('approved')">Approved Queue (<span id="countApproved">0</span>)</button>
+                </div>
+
+                <div id="postList" class="post-list">
+                    <!-- Posts dynamically inserted here -->
+                </div>
+            </div>
+
+            <!-- Right Side: Memory and Status -->
+            <div class="sidebar-section">
+                <!-- Status & Engine Card -->
+                <div class="card" style="padding: 1.5rem;">
+                    <h2>System Status</h2>
+                    <div style="display: flex; flex-direction: column; gap: 0.8rem;">
+                        <div class="status-pill">
+                            <span class="status-label">Engine Model:</span>
+                            <span class="status-value" id="statusModel">Gemini 3.5 Flash</span>
+                        </div>
+                        <div class="status-pill">
+                            <span class="status-label">Approved Queue:</span>
+                            <span class="status-value" id="statusApprovedCount">0</span>
+                        </div>
+                        <div class="status-pill">
+                            <span class="status-label">Pending Drafts:</span>
+                            <span class="status-value" id="statusPendingCount">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Add Memory / Voice note Card -->
+                <div class="card" style="padding: 1.5rem;">
+                    <h2>Add Context / Wins</h2>
+                    <p style="color: var(--color-text-muted); font-size: 0.85rem; margin-bottom: 1rem;">
+                        Paste your raw developer thoughts, wins, or voice-to-text transcripts. The compactor will merge it into your database.
+                    </p>
+                    <textarea id="memoryInput" class="memory-textarea" placeholder="E.g. Shipped medusa coupon custom loyalty program today. Took 1 week of data migrations. Users can redeem codes instantly at check-out."></textarea>
+                    <button class="btn btn-primary btn-sm" style="width: 100%; margin-top: 1rem;" onclick="addMemory()">💾 Compact & Save Memory</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Scripting Dashboard Logic -->
+    <script>
+        let currentTab = 'pending';
+        let queueData = { approved: [], pending: [] };
+
+        // ─── Core Loaders ────────────────────────────────────────────────────
+        
+        async function fetchQueue() {
+            showLoader("Loading queues...");
+            try {
+                const response = await fetch('/api/queue');
+                queueData = await response.json();
+                document.getElementById('countPending').innerText = queueData.pending.length;
+                document.getElementById('countApproved').innerText = queueData.approved.length;
+                
+                document.getElementById('statusPendingCount').innerText = queueData.pending.length;
+                document.getElementById('statusApprovedCount').innerText = queueData.approved.length;
+                
+                renderPosts();
+            } catch (err) {
+                showToast("Failed to load queue: " + err.message, "error");
+            } finally {
+                hideLoader();
+            }
+        }
+
+        async function fetchStatus() {
+            try {
+                const response = await fetch('/api/status');
+                const status = await response.json();
+                document.getElementById('statusModel').innerText = status.summary.has_voice ? "Gemini 3.5 Flash (Voice active)" : "Gemini 3.5 Flash";
+            } catch (err) {
+                console.error("Status fetch failed", err);
+            }
+        }
+
+        // ─── Rendering ───────────────────────────────────────────────────────
+        
+        function renderPosts() {
+            const listContainer = document.getElementById('postList');
+            listContainer.innerHTML = '';
+            
+            const list = queueData[currentTab] || [];
+            
+            if (list.length === 0) {
+                listContainer.innerHTML = `
+                    <div style="text-align: center; padding: 3rem; color: var(--color-text-muted);">
+                        <p style="font-size: 1.1rem; margin-bottom: 0.5rem;">No posts in this section.</p>
+                        <p style="font-size: 0.9rem;">${currentTab === 'pending' ? 'Click "Generate Drafts" above to query Gemini.' : 'Approve some drafts from the Pending tab to fill your queue.'}</p>
+                    </div>
+                `;
+                return;
+            }
+
+            list.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.className = 'post-card';
+                
+                let actionButtons = '';
+                if (currentTab === 'pending') {
+                    actionButtons = `
+                        <button class="btn btn-danger btn-sm" onclick="rejectPost(${index})">❌ Decline</button>
+                        <button class="btn btn-secondary btn-sm" onclick="saveDraftText(${index}, '${currentTab}')">💾 Save Edit</button>
+                        <button class="btn btn-success btn-sm" onclick="approvePost(${index})">✅ Approve</button>
+                    `;
+                } else {
+                    actionButtons = `
+                        <button class="btn btn-danger btn-sm" onclick="removeApproved(${index})">🗑️ Delete</button>
+                        <button class="btn btn-secondary btn-sm" onclick="saveDraftText(${index}, '${currentTab}')">💾 Save Edit</button>
+                    `;
+                }
+
+                card.innerHTML = `
+                    <div class="post-header">
+                        <span class="post-index-tag">Draft #${index + 1}</span>
+                        <span class="post-reasoning">${item.reasoning || 'No reasoning provided'}</span>
+                    </div>
+                    <textarea id="text-${currentTab}-${index}" class="post-textarea">${item.post_text}</textarea>
+                    <div class="post-actions">
+                        ${actionButtons}
+                    </div>
+                `;
+                listContainer.appendChild(card);
+            });
+        }
+
+        // ─── Event Handlers ──────────────────────────────────────────────────
+        
+        function switchTab(tab) {
+            currentTab = tab;
+            document.getElementById('tabPending').className = tab === 'pending' ? 'tab-btn active' : 'tab-btn';
+            document.getElementById('tabApproved').className = tab === 'approved' ? 'tab-btn active' : 'tab-btn';
+            renderPosts();
+        }
+
+        async function saveDraftText(index, tab) {
+            const newText = document.getElementById(`text-${tab}-${index}`).value.strip ? 
+                            document.getElementById(`text-${tab}-${index}`).value.strip() : 
+                            document.getElementById(`text-${tab}-${index}`).value;
+            
+            queueData[tab][index].post_text = newText;
+            
+            showLoader("Saving post...");
+            try {
+                const res = await fetch('/api/queue/save', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(queueData)
+                });
+                const result = await res.json();
+                if (result.status === 'success') {
+                    showToast("Draft updated successfully!", "success");
+                    fetchQueue();
+                } else {
+                    showToast(result.message, "error");
+                }
+            } catch (err) {
+                showToast("Save failed: " + err.message, "error");
+            } finally {
+                hideLoader();
+            }
+        }
+
+        async function approvePost(index) {
+            showLoader("Approving post...");
+            try {
+                const res = await fetch('/api/post/approve', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ index })
+                });
+                const result = await res.json();
+                if (result.status === 'success') {
+                    showToast("Post approved! Added to approved queue.", "success");
+                    fetchQueue();
+                } else {
+                    showToast(result.message, "error");
+                }
+            } catch (err) {
+                showToast("Approval failed: " + err.message, "error");
+            } finally {
+                hideLoader();
+            }
+        }
+
+        async function rejectPost(index) {
+            showLoader("Declining draft... Generating a replacement from Gemini...");
+            try {
+                const res = await fetch('/api/post/reject', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ index })
+                });
+                const result = await res.json();
+                if (result.status === 'success') {
+                    showToast("Draft declined. New replacement generated!", "success");
+                    fetchQueue();
+                } else {
+                    showToast(result.message, "error");
+                }
+            } catch (err) {
+                showToast("Rejection failed: " + err.message, "error");
+            } finally {
+                hideLoader();
+            }
+        }
+
+        async function removeApproved(index) {
+            if (!confirm("Remove this post from approved queue?")) return;
+            queueData.approved.splice(index, 1);
+            
+            showLoader("Updating approved list...");
+            try {
+                const res = await fetch('/api/queue/save', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(queueData)
+                });
+                showToast("Removed from approved queue.", "success");
+                fetchQueue();
+            } catch (err) {
+                showToast("Remove failed: " + err.message, "error");
+            } finally {
+                hideLoader();
+            }
+        }
+
+        async function replenishQueue() {
+            showLoader("Asking Gemini to generate drafts queue to 10...");
+            try {
+                const res = await fetch('/api/post/replenish', { method: 'POST' });
+                const result = await res.json();
+                if (result.status === 'success') {
+                    showToast(result.message, "success");
+                    fetchQueue();
+                } else {
+                    showToast(result.message, "error");
+                }
+            } catch (err) {
+                showToast("Generation failed: " + err.message, "error");
+            } finally {
+                hideLoader();
+            }
+        }
+
+        async function addMemory() {
+            const text = document.getElementById('memoryInput').value.trim();
+            if (!text) {
+                showToast("Please enter some text wins / context.", "warning");
+                return;
+            }
+
+            showLoader("Compacting raw memory... saving token size...");
+            try {
+                const res = await fetch('/api/memory/add', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text })
+                });
+                const result = await res.json();
+                if (result.status === 'success') {
+                    showToast("Memory saved & compacted successfully!", "success");
+                    document.getElementById('memoryInput').value = '';
+                    fetchStatus();
+                } else {
+                    showToast(result.message, "error");
+                }
+            } catch (err) {
+                showToast("Memory addition failed: " + err.message, "error");
+            } finally {
+                hideLoader();
+            }
+        }
+
+        async function syncGitHub() {
+            showLoader("Pushed updates... committing & pushing to GitHub Remote Actions...");
+            try {
+                const res = await fetch('/api/github/sync', { method: 'POST' });
+                const result = await res.json();
+                if (result.status === 'success') {
+                    showToast(result.message, "success");
+                } else {
+                    showToast(result.message, "error");
+                }
+            } catch (err) {
+                showToast("Sync failed: " + err.message, "error");
+            } finally {
+                hideLoader();
+            }
+        }
+
+        // ─── UI Helpers ──────────────────────────────────────────────────────
+        
+        function showLoader(text = "Loading...") {
+            document.getElementById('loaderText').innerText = text;
+            document.getElementById('loader').style.display = 'flex';
+        }
+
+        function hideLoader() {
+            document.getElementById('loader').style.display = 'none';
+        }
+
+        function showToast(text, type = "success") {
+            const toast = document.getElementById('toast');
+            toast.innerText = text;
+            toast.className = `toast show ${type}`;
+            setTimeout(() => {
+                toast.className = 'toast';
+            }, 3500);
+        }
+
+        // Init
+        fetchQueue();
+        fetchStatus();
+    </script>
+</body>
+</html>

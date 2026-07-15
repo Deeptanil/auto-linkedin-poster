@@ -86,75 +86,54 @@ def main():
     print(f"  Voice profile:  {'[OK]' if ctx_summary['has_voice'] else '[X] (not set)'}")
     print(f"  Achievements:   {'[OK]' if ctx_summary['has_achievements'] else '[X] (not set)'}")
     print(f"  Recent context: {'[OK]' if ctx_summary['has_context'] else '[X] (none found)'}")
-
-    print(f"  Queue count:    {ctx_summary['queue_count']} post(s) cached")
+    print(f"  Approved posts: {ctx_summary['approved_count']}")
+    print(f"  Pending drafts: {ctx_summary['pending_count']}")
     print()
 
-    # ── Queue check and Batch Generation ──────────────────────────────────────
+    # ── 1. Check Approved Queue ───────────────────────────────────────────────
     queue = mem.load_posts_queue()
-    
-    # If the queue is empty OR if we have forced regeneration via new context/override
-    need_generation = len(queue) == 0 or context_input or force
+    approved_list = queue.get("approved", [])
+    pending_list = queue.get("pending", [])
 
-    if need_generation:
-        print("[3/5] Queue empty or new context forced. Generating batch of posts...")
+    if not approved_list:
+        print("[!] No approved posts in queue. Skipping schedule execution.")
+        print("    Please run the local dashboard, approve some drafts, and sync to GitHub.")
         
-        # Guard: no context and not forced -> skip
-        if not ctx_summary["has_context"] and not force:
-            print("[!] No context available. Skipping generation to avoid generic content.")
-            notify_no_context()
-            sys.exit(0)
-
-        # Build topic
-        if ctx_summary["recent_context"]:
-            topic = "See the recent context below — extract the most compelling story or insight."
-        else:
-            topic = "Share an insight from my professional background and achievements."
-
-        # Fetch past post updates for anti-repetition memory
-        past_posts_text = mem.load_recent_posts_history_text(limit=15)
-        print(f"  Loaded {len(past_posts_text)} past posts as anti-repetition constraints.")
-
-        try:
-            ai = AIGenerator()
-            batch = ai.generate_post_batch(
-                topic            = topic,
-                tone             = tone,
-                extra_instructions = extra_notes,
-                voice_profile    = ctx_summary["voice_profile"],
-                achievements     = ctx_summary["achievements"],
-                recent_context   = ctx_summary["recent_context"],
-                past_posts       = past_posts_text,
-                batch_size       = 5
-            )
-        except Exception as e:
-            error_msg = f"AI batch generation failed: {e}"
-            print(f"[ERROR] {error_msg}")
-            notify_post_error(error_msg)
-            sys.exit(1)
-
-        if not batch:
-            error_msg = "AI generated an empty batch or JSON parsing failed."
-            print(f"[ERROR] {error_msg}")
-            notify_post_error(error_msg)
-            sys.exit(1)
-
-        print(f"  Successfully generated and filtered {len(batch)} new post options.")
+        # If we have less than 10 pending drafts, let's proactively generate some so the user has choices
+        if len(pending_list) < 10:
+            print("    Proactively replenishing pending drafts queue (target: 10)...")
+            try:
+                topic = "See the recent context below — extract the most compelling story or insight." if ctx_summary["recent_context"] else "Share an insight from my professional background and achievements."
+                past_posts_text = mem.load_recent_posts_history_text(limit=15)
+                compact = mem.load_compact_profile()
+                ai = AIGenerator()
+                needed = 10 - len(pending_list)
+                batch = ai.generate_post_batch(
+                    topic=topic,
+                    tone=tone,
+                    extra_instructions=extra_notes,
+                    compact_profile=compact,
+                    recent_context=ctx_summary["recent_context"],
+                    past_posts=past_posts_text,
+                    batch_size=needed
+                )
+                if batch:
+                    pending_list.extend(batch)
+                    queue["pending"] = pending_list
+                    mem.save_posts_queue(queue)
+                    print(f"    Added {len(batch)} new drafts to pending queue.")
+            except Exception as e:
+                print(f"    Failed to replenish drafts queue: {e}")
         
-        # Save generated batch directly to the queue
-        queue = batch
-        mem.save_posts_queue(queue)
-    else:
-        print("[3/5] Queue has posts. Loading next post from cache...")
+        sys.exit(0)
 
-    # Pop the first post in the queue
-    current_item = queue[0]
+    # Pop the first approved post
+    current_item = approved_list[0]
     post_text = current_item["post_text"]
-    reasoning = current_item.get("reasoning", "No reasoning provided")
 
     print()
     print("─" * 60)
-    print(f"CURRENT DRAFT TO PUBLISH (Reasoning: {reasoning}):")
+    print("CURRENT APPROVED POST TO PUBLISH:")
     print("─" * 60)
     print(post_text)
     print("─" * 60)
@@ -171,9 +150,7 @@ def main():
             context_date = ctx_summary["latest_date"],
             dry_run      = True,
         )
-        print("[5/5] Logged dry-run entry to post_history.json.")
-        print()
-        print("✅ Dry run complete. Review the post above. Queue count remains unchanged.")
+        print("[5/5] Logged dry-run entry to post_history.json. Queues unchanged.")
         sys.exit(0)
 
     # ── Post to LinkedIn ──────────────────────────────────────────────────────
@@ -193,13 +170,40 @@ def main():
         notify_post_error(error_msg)
         sys.exit(1)
 
-    # ── Log, remove from queue & notify ───────────────────────────────────────
-    print("[5/5] Updating queue and logging history...")
+    # ── Update queues & notify ────────────────────────────────────────────────
+    print("[5/5] Updating queues and logging history...")
     
-    # Remove the posted item and update queue file
-    queue.pop(0)
+    # Remove the posted item from approved list
+    approved_list.pop(0)
+    queue["approved"] = approved_list
+
+    # Ensure pending queue maintains at least 10 items
+    if len(pending_list) < 10:
+        print("  Replenishing pending queue back up to 10...")
+        try:
+            topic = "See the recent context below — extract the most compelling story or insight." if ctx_summary["recent_context"] else "Share an insight from my professional background and achievements."
+            past_posts_text = mem.load_recent_posts_history_text(limit=15)
+            compact = mem.load_compact_profile()
+            ai = AIGenerator()
+            needed = 10 - len(pending_list)
+            batch = ai.generate_post_batch(
+                topic=topic,
+                tone=tone,
+                extra_instructions=extra_notes,
+                compact_profile=compact,
+                recent_context=ctx_summary["recent_context"],
+                past_posts=past_posts_text,
+                batch_size=needed
+            )
+            if batch:
+                pending_list.extend(batch)
+                queue["pending"] = pending_list
+                print(f"  Added {len(batch)} new drafts to pending queue.")
+        except Exception as e:
+            print(f"  Could not automatically replenish pending drafts: {e}")
+
+    # Save queues
     mem.save_posts_queue(queue)
-    print(f"  Removed post from cache. Remaining queue size: {len(queue)}")
 
     # Log history
     history = PostHistory()
