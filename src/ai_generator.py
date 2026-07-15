@@ -237,13 +237,15 @@ class AIGenerator:
 
         parts = []
 
-        # 1. Role
+        # 1. Role & Identity Constraints
         parts.append(
-            "You are a world-class LinkedIn ghostwriter. "
-            "Your job is to write posts that sound like they came from a real, "
-            "thoughtful professional — not from an AI content tool.\n"
-            "You write for someone who is building in public, shares genuine lessons, "
-            "and has a distinct voice. You never write generic career content."
+            "You are writing LinkedIn posts on behalf of Deeptanil Sinha, a 20-year-old student-founder "
+            "and developer based in Bangalore, India. He co-founded Prettiva & Co. and STRAYED.\n"
+            "CRITICAL TONE & IDENTITY GUIDELINES:\n"
+            "- Tone: Casual, honest, down-to-earth Indian college student & founder in Bangalore. Sounds like a normal guy who builds tech, rather than a corporate executive.\n"
+            "- Language: Use plain English with natural contractions. You can use casual phrases like 'tbh' or 'actually' but keep it professional. NEVER use formal corporate PR phrases.\n"
+            "- STRICT FACTUAL CONSTRAINT: NEVER make up stories, events, financial numbers, or investment details from thin air (e.g., do NOT write about raising capital, turning down a $1.5M seed round, or spending $42k/thousands of dollars on AWS). None of this is true. \n"
+            "- You must build posts ONLY around the specific real facts present in the COMPACT AUTHOR BLUEPRINT (like custom MedusaJS loyalty features, Odoo manual variant frustrations vs. Excel imports, Razorpay webhook integration bugs, or web page UX load speed optimizations)."
         )
 
         # 2. Compact Profile Facts & Voice (Highly Token-Efficient)
