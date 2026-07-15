@@ -1,4 +1,13 @@
-google-genai
-playwright
-python-dotenv
-rich
+# ─── Core AI ──────────────────────────────────────────────────────────────────
+google-genai>=1.0.0
+
+# ─── LinkedIn & HTTP ──────────────────────────────────────────────────────────
+requests>=2.31.0
+
+# ─── GitHub Secrets Auto-Update ───────────────────────────────────────────────
+PyNaCl>=1.5.0          # required for encrypting secrets before sending to GitHub API
+
+# ─── Local CLI (existing) ─────────────────────────────────────────────────────
+rich>=13.0.0
+playwright>=1.40.0
+python-dotenv>=1.0.0

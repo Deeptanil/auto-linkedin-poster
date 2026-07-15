@@ -1,81 +1,225 @@
-# LinkedIn AI Poster 🚀
+# LinkedIn AI Auto-Poster
 
-A Python-based AI agent that helps you generate, refine, and automatically post content to your personal LinkedIn profile using Gemini API (via the official `google-genai` SDK) and Playwright browser automation.
-
----
-
-## Features
-
-- **Gemini AI Generation**: Tailor posts using 5 distinct tones (Professional, Technical, Thought Leadership, Casual, Storytelling).
-- **Interactive Review & Revision**: Revise posts with iterative AI instructions or edit them manually using Notepad directly from the CLI.
-- **Robust Playwright Posting**: Reuses login sessions securely, avoiding credentials-entry on every run, skipping MFA and verification blocks.
-- **Diagnostics**: Auto-captures screenshots in a local `screenshots/` directory if posting fails or encounters layout changes.
+> Post high-quality, human-sounding LinkedIn content daily — AI-generated from *your* voice, *your* recent context, *your* achievements. Runs on GitHub Actions. 100% free.
 
 ---
 
-## Setup Instructions
+## What This Does
 
-### 1. Installation
+- **Daily automated post** to your LinkedIn profile at 9:00 AM IST
+- **AI-powered** (Gemini 2.5 Flash) — generates posts that don't sound like AI
+- **You stay in control** — feed it your raw thoughts, it structures them
+- **Persistent memory** — remembers your voice, achievements, and recent wins
+- **Discord alerts** — warns you before tokens expire, notifies every post
+- **Auto token refresh** — handles LinkedIn's 60-day access token expiry automatically
 
-Open your terminal (PowerShell or Command Prompt) and run the following:
+---
 
-```bash
-# Navigate to this project folder
-cd "c:\Users\deep1\Documents\Pupu\linkedin-poster"
+## Architecture
 
-# (Recommended) Create and activate a python virtual environment
-python -m venv venv
-venv\Scripts\activate
-
-# Install the Python dependencies
-pip install -r requirements.txt
-
-# Install Playwright browser binaries
-playwright install chromium
+```
+You (GitHub UI)
+    │
+    ├── [Add Context workflow]  → memory/contexts/YYYY-MM-DD.md
+    ├── [Daily Post workflow]   → reads memory/ → Gemini → LinkedIn API
+    └── [Token Refresh workflow] → auto-refreshes + updates GitHub Secrets
 ```
 
-### 2. Configure Environment Variables
+---
 
-1. Open the `.env` file in the project directory.
-2. Enter your Gemini API key:
-   ```env
-   GEMINI_API_KEY=AIzaSyYourGeminiApiKeyHere...
-   ```
-   *Note: If you don't have one, get a free key from [Google AI Studio](https://aistudio.google.com/).*
+## Setup Guide
+
+### Prerequisites
+- A GitHub account with this repo (public or private)
+- A [Google AI Studio](https://aistudio.google.com/app/apikey) API key (Gemini — free)
+- A Discord server with a webhook URL (for notifications)
 
 ---
 
-## How to Use
+### Step 1: Create a LinkedIn Developer App
 
-Run the main application:
+1. Go to [developer.linkedin.com](https://developer.linkedin.com/) → **Create App**
+2. Give it a name (e.g. "My Auto Poster") and link to any company page
+3. Under **Products** tab → add:
+   - ✅ **Share on LinkedIn**
+   - ✅ **Sign In with LinkedIn using OpenID Connect**
+4. Under **Auth** tab → scroll to **OAuth 2.0 Settings** → add this redirect URI:
+   ```
+   http://localhost:8765/callback
+   ```
+5. Note down your **Client ID** and **Client Secret**
+
+---
+
+### Step 2: Run the OAuth Setup Script (once)
+
+On your local machine:
+
+```bash
+# Clone the repo
+git clone https://github.com/YOUR_USERNAME/linkedin-poster.git
+cd linkedin-poster
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Run the setup script
+python scripts/setup_token.py
+```
+
+The script will:
+1. Ask for your Client ID and Client Secret
+2. Open your browser to LinkedIn's auth page
+3. Catch the callback automatically
+4. Print all the values you need to add as GitHub Secrets
+
+---
+
+### Step 3: Add GitHub Secrets
+
+Go to your repo → **Settings** → **Secrets and variables** → **Actions** → **New repository secret**
+
+Add ALL of these:
+
+| Secret Name | Value |
+|---|---|
+| `GEMINI_API_KEY` | From [aistudio.google.com](https://aistudio.google.com/app/apikey) |
+| `LINKEDIN_CLIENT_ID` | From your LinkedIn App |
+| `LINKEDIN_CLIENT_SECRET` | From your LinkedIn App |
+| `LINKEDIN_ACCESS_TOKEN` | From `setup_token.py` output |
+| `LINKEDIN_REFRESH_TOKEN` | From `setup_token.py` output |
+| `LINKEDIN_TOKEN_EXPIRY` | From `setup_token.py` output (ISO datetime) |
+| `LINKEDIN_REFRESH_TOKEN_EXPIRY` | From `setup_token.py` output |
+| `LINKEDIN_MEMBER_URN` | From `setup_token.py` output (e.g. `urn:li:person:XXXX`) |
+| `DISCORD_WEBHOOK_URL` | From Discord → Server Settings → Integrations → Webhooks |
+
+---
+
+### Step 4: Fill In Your Voice Profile
+
+Edit `memory/voice_profile.md` — this is the most important file.
+It defines how the AI writes *as you*. Fill in:
+- Who you are professionally
+- Your writing style (3-5 descriptors)
+- Words/phrases you'd never say
+- Words/phrases you actually use
+- What topics you post about
+
+The more specific, the better. See the template for guidance.
+
+---
+
+### Step 5: Fill In Your Achievements
+
+Edit `memory/achievements.md` with:
+- Projects you've built
+- Your professional background
+- Notable wins (with dates)
+
+The AI uses this as background credibility. Update it when you hit new milestones.
+
+---
+
+### Step 6: Test with a Dry Run
+
+Go to **GitHub Actions** → **"📅 Daily LinkedIn Post"** → **Run workflow**
+
+Set `dry_run = true` and optionally add some context. This generates a post but **doesn't publish it** — you'll see it in the Action logs.
+
+---
+
+## Daily Usage
+
+### Option A: Add Context (Most Common)
+Go to **Actions** → **"🧠 Add Context / Memory"** → **Run workflow**
+
+Fill in the text box with whatever you've been up to:
+```
+Just shipped the authentication system for my app.
+Took 3 weeks of debugging JWT refresh tokens.
+The key lesson: silent token rotation is the way.
+Also got 2 new beta users today.
+```
+
+The AI will pick this up and post about it tomorrow morning.
+
+### Option B: Post Right Now
+Go to **Actions** → **"📅 Daily LinkedIn Post"** → **Run workflow**
+
+Fill in:
+- `context`: what you want to post about
+- `tone`: Storytelling / Technical / Professional / etc.
+- `extra_notes`: any specific instructions
+
+### Option C: Fully Automatic
+Just leave it. Every day at 9:00 AM IST, the workflow runs automatically.
+It picks up the most recent context file you've added and generates a post from it.
+
+---
+
+## Token Management
+
+LinkedIn access tokens expire every **60 days**. The system handles this automatically:
+
+1. **Weekly health check** (every Monday) — `refresh-token.yml` runs automatically
+2. If the token is within 14 days of expiry → Discord warning sent
+3. If within 10 days → access token auto-refreshed using refresh token
+4. **Refresh token** (365 days) → Discord warning sent 30 days before expiry
+5. When refresh token expires, run `python scripts/setup_token.py` again (once per year)
+
+> **You never need to think about tokens** — just watch for Discord alerts.
+
+---
+
+## Memory Structure
+
+```
+memory/
+├── voice_profile.md      ← Your personal writing style (fill this in)
+├── achievements.md       ← Your background and wins (fill this in)
+├── contexts/
+│   ├── 2026-07-15.md    ← Context you added on July 15
+│   └── 2026-07-16.md    ← Context you added on July 16
+└── post_history.json     ← Auto-generated log of all posts
+```
+
+---
+
+## Cost
+
+| Service | Cost |
+|---|---|
+| GitHub Actions | Free (2,000 min/month on private repos — this uses ~2 min/day) |
+| Gemini 2.5 Flash | Free tier (1M tokens/day) |
+| LinkedIn API | Free |
+| Discord Webhooks | Free |
+| **Total** | **$0** |
+
+---
+
+## Local CLI
+
+The original interactive CLI (`main.py`) still works for local use:
+
 ```bash
 python main.py
 ```
 
-### Step 1: Session Authentication (Do this once)
-1. Select **Option 1 (Authenticate & Setup Session)** in the CLI.
-2. A headed Chrome/Chromium browser will open.
-3. Manually log in to your personal LinkedIn account.
-4. If you have MFA/M2FA enabled, complete the verification code.
-5. Once you are redirected to the homepage feed, return to the CLI console and press **[ENTER]**.
-6. The session cookie state will be stored locally inside the `.playwright_session/` folder. You will not need to log in again.
-
-### Step 2: Write & Post
-1. Choose **Option 2 (Generate Post with AI)** or **Option 3 (Post Custom Text)**.
-2. Provide a topic, select a tone, and add constraints.
-3. Review the generated draft.
-4. Choose to **Post it now**, **Revise with AI** (e.g. "make it punchier", "shorten"), or **Edit manually** (this will pop up Windows Notepad for editing. Save and close to sync back).
-5. Confirm if you want to watch the browser (headed) or let it post silently (headless).
-6. Success! Your post is live on LinkedIn.
+Options:
+1. Authenticate & setup session (Playwright browser)
+2. Generate post with AI
+3. Post custom text
 
 ---
 
-## File Structure
+## LinkedIn Best Practices (Built In)
 
-- `main.py`: Interactive command-line menu loop.
-- `ai_generator.py`: Connects with Gemini to draft and revise text.
-- `poster.py`: Automates browser login checks and post creation flow.
-- `config.py`: Configuration and environment path initialization.
-- `requirements.txt`: Python package requirements.
-- `.env`: Holds your secret credentials.
-- `screenshots/`: Holds visual feedback if errors occur during automation.
+The AI is pre-configured with all current best practices:
+
+- ✅ **Hooks under 15 words** — uses tension/numbers, not questions
+- ✅ **No links in post body** — links go in the first comment
+- ✅ **1-3 hashtags only** — no spam
+- ✅ **Short paragraphs** — mobile-optimized
+- ✅ **No AI buzzwords** — "leverage", "delve", "tapestry" etc. are banned
+- ✅ **Specificity injection** — real dates, numbers, names make posts unique
+- ✅ **Burstiness** — varied sentence lengths for human-sounding rhythm

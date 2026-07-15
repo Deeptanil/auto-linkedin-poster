@@ -1,0 +1,107 @@
+name: "📅 Daily LinkedIn Post"
+
+# ─── Triggers ─────────────────────────────────────────────────────────────────
+on:
+  # Auto: every day at 9:00 AM IST (3:30 AM UTC)
+  schedule:
+    - cron: "30 3 * * *"
+
+  # Manual: trigger with optional overrides from GitHub UI
+  workflow_dispatch:
+    inputs:
+      context:
+        description: "What happened recently? (raw thoughts, wins, learnings)"
+        required: false
+        type: string
+      tone:
+        description: "Post tone"
+        required: false
+        type: choice
+        default: "Auto"
+        options:
+          - Auto
+          - Storytelling
+          - Technical
+          - Professional
+          - "Thought Leadership"
+          - "Casual/Conversational"
+      extra_notes:
+        description: "Extra instructions (e.g. 'keep it under 200 words', 'mention the product launch')"
+        required: false
+        type: string
+      dry_run:
+        description: "Dry run — generate post but don't publish it"
+        required: false
+        type: boolean
+        default: false
+      force:
+        description: "Force post even if no context file exists"
+        required: false
+        type: boolean
+        default: false
+
+# ─── Permissions ──────────────────────────────────────────────────────────────
+permissions:
+  contents: write    # needed to commit post_history.json back to repo
+  secrets: write     # needed for auto token refresh
+
+# ─── Jobs ─────────────────────────────────────────────────────────────────────
+jobs:
+  post:
+    name: "Generate & Post"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      # 1. Checkout code (including memory/ files)
+      - name: "⬇️ Checkout repository"
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      # 2. Set up Python
+      - name: "🐍 Setup Python 3.11"
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      # 3. Install dependencies
+      - name: "📦 Install dependencies"
+        run: pip install -r requirements.txt
+
+      # 4. Run the posting script
+      - name: "🚀 Generate & publish post"
+        env:
+          # Gemini
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          # LinkedIn
+          LINKEDIN_ACCESS_TOKEN:         ${{ secrets.LINKEDIN_ACCESS_TOKEN }}
+          LINKEDIN_REFRESH_TOKEN:        ${{ secrets.LINKEDIN_REFRESH_TOKEN }}
+          LINKEDIN_TOKEN_EXPIRY:         ${{ secrets.LINKEDIN_TOKEN_EXPIRY }}
+          LINKEDIN_REFRESH_TOKEN_EXPIRY: ${{ secrets.LINKEDIN_REFRESH_TOKEN_EXPIRY }}
+          LINKEDIN_CLIENT_ID:            ${{ secrets.LINKEDIN_CLIENT_ID }}
+          LINKEDIN_CLIENT_SECRET:        ${{ secrets.LINKEDIN_CLIENT_SECRET }}
+          LINKEDIN_MEMBER_URN:           ${{ secrets.LINKEDIN_MEMBER_URN }}
+          # Discord
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          # GitHub (auto-provided, used for secret auto-update)
+          GITHUB_TOKEN:      ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          # Workflow inputs
+          CONTEXT:     ${{ github.event.inputs.context }}
+          TONE:        ${{ github.event.inputs.tone || 'Auto' }}
+          EXTRA_NOTES: ${{ github.event.inputs.extra_notes }}
+          DRY_RUN:     ${{ github.event.inputs.dry_run || 'false' }}
+          FORCE:       ${{ github.event.inputs.force || 'false' }}
+        run: python src/run.py
+
+      # 5. Commit post_history.json and any new context files back to repo
+      - name: "💾 Commit post history"
+        if: always()
+        run: |
+          git config user.name  "linkedin-poster[bot]"
+          git config user.email "linkedin-poster[bot]@users.noreply.github.com"
+          git add memory/post_history.json memory/contexts/ || true
+          git diff --staged --quiet || git commit -m "chore: update post history [skip ci]"
+          git push || true
