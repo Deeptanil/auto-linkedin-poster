@@ -1,6 +1,5 @@
 {
-  "approved": [],
-  "pending": [
+  "approved": [
     {
       "post_text": "Doing manual data entry for 200 product variants in Odoo is pure torture.\n\nWhen we were setting up the catalog for Prettiva & Co., we realized doing this through the standard dashboard UI would take days. Clicking through endless menus for every single size and color variation is a nightmare to debug when you make a typo.\n\nSo I built a custom python-based automated parser that takes a structured Excel sheet and loads the variants directly. It was a messy weekend of reading API docs, but it saved us dozens of hours of boring manual work.\n\nSometimes the best way to speed up your operations is to stop using the shiny web UI and write a script. It is lowkey satisfying to see hundreds of variants upload in seconds.\n\nHow are you handling bulk inventory uploads in your current setup?\n\n#python #odoo #ecommerce",
       "reasoning": "Fits the persona of a pragmatic student-founder dealing with real, ground-level e-commerce catalog problems. Showcases technical initiative without corporate buzzwords."
@@ -8,7 +7,9 @@
     {
       "post_text": "Our mobile checkout latency on STRAYED was killing our conversion rates.\n\nWhen we first launched, our Razorpay API redirects took way too long on spotty 4G connections. Users would tap the buy button, stare at a blank screen, and close the tab.\n\nTo fix this, we reworked our checkout flow to minimize server-side roundtrips and optimized the mobile redirects. Tbh, a fast mobile experience matters way more than flashy animations.\n\nWe managed to shave off valuable seconds from the checkout loop, and the difference in completed orders was instant. People do not want a beautiful loader; they just want their payment to go through.\n\nHow have you optimized payment checkout delays on your own online stores?\n\n#webdev #ux #paymentgateways",
       "reasoning": "Highlights technical problem-solving on Razorpay latency. Aligns with the core philosophy of UX over UI and real developer constraints."
-    },
+    }
+  ],
+  "pending": [
     {
       "post_text": "We built our own custom loyalty rewards engine instead of using heavy third-party plugins.\n\nWhen setting up STRAYED on MedusaJS, we wanted a unique way to reward our early supporters with custom discounts. Adding heavy external apps felt like a bloat risk for our database performance.\n\nInstead, I wrote the loyalty and referral logic directly into our PostgreSQL backend. It keeps our stack clean, our queries fast, and gives us complete control over how points are calculated.\n\nHosting it all on our Oracle Cloud VPS means we do not pay monthly SaaS fees for simple features. Sometimes building from scratch is actually the logical choice.\n\nWhat is your threshold for building a custom feature versus paying for a SaaS plugin?\n\n#medusajs #backend #postgresql",
       "reasoning": "Displays technical competence with PostgreSQL and MedusaJS. Reflects the developer preference for building from scratch over bloated plugins."
