@@ -945,6 +945,7 @@
             ghToken: '',
             ghRepo: '',
             ghSha: null, // SHA for posts_queue.json content commits
+            isSaving: false,
 
             init() {
                 this.ghToken = localStorage.getItem('gh_token') || '';
@@ -1106,23 +1107,33 @@
             },
 
             async saveQueue(data, commitMsg = "chore: sync queue from dashboard [skip ci]") {
+                this.isSaving = true;
                 if (this.isCloud) {
                     try {
-                        const fileInfo = await this.ghFetch('posts_queue.json');
-                        this.ghSha = fileInfo.sha;
-                    } catch (e) {
-                        console.warn("Failed to fetch fresh SHA, using cache", e);
+                        try {
+                            const fileInfo = await this.ghFetch('posts_queue.json');
+                            this.ghSha = fileInfo.sha;
+                        } catch (e) {
+                            console.warn("Failed to fetch fresh SHA, using cache", e);
+                        }
+                        const res = await this.ghWrite('posts_queue.json', data, this.ghSha, commitMsg);
+                        this.ghSha = res.content.sha;
+                        return { status: 'success', message: "Drafts updated directly on GitHub." };
+                    } finally {
+                        // Allow GitHub API cache 2.5 seconds to settle before clearing the save flag
+                        setTimeout(() => { this.isSaving = false; }, 2500);
                     }
-                    const res = await this.ghWrite('posts_queue.json', data, this.ghSha, commitMsg);
-                    this.ghSha = res.content.sha;
-                    return { status: 'success', message: "Drafts updated directly on GitHub." };
                 } else {
-                    const res = await fetch('/api/queue/save', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(data)
-                    });
-                    return await safeJson(res);
+                    try {
+                        const res = await fetch('/api/queue/save', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(data)
+                        });
+                        return await safeJson(res);
+                    } finally {
+                        this.isSaving = false;
+                    }
                 }
             },
 
@@ -1612,6 +1623,8 @@
                 startReplenishPoller();
             } catch (err) {
                 showToast("Sync failed: " + err.message, "error");
+            } finally {
+                storageProvider.isSaving = false;
             }
         }
 
@@ -1623,12 +1636,15 @@
             renderPosts();
             showToast("Declined. Generating replacement draft...", "success");
             
+            storageProvider.isSaving = true;
             try {
                 await storageProvider.saveQueue(queueData, "chore: decline draft from dashboard [skip ci]");
                 storageProvider.replenishQueue().catch(console.error);
                 startReplenishPoller();
             } catch (err) {
                 showToast("Sync failed: " + err.message, "error");
+            } finally {
+                storageProvider.isSaving = false;
             }
         }
 
@@ -1667,6 +1683,7 @@
 
             // Poll every 4 seconds
             _replenishPollTimer = setInterval(async () => {
+                if (storageProvider.isSaving) return;
                 try {
                     // Update logs to show real-time GitHub Actions step progression
                     fetchLogs();
