@@ -52,9 +52,15 @@ jobs:
           import sys
           from pathlib import Path
           sys.path.insert(0, '.')
+          from src.memory_manager import MemoryManager
           from src.compactor import MemoryCompactor
           
           raw_text = '''${{ github.event.inputs.raw_text }}'''
+          
+          print('[compactor] Saving raw text as context file...')
+          mem = MemoryManager()
+          mem.save_context(raw_text)
+          
           print('[compactor] Running compaction on input...')
           compactor = MemoryCompactor()
           compactor.compact_all(new_raw_input=raw_text)
