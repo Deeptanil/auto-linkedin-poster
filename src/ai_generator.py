@@ -97,11 +97,10 @@ class AIGenerator:
         """
         Generate a batch of LinkedIn posts as structured JSON.
         Applies anti-repetition memory and filters out invalid posts (e.g. posts containing URLs).
-
-        Returns:
-            list[dict]: Array of parsed post dicts, each with "post_text" and "reasoning"
         """
+        print(f"[ai_generator] Starting batch generation. Batch size: {batch_size}, Tone: {tone}")
         if not self.client:
+            print("[ai_generator] ERROR: Gemini API key is missing. Ensure GEMINI_API_KEY is configured in your environment or .env file.")
             raise ValueError("Gemini API client not configured. Set GEMINI_API_KEY.")
 
         # Format anti-repetition negative constraints
@@ -111,18 +110,25 @@ class AIGenerator:
             escaped_posts = [p.replace('"', '\\"') for p in past_posts]
             history_blacklist = "\n".join(f'- "{p}"' for p in escaped_posts)
 
+        print("[ai_generator] Building prompt payload...")
         prompt = self._build_batch_prompt(
             topic, tone, extra_instructions,
             compact_profile, recent_context,
             history_blacklist, batch_size
         )
 
-        raw_response = self._call_gemini_json(prompt)
+        print(f"[ai_generator] Calling Google Gemini API (model: {config.GEMINI_MODEL}) requesting structured JSON response...")
+        try:
+            raw_response = self._call_gemini_json(prompt)
+            print(f"[ai_generator] Received API response from Gemini (size: {len(raw_response)} characters).")
+        except Exception as api_err:
+            print(f"[ai_generator] API Call Error: {api_err}")
+            raise api_err
+            
         raw_text = raw_response.strip()
 
         # Clean JSON if wrapped in markdown code blocks
         if raw_text.startswith("```"):
-            # Strip first line e.g., ```json
             first_newline = raw_text.find("\n")
             if first_newline != -1:
                 raw_text = raw_text[first_newline:].strip()
@@ -133,17 +139,19 @@ class AIGenerator:
             batch = json.loads(raw_text)
             if not isinstance(batch, list):
                 raise ValueError("AI response is not a JSON list.")
+            print(f"[ai_generator] Successfully parsed JSON array containing {len(batch)} posts.")
         except Exception as e:
-            print(f"[ai_generator] Failed to parse JSON response: {e}. Raw response:\n{raw_text}", file=sys.stderr)
-            # Return empty list so caller can retry or handle
+            print(f"[ai_generator] JSON Parsing Failure: {e}. Raw response:\n{raw_text}", file=sys.stderr)
             return []
 
         # Apply hard URL and safety filters
         filtered_batch = []
         url_patterns = [".co", ".in", ".com", "http", "link in bio", "check the site", "www.", ".org", ".net"]
         
+        print("[ai_generator] Running posts through strict quality filters (URLs, minimum length, markdown markers)...")
         for idx, item in enumerate(batch):
             if not isinstance(item, dict) or "post_text" not in item:
+                print(f"  - Post index {idx}: Ignored (missing 'post_text' key).")
                 continue
             
             post_text = item["post_text"].strip()
@@ -151,25 +159,26 @@ class AIGenerator:
             # URL constraint filter
             contains_url = any(pat in post_text.lower() for pat in url_patterns)
             if contains_url:
-                print(f"[ai_generator] Filtered post index {idx} because it contained a URL or link phrasing.")
+                print(f"  - Post index {idx}: Filtered out (contains URL or link reference). Preview: {post_text[:60]}...")
                 continue
 
             # Hard safety filter (simple checks to prevent brand damage)
             if not post_text or len(post_text) < 50:
-                print(f"[ai_generator] Filtered post index {idx} because it was too short.")
+                print(f"  - Post index {idx}: Filtered out (too short, length={len(post_text)}).")
                 continue
 
             # Double check for markdown formatting
-            # Check for double asterisks or triple backticks
             if "**" in post_text or "```" in post_text:
-                print(f"[ai_generator] Filtered post index {idx} because it contained markdown symbols (** or ```).")
+                print(f"  - Post index {idx}: Filtered out (contains markdown bold '**' or code block '```' formatting).")
                 continue
 
+            print(f"  - Post index {idx}: Accepted! (length={len(post_text)})")
             filtered_batch.append({
                 "post_text": post_text,
                 "reasoning": item.get("reasoning", "No reasoning provided")
             })
 
+        print(f"[ai_generator] Filter process complete. {len(filtered_batch)} of {len(batch)} generated posts were approved.")
         return filtered_batch
 
     def generate_post(

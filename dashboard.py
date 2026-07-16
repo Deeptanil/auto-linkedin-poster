@@ -88,18 +88,31 @@ def save_queue():
 
 def bg_replenish_task():
     try:
+        print("\n[replenish] >>> Background replenishment worker thread started.")
         queue = mem.load_posts_queue()
         pending = queue.get("pending", [])
         needed = 10 - len(pending)
+        print(f"[replenish] Current drafts in queue: {len(pending)}/10. Needed: {needed}")
+        
         if needed <= 0:
+            print("[replenish] Queue is already full (10 drafts). No generation needed.")
             return
             
+        print("[replenish] Gathering profile and context to build generation prompt...")
         summary = mem.build_full_context_summary()
         topic = "See the recent context below — extract the most compelling story or insight." if summary["recent_context"] else "Share an insight from my professional background and achievements."
+        
+        print("[replenish] Loading recent post history to prevent AI repeating past topics...")
         past_posts_text = mem.load_recent_posts_history_text(limit=15)
+        print(f"[replenish] Loaded {len(past_posts_text)} past posts for repetition blacklist.")
+        
+        print("[replenish] Loading compact profile (experiences, banned buzzwords, voice guidelines)...")
         compact_data = mem.load_compact_profile()
         
+        print("[replenish] Initializing Google Gemini AIGenerator client...")
         ai = AIGenerator()
+        
+        print(f"[replenish] Requesting Gemini to generate {needed} brand-new drafts...")
         batch = ai.generate_post_batch(
             topic=topic,
             compact_profile=compact_data,
@@ -107,13 +120,22 @@ def bg_replenish_task():
             past_posts=past_posts_text,
             batch_size=needed
         )
+        
         if batch:
+            print(f"[replenish] Gemini generated {len(batch)} valid draft(s). Storing to posts_queue.json...")
             queue = mem.load_posts_queue() # reload to prevent race condition overrides
             queue["pending"].extend(batch)
             mem.save_posts_queue(queue)
-            print(f"[dashboard] Background replenishment generated {len(batch)} drafts.")
+            print(f"[replenish] Success! Appended {len(batch)} drafts. New drafts total: {len(queue['pending'])}")
+            
+            # Trigger background sync to state branch on GitHub if token is set
+            trigger_background_sync()
+        else:
+            print("[replenish] WARNING: Gemini replenishment returned 0 valid drafts after filters. Check Gemini API key validity or prompt constraints.")
     except Exception as e:
-        print(f"[dashboard] Background replenishment failed: {e}")
+        print(f"[replenish] ERROR during draft replenishment: {e}")
+        import traceback
+        traceback.print_exc()
 
 def trigger_background_replenish():
     threading.Thread(target=bg_replenish_task, daemon=True).start()
