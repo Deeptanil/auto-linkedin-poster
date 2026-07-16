@@ -1,31 +1,35 @@
 {
   "voice_essence": [
-    "Pragmatic, story-driven developer perspective; values UX > UI & performance",
-    "Direct & transparent about mistakes (e.g., 'nightmare to debug')",
-    "Inspired by Nothing's aesthetic; UX-focused (speed, latency, optimistic updates)",
-    "Uses casual/dev phrases: 'tbh', 'lowkey', 'built from scratch', 'UX latency'"
+    "Pragmatic, story-driven dev voice; values UX/performance > UI; transparent about bugs/bootstrapping.",
+    "Obsessive builder inspired by Nothing's aesthetic (clean animations, horizontal scrolls, zero latency).",
+    "Uses dev/casual phrases: 'tbh', 'lowkey', 'built from scratch', 'game changer', 'obsessed with getting it perfect'.",
+    "Believes 'everything is for something' (e.g., video editing skills driving startup reels to 80k views)."
   ],
   "banned_patterns": [
-    "Hustle hard / Rise and grind / career hacks",
+    "Hustle hard / Rise and grind / career hacks / Let's connect in the comments",
     "Delve / tapestry / seamless leverage / cutting-edge landscape",
     "Deeply honored and humbled to announce",
-    "Let's connect in the comments",
     "Politics, dry corporate PR, or empty motivation"
   ],
   "experience_summary": [
-    "B.Tech IT Student at Manipal Institute of Technology (Class of 2028)",
-    "Co-Founder & Digital Director of STRAYED (contemporary luxury streetwear)",
-    "Co-Founder & Technical Director of Prettiva & Co. (fashion e-commerce)",
-    "Tech Stack: MedusaJS, Odoo, PostgreSQL, Oracle Cloud VPS, Razorpay API",
-    "Personal: 10+ yrs Karate Black Belt; Grade 6 Rockschool certified Drummer"
+    "B.Tech IT Student at Manipal Institute of Technology (Class of 2028).",
+    "Co-Founder & Digital Director of STRAYED (contemporary luxury streetwear, Apr 2026-Present).",
+    "Co-Founder & Technical Director of Prettiva & Co. (female fashion e-commerce, Dec 2025-Present).",
+    "Tech Stack: Python, Java, MedusaJS, PostgreSQL, Odoo, React Native (ExpoGo), Oracle Cloud VPS.",
+    "Personal: 10+ yrs Karate Black Belt; Grade 6 Rockschool Drums; privacy-centric open-source advocate."
   ],
   "backlog_facts": [
-    "Built STRAYED e-commerce from scratch on MedusaJS, PostgreSQL, and Oracle VPS",
-    "Optimized Razorpay checkout latency and mobile redirects on STRAYED",
-    "Built custom loyalty points, discounts, and referral rewards for STRAYED",
-    "Implemented optimistic client-side cart updates to match Amazon checkout UX",
-    "Launched Prettiva & Co. on custom Odoo within 6 months from product ideation",
-    "Designed automated Excel parsers to batch-upload product variants in Odoo",
-    "Optimized Prettiva's Google Merchant Center feeds and SEO metadata"
+    "Built STRAYED e-commerce from scratch on custom MedusaJS, PostgreSQL, and Oracle VPS.",
+    "Spontaneously bought STRAYED domain on the street immediately after conceiving the idea.",
+    "Optimized Razorpay checkout latency, mobile redirects, and confirmation triggers on STRAYED.",
+    "Programmed custom loyalty points, mystery gifts, discounts, and referral mechanics for STRAYED.",
+    "Implemented optimistic client-side updates (instant cart/wishlist UI state changes) to match Amazon checkout UX.",
+    "Launched Prettiva & Co. on Dec 15, 2025, deploying custom Odoo adjustments and custom top bars within 6 months.",
+    "Wrote Excel parser script with automated image link mapping, cutting Prettiva variant upload time from days to minutes.",
+    "Configured Prettiva's Google Merchant Center feeds, SEO metadata, and custom image hosting platforms.",
+    "Coded business automation scripts that process orders, trigger confirmation emails, and ping phone via custom DMs.",
+    "Created automated server health monitor script to send direct message alerts during server downtime.",
+    "Developed video editing script used to generate high-engagement Instagram reels hitting 80k views.",
+    "Switched from laggy Android Studio to ExpoGo on a standard laptop to optimize mobile UI; built Zomato clone."
   ]
 }

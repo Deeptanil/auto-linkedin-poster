@@ -52,13 +52,32 @@ class MemoryCompactor:
             current_compact
         )
 
-        try:
-            response = self.client.models.generate_content(
-                model=config.GEMINI_MODEL,
-                contents=prompt,
-                config={"response_mime_type": "application/json"}
-            )
+        import time
+        max_retries = 3
+        delay = 2
+        response = None
+        
+        for attempt in range(max_retries):
+            try:
+                response = self.client.models.generate_content(
+                    model=config.GEMINI_MODEL,
+                    contents=prompt,
+                    config={"response_mime_type": "application/json"}
+                )
+                break
+            except Exception as e:
+                if attempt == max_retries - 1:
+                    raise e
+                err_msg = str(e)
+                is_transient = any(code in err_msg for code in ["503", "429", "UNAVAILABLE", "ResourceExhausted", "Resource exhausted"])
+                if is_transient:
+                    print(f"[compactor] Gemini experiencing high demand/rate limits (Attempt {attempt+1}/{max_retries}). Retrying in {delay}s...")
+                    time.sleep(delay)
+                    delay *= 2
+                else:
+                    raise e
             
+        try:
             raw_json = response.text.strip()
             
             # Clean markdown JSON wrapping if present
