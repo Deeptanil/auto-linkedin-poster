@@ -246,6 +246,13 @@ def main():
         
         sys.exit(0)
 
+    # ── Check if already posted today (IST) ───────────────────────────────────
+    from src.post_history import PostHistory
+    history = PostHistory()
+    if not force and history.already_posted_today():
+        print("[!] A post has already been successfully published today in Asia/Kolkata timezone. Skipping duplicate execution.")
+        sys.exit(0)
+
     # Pop the first approved post
     current_item = approved_list[0]
     post_text = current_item["post_text"]

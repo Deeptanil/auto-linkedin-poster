@@ -2,9 +2,11 @@ name: "📅 Daily LinkedIn Post"
 
 # ─── Triggers ─────────────────────────────────────────────────────────────────
 on:
-  # Auto: every day at 9:00 AM IST (3:30 AM UTC)
+  # Auto: runs 3x daily at 9:00 AM, 1:00 PM, and 6:00 PM IST to check/retry posting
   schedule:
-    - cron: "30 3 * * *"
+    - cron: "30 3 * * *"   # 9:00 AM IST
+    - cron: "30 7 * * *"   # 1:00 PM IST
+    - cron: "30 12 * * *"  # 6:00 PM IST
 
   # Manual: trigger with optional overrides from GitHub UI
   workflow_dispatch:

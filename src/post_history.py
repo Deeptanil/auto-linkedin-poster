@@ -59,12 +59,29 @@ class PostHistory:
         return last[-1].get("posted_at", "")[:10]  # YYYY-MM-DD
 
     def already_posted_today(self) -> bool:
-        """True if a real (non-dry-run) post was already made today."""
-        last_date = self.get_last_post_date()
-        if not last_date:
+        """True if a real (non-dry-run) post was already made today (in Asia/Kolkata timezone)."""
+        history = self.memory.load_post_history()
+        real = [e for e in history if not e.get("dry_run")]
+        if not real:
             return False
-        today = datetime.now(timezone.utc).date().isoformat()
-        return last_date == today
+            
+        last_entry = real[-1]
+        posted_at_str = last_entry.get("posted_at")
+        if not posted_at_str:
+            return False
+
+        try:
+            import zoneinfo
+            # Parse UTC timestamp and convert to IST
+            dt_utc = datetime.fromisoformat(posted_at_str.replace("Z", "+00:00"))
+            tz_ist = zoneinfo.ZoneInfo("Asia/Kolkata")
+            dt_ist = dt_utc.astimezone(tz_ist)
+            
+            today_ist = datetime.now(tz_ist).date()
+            return dt_ist.date() == today_ist
+        except Exception as e:
+            print(f"[post_history] Warning: failed parsing post date '{posted_at_str}': {e}")
+            return posted_at_str[:10] == datetime.now(timezone.utc).date().isoformat()
 
     def print_recent(self, n: int = 5) -> None:
         history = self.memory.load_post_history()
