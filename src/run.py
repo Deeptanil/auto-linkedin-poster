@@ -65,6 +65,51 @@ class DualLogger:
         self.terminal.flush()
 
 
+def is_another_workflow_running() -> bool:
+    """Check if another instance of this workflow is already running on GitHub Actions."""
+    import os
+    import requests
+
+    if not os.getenv("GITHUB_ACTIONS"):
+        return False
+
+    repo = os.getenv("GITHUB_REPOSITORY")
+    run_id = os.getenv("GITHUB_RUN_ID")
+    token = os.getenv("GITHUB_TOKEN") or os.getenv("ACTIONS_RUNTIME_TOKEN")
+    
+    if not repo or not run_id or not token:
+        return False
+
+    url = f"https://api.github.com/repos/{repo}/actions/runs"
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Accept": "application/vnd.github+json"
+    }
+
+    try:
+        res = requests.get(f"{url}?status=in_progress", headers=headers, timeout=10)
+        if not res.ok:
+            return False
+
+        runs = res.json().get("workflow_runs", [])
+        current_run_id = int(run_id)
+        current_workflow_name = os.getenv("GITHUB_WORKFLOW")
+
+        for run in runs:
+            other_id = run.get("id")
+            other_workflow_name = run.get("name")
+            
+            if (other_id and other_id != current_run_id and 
+                other_workflow_name == current_workflow_name and 
+                other_id < current_run_id):
+                print(f"[!] Found active run of '{current_workflow_name}' (ID: {other_id}) started before us.")
+                return True
+    except Exception as e:
+        print(f"[!] Error checking active workflow runs: {e}")
+
+    return False
+
+
 def main():
     # Redirect output streams to local or remote state log
     log_file = config.MEMORY_DIR / "dashboard.log"
@@ -74,6 +119,10 @@ def main():
     print("=" * 60)
     print("  LinkedIn AI Auto-Poster (Batch Queue & Memory Engine)")
     print("=" * 60)
+
+    if is_another_workflow_running():
+        print("[!] Another instance of this workflow is already running. Exiting to prevent overlap.")
+        sys.exit(0)
 
     # ── Read inputs from environment ──────────────────────────────────────────
     context_input    = os.getenv("CONTEXT", "").strip()

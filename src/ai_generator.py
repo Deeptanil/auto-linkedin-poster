@@ -294,18 +294,14 @@ class AIGenerator:
         # 6. Formatting rules
         parts.append(
             "=== LINKEDIN FORMATTING RULES (non-negotiable) ===\n"
-            "1. HOOK: First line must be under 15 words. Use tension, a specific number, "
-            "   or a counterintuitive claim. NEVER start with a question.\n"
-            "2. SPACING: Every paragraph is 1–3 sentences. Leave a blank line between each.\n"
-            "3. LINKS: NEVER put any URL, domain name, or link in the post body. Mention 'link in comments' "
-            "   if you need to reference something.\n"
-            "4. HASHTAGS: 1–3 hashtags only. Place them on the last line. No hashtag spam.\n"
+            "1. HOOK: The very first line of the post MUST be a strong hook under 15 words. Follow this line with a blank line (\\n\\n). NEVER start with a question.\n"
+            "2. SPACING: Every paragraph is 1–3 sentences. You MUST leave exactly one blank line between each paragraph (using escape sequence \\n\\n in the JSON string). Do NOT combine everything into a single wall of text.\n"
+            "3. LINKS: NEVER put any URL, domain name, or link in the post body. Mention 'link in comments' if you need to reference something.\n"
+            "4. HASHTAGS: Include 1–3 relevant hashtags at the very end of the post, on a new line (\\n\\n#hashtag1 #hashtag2).\n"
             "5. EMOJIS: STRICT CONSTRAINT: NEVER use any emojis in the post. Do not include a single emoji. Keep the text 100% plain text.\n"
-            "6. NO MARKDOWN: Do not use **bold**, *italic*, or ``` code blocks. "
-            "   LinkedIn does not render markdown. Keep everything as raw text.\n"
+            "6. NO MARKDOWN: Do not use **bold**, *italic*, or ``` code blocks. LinkedIn does not render markdown. Keep everything as raw text.\n"
             "7. LENGTH: 150–400 words per post. Enough to be substantial, not a wall of text.\n"
-            "8. CTA: End with one specific, open-ended question that invites real replies — "
-            "   not 'What do you think?' or 'Drop a comment below'.\n"
+            "8. CTA: End with one specific, open-ended question that invites real replies — not 'What do you think?' or 'Drop a comment below'.\n"
         )
 
         # 7. Anti-AI rules
@@ -337,7 +333,7 @@ class AIGenerator:
             f"Return ONLY a valid JSON array of objects with this structure:\n"
             f"[\n"
             f"  {{\n"
-            f"    \"post_text\": \"The complete raw text of the post\",\n"
+            f"    \"post_text\": \"The complete raw text of the post. You MUST use escape sequence \\n\\n for paragraph breaks and hook separation so it does not render as a single continuous block of text.\",\n"
             f"    \"reasoning\": \"A short explanation of why this post fits the persona/context\"\n"
             f"  }}\n"
             f"]"
