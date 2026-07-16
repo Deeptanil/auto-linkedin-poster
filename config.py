@@ -27,7 +27,7 @@ LINKEDIN_CLIENT_SECRET = os.getenv("LINKEDIN_CLIENT_SECRET", "")
 LINKEDIN_MEMBER_URN    = os.getenv("LINKEDIN_MEMBER_URN", "")     # urn:li:person:XXXX
 
 LINKEDIN_API_BASE   = "https://api.linkedin.com"
-LINKEDIN_REST_VER   = "202501"     # bump this ~monthly if needed
+LINKEDIN_REST_VER   = "202606"     # bump this ~monthly if needed
 LINKEDIN_FEED_URL   = "https://www.linkedin.com/feed/"
 
 # ─── GitHub (for auto-updating Secrets) ───────────────────────────────────────

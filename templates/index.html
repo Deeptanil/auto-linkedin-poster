@@ -279,7 +279,7 @@
             padding: 1rem;
             border-radius: 6px;
             resize: vertical;
-            min-height: 120px;
+            min-height: 380px;
             outline: none;
             transition: var(--transition-smooth);
         }
@@ -669,7 +669,6 @@
                 card.innerHTML = `
                     <div class="post-header">
                         <span class="post-index-tag">Draft #${index + 1}</span>
-                        <span class="post-reasoning">${item.reasoning || 'No reasoning provided'}</span>
                     </div>
                     <textarea id="text-${currentTab}-${index}" class="post-textarea">${item.post_text}</textarea>
                     <div class="post-actions">
