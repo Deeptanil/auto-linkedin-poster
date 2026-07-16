@@ -1,4 +1,4 @@
---- Posting Pipeline Run Started: 2026-07-16 17:36:22.921872 ---
+--- Posting Pipeline Run Started: 2026-07-16 17:40:54.580586 ---
 ============================================================
   LinkedIn AI Auto-Poster (Batch Queue & Memory Engine)
 ============================================================
@@ -12,12 +12,12 @@
   Voice profile:  [X] (not set)
   Achievements:   [X] (not set)
   Recent context: [X] (none found)
-  Approved posts: 7
-  Pending drafts: 7
+  Approved posts: 8
+  Pending drafts: 6
 
 [!] Replenish Only mode active. Skipping publishing logic.
-    Replenishing pending drafts queue (current: 7, target: 10)...
-[ai_generator] Starting batch generation. Batch size: 3, Tone: Auto
+    Replenishing pending drafts queue (current: 6, target: 10)...
+[ai_generator] Starting batch generation. Batch size: 4, Tone: Auto
 [ai_generator] Building prompt payload...
 [ai_generator] Calling Google Gemini API (model: gemini-3.5-flash) requesting structured JSON response...
 [ai_generator] Gemini experiencing high demand/rate limits (Attempt 1/3). Retrying in 2s...
