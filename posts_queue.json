@@ -47,10 +47,6 @@
   ],
   "pending": [
     {
-      "post_text": "Upgrading our Odoo instance broke our entire product inventory sync.\n\nWe had our inventory system running smoothly until a minor patch update messed up our database schemas. Suddenly, our custom product fields were not map-able to the main variant tables.\n\nIt resulted in a bunch of database constraint errors every time we tried to sync stock levels. I spent a whole evening diving into PostgreSQL logs trying to find the conflicting foreign keys.\n\nIt turns out a default Odoo migration script had altered a column type that our Excel import templates relied on. I had to manually drop the broken constraints and rebuild the schema mapping.\n\nTbh, managing your own ERP database is a massive headache, but it teaches you exactly how relational data models operate under load. 💥\n\nWhat is the most stressful database migration disaster you have had to fix live?\n\n#postgresql #odoo #database",
-      "reasoning": "Shares a real technical headache with Odoo upgrading and database constraints. The tone is highly genuine, focused entirely on the code and structural realities."
-    },
-    {
       "post_text": "Cumulative Layout Shift was ruining our mobile shopping experience.\n\nOur product images were jumping around the screen as the custom fonts loaded in. This layout shift was causing customers to accidentally click the wrong buttons during checkout.\n\nTo fix this, I set up font-display swap in our CSS and defined strict aspect-ratio boxes for all image containers. It seems like a minor thing, but stabilizing the layout improved our Core Web Vitals score dramatically.\n\nWe saw our mobile conversion rate improve slightly after fixing these layout shifts. It goes to show that good UX is not just about aesthetics, it is about keeping the layout stable while assets load. 📱\n\nHow do you handle custom font loading to prevent layout shifts on your sites?\n\n#webperformance #uxdesign #css",
       "reasoning": "Details a specific front-end layout shift problem (CLS) and its solution. Fits the web page UX load speed optimizations criteria exactly."
     },
