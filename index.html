@@ -1039,7 +1039,8 @@
             async uploadImage(file, filename) {
                 const relativePath = `memory/images/${filename}`;
                 if (this.isCloud) {
-                    await this.ghUploadFile(relativePath, file);
+                    const cloudPath = `images/${filename}`;
+                    await this.ghUploadFile(cloudPath, file);
                     return { status: 'success', image_path: relativePath };
                 } else {
                     const formData = new FormData();
@@ -1055,7 +1056,7 @@
 
             async fetchQueue() {
                 if (this.isCloud) {
-                    const result = await this.ghFetch('memory/posts_queue.json');
+                    const result = await this.ghFetch('posts_queue.json');
                     this.ghSha = result.sha;
                     return result.data;
                 } else {
@@ -1068,12 +1069,12 @@
             async saveQueue(data, commitMsg = "chore: sync queue from dashboard [skip ci]") {
                 if (this.isCloud) {
                     try {
-                        const fileInfo = await this.ghFetch('memory/posts_queue.json');
+                        const fileInfo = await this.ghFetch('posts_queue.json');
                         this.ghSha = fileInfo.sha;
                     } catch (e) {
                         console.warn("Failed to fetch fresh SHA, using cache", e);
                     }
-                    const res = await this.ghWrite('memory/posts_queue.json', data, this.ghSha, commitMsg);
+                    const res = await this.ghWrite('posts_queue.json', data, this.ghSha, commitMsg);
                     this.ghSha = res.content.sha;
                     return { status: 'success', message: "Drafts updated directly on GitHub." };
                 } else {
@@ -1194,7 +1195,7 @@
 
             async fetchStatus() {
                 if (this.isCloud) {
-                    const profile = await this.ghFetch('memory/compact_profile.json');
+                    const profile = await this.ghFetch('compact_profile.json');
                     return {
                         summary: {
                             has_voice: !!(profile.data && profile.data.voice_essence && profile.data.voice_essence.length > 0)
@@ -1261,7 +1262,7 @@
                     
                     let logContent = "";
                     try {
-                        const fileInfo = await this.ghFetch('memory/dashboard.log', false);
+                        const fileInfo = await this.ghFetch('dashboard.log', false);
                         logContent = fileInfo.data || "No log content found.";
                     } catch (e) {
                         logContent = "No remote log file found. It will sync and display here after your next run finishes.";
@@ -1748,7 +1749,8 @@
             
             if (storageProvider.isCloud) {
                 try {
-                    const url = `https://api.github.com/repos/${storageProvider.ghRepo}/contents/${imagePath}?ref=state`;
+                    const cleanPath = imagePath.startsWith('memory/') ? imagePath.substring(7) : imagePath;
+                    const url = `https://api.github.com/repos/${storageProvider.ghRepo}/contents/${cleanPath}?ref=state`;
                     const res = await fetch(url, {
                         headers: {
                             'Authorization': `Bearer ${storageProvider.ghToken}`,
