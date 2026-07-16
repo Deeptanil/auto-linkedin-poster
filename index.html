@@ -1037,7 +1037,6 @@
             },
 
             async uploadImage(file, filename) {
-                this.checkAuth();
                 const relativePath = `memory/images/${filename}`;
                 if (this.isCloud) {
                     await this.ghUploadFile(relativePath, file);
@@ -1055,7 +1054,6 @@
             },
 
             async fetchQueue() {
-                this.checkAuth();
                 if (this.isCloud) {
                     const result = await this.ghFetch('memory/posts_queue.json');
                     this.ghSha = result.sha;
@@ -1068,7 +1066,6 @@
             },
 
             async saveQueue(data, commitMsg = "chore: sync queue from dashboard [skip ci]") {
-                this.checkAuth();
                 if (this.isCloud) {
                     try {
                         const fileInfo = await this.ghFetch('memory/posts_queue.json');
@@ -1090,7 +1087,6 @@
             },
 
             async approvePost(index, postText) {
-                this.checkAuth();
                 // Obsolete in Optimistic UI (handled via saveQueue directly), but kept for compatibility
                 if (this.isCloud) {
                     const queue = await this.fetchQueue();
@@ -1114,7 +1110,6 @@
             },
 
             async rejectPost(index) {
-                this.checkAuth();
                 // Obsolete in Optimistic UI (handled via saveQueue directly), but kept for compatibility
                 if (this.isCloud) {
                     const queue = await this.fetchQueue();
@@ -1159,7 +1154,6 @@
             },
 
             async addMemory(rawText) {
-                this.checkAuth();
                 if (this.isCloud) {
                     const url = `https://api.github.com/repos/${this.ghRepo}/actions/workflows/compact-memory.yml/dispatches`;
                     const res = await fetch(url, {
@@ -1190,7 +1184,6 @@
             },
 
             async syncGitHub() {
-                this.checkAuth();
                 if (this.isCloud) {
                     return { status: 'success', message: "Drafts are auto-saved directly to cloud repository." };
                 } else {
@@ -1200,7 +1193,6 @@
             },
 
             async fetchStatus() {
-                this.checkAuth();
                 if (this.isCloud) {
                     const profile = await this.ghFetch('memory/compact_profile.json');
                     return {
@@ -1215,7 +1207,6 @@
             },
 
             async fetchLogs() {
-                this.checkAuth();
                 if (this.isCloud) {
                     let actionsStatus = "=== CLOUD MODE: GitHub Actions Run Status ===\n";
                     let runningJobLogs = "";
