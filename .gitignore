@@ -20,3 +20,4 @@ screenshots/
 .idea/
 *.swp
 memory/dashboard.log
+__pycache__/config.cpython-314.pyc
