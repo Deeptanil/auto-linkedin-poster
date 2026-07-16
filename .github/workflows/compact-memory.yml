@@ -1,0 +1,57 @@
+name: "🧠 Compact Memory"
+
+on:
+  workflow_dispatch:
+    inputs:
+      raw_text:
+        description: "Raw developer thoughts or voice transcription"
+        required: true
+        type: string
+
+# ─── Permissions ──────────────────────────────────────────────────────────────
+permissions:
+  contents: write
+
+# ─── Jobs ─────────────────────────────────────────────────────────────────────
+jobs:
+  compact:
+    name: "Compact & Commit Memory"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: "⬇️ Checkout repository"
+        uses: actions/checkout@v4
+
+      - name: "🐍 Setup Python 3.11"
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: "📦 Install dependencies"
+        run: pip install -r requirements.txt
+
+      - name: "🧠 Run compaction script"
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          python -c "
+          import sys
+          from pathlib import Path
+          sys.path.insert(0, '.')
+          from src.compactor import MemoryCompactor
+          
+          raw_text = '''${{ github.event.inputs.raw_text }}'''
+          print('[compactor] Running compaction on input...')
+          compactor = MemoryCompactor()
+          compactor.compact_all(new_raw_input=raw_text)
+          print('[compactor] Compaction complete!')
+          "
+
+      - name: "💾 Commit changes back to repo"
+        run: |
+          git config --global user.name "linkedin-poster[bot]"
+          git config --global user.email "linkedin-poster[bot]@users.noreply.github.com"
+          git add memory/
+          git diff --quiet && git diff --staged --quiet || (git commit -m "chore: compact memory via dashboard [skip ci]" && git push)

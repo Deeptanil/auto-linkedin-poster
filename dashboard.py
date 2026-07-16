@@ -47,7 +47,7 @@ log_file = Path("memory/dashboard.log")
 sys.stdout = DualLogger(log_file)
 sys.stderr = sys.stdout
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder=".")
 mem = MemoryManager()
 compactor = MemoryCompactor()
 
