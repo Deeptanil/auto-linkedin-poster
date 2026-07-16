@@ -51,10 +51,6 @@
   ],
   "pending": [
     {
-      "post_text": "MedusaJS subscribers make event-driven architecture incredibly easy to implement.\n\nWhen a customer places an order, we need to trigger several actions at once. We have to update our inventory in Odoo, send a confirmation email, and log the transaction for our accounting records.\n\nInstead of packing all this logic into a single bloated controller, I used MedusaJS subscribers. I created an order subscriber that listens for the order placed event and runs these tasks asynchronously.\n\nThis keeps our main checkout API response super fast because the server does not wait for third-party APIs to respond before confirming the order. If one of the background tasks fails, it does not crash the user's checkout flow.\n\nUsing event-driven patterns on the backend has completely changed how I think about system design. ⚡\n\nDo you prefer event-driven subscribers or simple linear controllers for handling background tasks?\n\n#nodejs #medusajs #backend",
-      "reasoning": "A purely technical post exploring MedusaJS event-driven subscribers. No marketing fluff, just clean architectural discussion with practical tools."
-    },
-    {
       "post_text": "I wasted six hours debugging a simple cache invalidation issue in our inventory view. \n\nWe updated our product pricing in the database, but our frontend kept showing the old numbers for stale sessions. It turned out our Redis caching layer was set to a 24-hour TTL, which is way too long for a live retail store.\n\nI ended up implementing a cache busting mechanism that triggers whenever an update mutation hits our MedusaJS backend. Now, the cache invalidates instantly upon change. It is funny how a single line of code regarding TTL settings can make your business look disorganized.\n\nWhat is the most stubborn cache-related bug you have encountered while scaling your stack?\n\n#webdev #backend #redis",
       "reasoning": "Focuses on a technical hurdle involving caching in the MedusaJS stack, reflecting Deeptanil's hands-on engineering background."
     },
