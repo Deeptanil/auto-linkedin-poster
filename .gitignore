@@ -19,5 +19,5 @@ screenshots/
 .vscode/
 .idea/
 *.swp
-memory/dashboard.log
+memory/
 __pycache__/config.cpython-314.pyc

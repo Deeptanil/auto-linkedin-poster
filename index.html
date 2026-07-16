@@ -743,7 +743,7 @@
             },
 
             async ghFetch(path) {
-                const url = `https://api.github.com/repos/${this.ghRepo}/contents/${path}`;
+                const url = `https://api.github.com/repos/${this.ghRepo}/contents/${path}?ref=state`;
                 const res = await fetch(url, {
                     headers: {
                         'Authorization': `Bearer ${this.ghToken}`,
@@ -779,7 +779,8 @@
                     body: JSON.stringify({
                         message: commitMsg,
                         content: base64,
-                        sha: sha
+                        sha: sha,
+                        branch: "state"
                     })
                 });
                 if (!res.ok) {
