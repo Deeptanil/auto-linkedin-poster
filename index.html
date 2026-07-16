@@ -732,6 +732,24 @@
 </head>
 <body>
 
+    <!-- Passcode Lock Screen Overlay -->
+    <div id="lockScreen" class="modal" style="display: none; align-items: center; justify-content: center; background: rgba(5, 8, 15, 0.98); backdrop-filter: blur(15px); position: fixed; z-index: 99999; top: 0; left: 0; width: 100vw; height: 100vh;">
+        <div class="modal-content" style="max-width: 380px; padding: 2.5rem; text-align: center; border: 1px solid var(--color-card-border); background: var(--color-bg-card); box-shadow: var(--shadow-glow);">
+            <div style="font-size: 3rem; margin-bottom: 1.5rem; color: var(--color-primary);">🔒</div>
+            <h3 style="margin-bottom: 0.5rem; color: var(--color-text);">Dashboard Locked</h3>
+            <p style="color: var(--color-text-muted); font-size: 0.85rem; margin-bottom: 1.5rem;">Enter access code to unlock the control panel.</p>
+            
+            <div class="form-group" style="text-align: left;">
+                <input type="password" id="lockInput" class="form-input" placeholder="Passcode" style="text-align: center; font-size: 1.2rem; letter-spacing: 0.3rem;" onkeydown="if(event.key==='Enter') unlockDashboard()">
+            </div>
+            
+            <button class="btn btn-primary" style="width: 100%; margin-top: 0.5rem; padding: 0.8rem;" onclick="unlockDashboard()">
+                Unlock Dashboard
+            </button>
+            <div id="lockError" style="color: #ff4757; font-size: 0.85rem; margin-top: 1rem; display: none;">Invalid access code. Please try again.</div>
+        </div>
+    </div>
+
     <!-- Loading overlay -->
     <div id="loader" class="loader-overlay">
         <div class="loader-spinner"></div>
@@ -771,6 +789,14 @@
                 <input type="text" id="cfgRepo" class="form-input" placeholder="owner/repository (e.g. Deeptanil/linkedin-poster)">
             </div>
 
+            <div class="form-group">
+                <label for="cfgPasscode">Dashboard Access Passcode (Optional Lock)</label>
+                <input type="password" id="cfgPasscode" class="form-input" placeholder="Enter a passcode to lock this dashboard">
+                <p style="font-size: 0.75rem; color: var(--color-text-muted); margin: 0;">
+                    If set, you must enter this passcode to unlock the controls whenever you load this website.
+                </p>
+            </div>
+
             <div style="display: flex; gap: 1rem; margin-top: 1rem;">
                 <button class="btn btn-secondary" style="flex: 1;" onclick="toggleSettingsModal()">Cancel</button>
                 <button class="btn btn-primary" style="flex: 1;" onclick="saveSettings()">Save Configs</button>
@@ -793,6 +819,10 @@
                 <button class="btn btn-secondary" onclick="replenishQueue()">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
                     Generate Drafts
+                </button>
+                <button class="btn btn-secondary" onclick="triggerPostNow()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                    Post Now
                 </button>
                 <button id="btnSync" class="btn btn-primary" onclick="syncGitHub()">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v16M12 2l-4 4M12 2l4 4M22 18H2v2h20v-2z"/></svg>
@@ -918,14 +948,21 @@
                 }
             },
 
-            saveConfig(cloudMode, token, repo) {
+            saveConfig(cloudMode, token, repo, passcode) {
                 localStorage.setItem('gh_cloud_mode', cloudMode ? 'true' : 'false');
                 localStorage.setItem('gh_token', token);
                 localStorage.setItem('gh_repo', repo);
+                if (passcode !== undefined) {
+                    if (passcode) {
+                        localStorage.setItem('dashboard_passcode', passcode);
+                    } else {
+                        localStorage.removeItem('dashboard_passcode');
+                    }
+                }
                 this.init();
             },
 
-            async ghFetch(path) {
+            async ghFetch(path, isJson = true) {
                 const url = `https://api.github.com/repos/${this.ghRepo}/contents/${path}?ref=state`;
                 const res = await fetch(url, {
                     headers: {
@@ -942,7 +979,7 @@
                 const decoded = new TextDecoder('utf-8').decode(bytes);
                 return {
                     sha: json.sha,
-                    data: JSON.parse(decoded)
+                    data: isJson ? JSON.parse(decoded) : decoded
                 };
             },
 
@@ -1188,26 +1225,37 @@
 
             async fetchLogs() {
                 if (this.isCloud) {
-                    const url = `https://api.github.com/repos/${this.ghRepo}/actions/runs?per_page=5`;
-                    const res = await fetch(url, {
-                        headers: {
-                            'Authorization': `Bearer ${this.ghToken}`,
-                            'Accept': 'application/vnd.github+json'
-                        }
-                    });
-                    if (!res.ok) return "Failed to fetch GitHub Actions logs. Check repository details.";
-                    const runs = await res.json();
+                    let logContent = "";
+                    try {
+                        const fileInfo = await this.ghFetch('memory/dashboard.log', false);
+                        logContent = fileInfo.data || "No log content found.";
+                    } catch (e) {
+                        logContent = "No remote log file found. It will sync and display here after your next run finishes.";
+                    }
                     
-                    let logs = "=== CLOUD MODE: GitHub Actions Workflow Runs ===\n\n";
-                    runs.workflow_runs.forEach(run => {
-                        logs += `[Run #${run.run_number}] ${run.name}\n`;
-                        logs += `  Event:       ${run.event.toUpperCase()}\n`;
-                        logs += `  Status:      ${run.status.toUpperCase()}\n`;
-                        logs += `  Conclusion:  ${(run.conclusion || 'IN PROGRESS').toUpperCase()}\n`;
-                        logs += `  Triggered:   ${new Date(run.created_at).toLocaleString()}\n`;
-                        logs += `  Details Link: ${run.html_url}\n\n`;
-                    });
-                    return logs;
+                    let actionsStatus = "=== CLOUD MODE: GitHub Actions Workflow Runs ===\n\n";
+                    try {
+                        const url = `https://api.github.com/repos/${this.ghRepo}/actions/runs?per_page=3`;
+                        const res = await fetch(url, {
+                            headers: {
+                                'Authorization': `Bearer ${this.ghToken}`,
+                                'Accept': 'application/vnd.github+json'
+                            }
+                        });
+                        if (res.ok) {
+                            const runs = await res.json();
+                            runs.workflow_runs.forEach(run => {
+                                actionsStatus += `[Run #${run.run_number}] ${run.name}\n`;
+                                actionsStatus += `  Status:      ${run.status.toUpperCase()} (${(run.conclusion || 'IN PROGRESS').toUpperCase()})\n`;
+                                actionsStatus += `  Triggered:   ${new Date(run.created_at).toLocaleString()}\n`;
+                                actionsStatus += `  Details Link: ${run.html_url}\n\n`;
+                            });
+                        }
+                    } catch (err) {
+                        actionsStatus += "Failed to fetch GitHub Actions runs list.\n";
+                    }
+                    
+                    return `${actionsStatus}=== REMOTE LOG (dashboard.log) ===\n${logContent}`;
                 } else {
                     const res = await fetch('/api/logs');
                     const json = await res.json();
@@ -1230,6 +1278,7 @@
                 document.getElementById('cfgCloudMode').checked = localStorage.getItem('gh_cloud_mode') === 'true';
                 document.getElementById('cfgToken').value = localStorage.getItem('gh_token') || '';
                 document.getElementById('cfgRepo').value = localStorage.getItem('gh_repo') || '';
+                document.getElementById('cfgPasscode').value = localStorage.getItem('dashboard_passcode') || '';
             }
         }
 
@@ -1237,13 +1286,14 @@
             const cloudMode = document.getElementById('cfgCloudMode').checked;
             const token = document.getElementById('cfgToken').value.trim();
             const repo = document.getElementById('cfgRepo').value.trim();
+            const passcode = document.getElementById('cfgPasscode').value.trim();
             
             if (cloudMode && (!token || !repo)) {
                 showToast("GitHub Token and Repo Path are required for Cloud Mode.", "error");
                 return;
             }
             
-            storageProvider.saveConfig(cloudMode, token, repo);
+            storageProvider.saveConfig(cloudMode, token, repo, passcode);
             toggleSettingsModal();
             showToast("Settings updated successfully! Reloading data...", "success");
             
@@ -1411,29 +1461,46 @@
             document.getElementById('countApproved').innerText = queueData.approved.length;
             document.getElementById('statusPendingCount').innerText = queueData.pending.length;
             document.getElementById('statusApprovedCount').innerText = queueData.approved.length;
-            updateCoverageDate(queueData.approved.length);
+            updateCoverageDate(queueData.approved.length, queueData.last_posted_at);
         }
 
-        function updateCoverageDate(approvedCount) {
+        function updateCoverageDate(approvedCount, lastPostedAt) {
             const elem = document.getElementById('statusCoverageDate');
             if (!elem) return;
-            
+
             if (approvedCount === 0) {
-                elem.innerHTML = `<span style="color: #ff4757; font-weight: bold;">⚠️ Empty (Approve posts today!)</span>`;
+                elem.innerHTML = `<span style="color: #ff4757; font-weight: bold;">Empty — approve posts now!</span>`;
                 return;
             }
-            
+
+            // Determine if today's post has already been sent.
+            // The scheduler fires at 9:30 AM IST = 04:00 UTC.
             const now = new Date();
-            const targetDate = new Date(now);
-            targetDate.setDate(now.getDate() + approvedCount);
-            
-            const options = { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' };
-            const dateStr = targetDate.toLocaleDateString('en-US', options);
-            
-            if (approvedCount === 1) {
-                elem.innerHTML = `<span>1 day (Runs out tomorrow: ${dateStr})</span>`;
+            const todayIST = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+            const postedTodayAlready = lastPostedAt
+                ? new Date(lastPostedAt).toDateString() === todayIST.toDateString()
+                : todayIST.getHours() >= 9; // fallback: assume posted if past 9 AM IST
+
+            // If today's post hasn't been sent yet, one approved post covers today.
+            // If already sent, the next post is tomorrow — so N approved = N more days from today.
+            const daysRemaining = postedTodayAlready ? approvedCount : approvedCount;
+            const startFrom = new Date(todayIST);
+            if (postedTodayAlready) {
+                startFrom.setDate(startFrom.getDate() + 1); // next post is tomorrow
+            }
+            const runsOutDate = new Date(startFrom);
+            runsOutDate.setDate(startFrom.getDate() + daysRemaining - 1);
+
+            const opts = { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' };
+            const dateStr = runsOutDate.toLocaleDateString('en-US', opts);
+            const postedLabel = postedTodayAlready
+                ? '<span style="color: var(--color-text-muted); font-size: 0.8em;"> (posted today)</span>'
+                : '<span style="color: #2ed573; font-size: 0.8em;"> (posts today)</span>';
+
+            if (daysRemaining === 1 && postedTodayAlready) {
+                elem.innerHTML = `<span style="color: #ffa502;">Runs out tomorrow: ${dateStr}</span>${postedLabel}`;
             } else {
-                elem.innerHTML = `<span>${approvedCount} days (Runs out: ${dateStr})</span>`;
+                elem.innerHTML = `<span>${daysRemaining} day${daysRemaining !== 1 ? 's' : ''} (until ${dateStr})</span>${postedLabel}`;
             }
         }
 
@@ -1557,6 +1624,71 @@
             }
             const badge = document.getElementById('countPending');
             if (badge) badge.style.opacity = '1';
+        }
+
+        // ─── Post Now (trigger full posting workflow) ─────────────────────────
+
+        async function triggerPostNow() {
+            if (!storageProvider.isCloud) {
+                showToast("Post Now only works in Cloud Mode (GitHub Actions). Enable Cloud Mode in Settings.", "warning");
+                return;
+            }
+            if (!confirm("This will trigger the full posting workflow on GitHub Actions, which will publish the next approved post to LinkedIn. Continue?")) return;
+
+            showLoader("Triggering post workflow on GitHub Actions...");
+            try {
+                const url = `https://api.github.com/repos/${storageProvider.ghRepo}/actions/workflows/daily-post.yml/dispatches`;
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${storageProvider.ghToken}`,
+                        'Accept': 'application/vnd.github+json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ ref: 'main', inputs: {} })
+                });
+                if (!res.ok) {
+                    const err = await res.json();
+                    throw new Error(err.message || res.statusText);
+                }
+                showToast("Post workflow triggered! Check logs for progress.", "success");
+                // Start polling logs to show progress
+                startReplenishPoller();
+                setTimeout(fetchLogs, 3000);
+            } catch (err) {
+                showToast("Failed to trigger: " + err.message, "error");
+            } finally {
+                hideLoader();
+            }
+        }
+
+        // ─── Passcode Lock Screen ────────────────────────────────────────────────
+
+        function checkLockScreen() {
+            const code = localStorage.getItem('dashboard_passcode') || '';
+            const overlay = document.getElementById('lockScreen');
+            if (!overlay) return;
+            if (code) {
+                overlay.style.display = 'flex';
+                setTimeout(() => document.getElementById('lockInput').focus(), 100);
+            } else {
+                overlay.style.display = 'none';
+            }
+        }
+
+        function unlockDashboard() {
+            const code = localStorage.getItem('dashboard_passcode') || '';
+            const val = document.getElementById('lockInput').value;
+            const err = document.getElementById('lockError');
+            if (val === code) {
+                document.getElementById('lockScreen').style.display = 'none';
+                err.style.display = 'none';
+                document.getElementById('lockInput').value = '';
+            } else {
+                err.style.display = 'block';
+                document.getElementById('lockInput').value = '';
+                setTimeout(() => { err.style.display = 'none'; }, 3000);
+            }
         }
 
         async function replenishQueue() {
@@ -1729,6 +1861,7 @@
         }
 
         // Init & Periodic Log Polling
+        checkLockScreen();
         fetchQueue();
         fetchStatus();
         fetchLogs();

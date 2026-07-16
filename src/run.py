@@ -45,7 +45,32 @@ from src.discord_notifier import (
 )
 
 
+class DualLogger:
+    def __init__(self, log_path):
+        self.terminal = sys.stdout
+        self.log_path = Path(log_path)
+        self.log_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(self.log_path, "w", encoding="utf-8") as f:
+            f.write(f"--- Posting Pipeline Run Started: {__import__('datetime').datetime.now()} ---\n")
+
+    def write(self, message):
+        self.terminal.write(message)
+        try:
+            with open(self.log_path, "a", encoding="utf-8") as f:
+                f.write(message)
+        except Exception:
+            pass
+
+    def flush(self):
+        self.terminal.flush()
+
+
 def main():
+    # Redirect output streams to local or remote state log
+    log_file = config.MEMORY_DIR / "dashboard.log"
+    sys.stdout = DualLogger(log_file)
+    sys.stderr = sys.stdout
+
     print("=" * 60)
     print("  LinkedIn AI Auto-Poster (Batch Queue & Memory Engine)")
     print("=" * 60)
@@ -263,6 +288,11 @@ def main():
                 print(f"  Added {len(batch)} new drafts to pending queue.")
         except Exception as e:
             print(f"  Could not automatically replenish pending drafts: {e}")
+
+    # Stamp the post time so the dashboard coverage-date calculation
+    # knows whether today's post has already been sent.
+    from datetime import datetime, timezone
+    queue["last_posted_at"] = datetime.now(timezone.utc).isoformat()
 
     # Save queues
     mem.save_posts_queue(queue)
