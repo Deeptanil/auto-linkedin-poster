@@ -47,13 +47,13 @@
     {
       "post_text": "Cumulative Layout Shift was ruining our mobile shopping experience.\n\nOur product images were jumping around the screen as the custom fonts loaded in. This layout shift was causing customers to accidentally click the wrong buttons during checkout.\n\nTo fix this, I set up font-display swap in our CSS and defined strict aspect-ratio boxes for all image containers. It seems like a minor thing, but stabilizing the layout improved our Core Web Vitals score dramatically.\n\nWe saw our mobile conversion rate improve slightly after fixing these layout shifts. It goes to show that good UX is not just about aesthetics, it is about keeping the layout stable while assets load.\n\nHow do you handle custom font loading to prevent layout shifts on your sites?\n\n#webperformance #uxdesign #css",
       "reasoning": "Details a specific front-end layout shift problem (CLS) and its solution. Fits the web page UX load speed optimizations criteria exactly."
-    }
-  ],
-  "pending": [
+    },
     {
       "post_text": "I wasted six hours debugging a simple cache invalidation issue in our inventory view. \n\nWe updated our product pricing in the database, but our frontend kept showing the old numbers for stale sessions. It turned out our Redis caching layer was set to a 24-hour TTL, which is way too long for a live retail store.\n\nI ended up implementing a cache busting mechanism that triggers whenever an update mutation hits our MedusaJS backend. Now, the cache invalidates instantly upon change. It is funny how a single line of code regarding TTL settings can make your business look disorganized.\n\nWhat is the most stubborn cache-related bug you have encountered while scaling your stack?\n\n#webdev #backend #redis",
       "reasoning": "Focuses on a technical hurdle involving caching in the MedusaJS stack, reflecting Deeptanil's hands-on engineering background."
-    },
+    }
+  ],
+  "pending": [
     {
       "post_text": "My local machine became a bottleneck for our deployment pipeline last month. \n\nI was running database migrations directly from my laptop, which is a recipe for disaster if your Wi-Fi drops mid-query. I learned the hard way when a failed migration left our production schema in a partial state that I had to manually repair at 3 AM.\n\nI finally moved our migration flow to a dedicated GitHub Action runner. Now, deployments are decoupled from my personal internet connection and happen in a clean environment every time. The peace of mind is worth the setup effort.\n\nHow do you handle your production database migrations to prevent accidental corruption?\n\n#devops #automation #database",
       "reasoning": "Shares a relatable developer struggle regarding deployment security and infrastructure, fitting the student-founder persona."
