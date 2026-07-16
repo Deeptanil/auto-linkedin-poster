@@ -55,10 +55,12 @@ def main():
     dry_run          = os.getenv("DRY_RUN", "false").strip().lower() == "true"
     force            = os.getenv("FORCE", "false").strip().lower() == "true"
     skip_token_check = os.getenv("SKIP_TOKEN_CHECK", "false").strip().lower() == "true"
+    replenish_only   = os.getenv("REPLENISH_ONLY", "false").strip().lower() == "true"
 
     print(f"  Tone:     {tone}")
     print(f"  Dry run:  {dry_run}")
     print(f"  Force:    {force}")
+    print(f"  Replenish Only: {replenish_only}")
     print()
 
     # ── Token check / refresh ─────────────────────────────────────────────────
@@ -94,6 +96,36 @@ def main():
     queue = mem.load_posts_queue()
     approved_list = queue.get("approved", [])
     pending_list = queue.get("pending", [])
+
+    if replenish_only:
+        print("[!] Replenish Only mode active. Skipping publishing logic.")
+        if len(pending_list) < 10:
+            print(f"    Replenishing pending drafts queue (current: {len(pending_list)}, target: 10)...")
+            try:
+                topic = "See the recent context below — extract the most compelling story or insight." if ctx_summary["recent_context"] else "Share an insight from my professional background and achievements."
+                past_posts_text = mem.load_recent_posts_history_text(limit=15)
+                compact = mem.load_compact_profile()
+                ai = AIGenerator()
+                needed = 10 - len(pending_list)
+                batch = ai.generate_post_batch(
+                    topic=topic,
+                    tone=tone,
+                    extra_instructions=extra_notes,
+                    compact_profile=compact,
+                    recent_context=ctx_summary["recent_context"],
+                    past_posts=past_posts_text,
+                    batch_size=needed
+                )
+                if batch:
+                    pending_list.extend(batch)
+                    queue["pending"] = pending_list
+                    mem.save_posts_queue(queue)
+                    print(f"    Added {len(batch)} new drafts to pending queue.")
+            except Exception as e:
+                print(f"    Failed to replenish drafts queue: {e}")
+        else:
+            print("    Pending queue is already full (10 drafts). No action needed.")
+        sys.exit(0)
 
     if not approved_list:
         print("[!] No approved posts in queue. Skipping schedule execution.")

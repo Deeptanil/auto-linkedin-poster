@@ -12,6 +12,7 @@ import sys
 import os
 import subprocess
 import webbrowser
+import threading
 from pathlib import Path
 from flask import Flask, jsonify, request, render_template
 
@@ -83,10 +84,43 @@ def save_queue():
     return jsonify({"status": "success", "message": "Queue updated."})
 
 
+def bg_replenish_task():
+    try:
+        queue = mem.load_posts_queue()
+        pending = queue.get("pending", [])
+        needed = 10 - len(pending)
+        if needed <= 0:
+            return
+            
+        summary = mem.build_full_context_summary()
+        topic = "See the recent context below — extract the most compelling story or insight." if summary["recent_context"] else "Share an insight from my professional background and achievements."
+        past_posts_text = mem.load_recent_posts_history_text(limit=15)
+        compact_data = mem.load_compact_profile()
+        
+        ai = AIGenerator()
+        batch = ai.generate_post_batch(
+            topic=topic,
+            compact_profile=compact_data,
+            recent_context=summary["recent_context"],
+            past_posts=past_posts_text,
+            batch_size=needed
+        )
+        if batch:
+            queue = mem.load_posts_queue() # reload to prevent race condition overrides
+            queue["pending"].extend(batch)
+            mem.save_posts_queue(queue)
+            print(f"[dashboard] Background replenishment generated {len(batch)} drafts.")
+    except Exception as e:
+        print(f"[dashboard] Background replenishment failed: {e}")
+
+def trigger_background_replenish():
+    threading.Thread(target=bg_replenish_task, daemon=True).start()
+
+
 @app.route("/api/post/approve", methods=["POST"])
 def approve_post():
     """Move a post from pending list to approved list, applying optional text updates first."""
-    data = request.json
+    data = request.json or {}
     idx = int(data.get("index", 0))
     edited_text = data.get("post_text", "").strip()
     
@@ -99,15 +133,17 @@ def approve_post():
         approved_item["post_text"] = edited_text
         
     queue["approved"].append(approved_item)
-    
-    # Save the updated queue
     mem.save_posts_queue(queue)
-    return jsonify({"status": "success", "message": "Post approved."})
+    
+    # Trigger replenishment in background thread
+    trigger_background_replenish()
+    
+    return jsonify({"status": "success", "message": "Post approved. Replenishment triggered in background."})
 
 
 @app.route("/api/post/reject", methods=["POST"])
 def reject_post():
-    """Discard a pending draft and immediately generate a replacement draft."""
+    """Discard a pending draft and trigger a replenishment in the background."""
     idx = int(request.json.get("index", 0))
     queue = mem.load_posts_queue()
     
@@ -118,36 +154,12 @@ def reject_post():
     queue["pending"].pop(idx)
     mem.save_posts_queue(queue)
 
-    # Immediately replenish it to maintain buffer count
-    replenished = False
-    error_msg = ""
-    try:
-        summary = mem.build_full_context_summary()
-        topic = "See the recent context below — extract the most compelling story or insight." if summary["recent_context"] else "Share an insight from my professional background and achievements."
-        past_posts_text = mem.load_recent_posts_history_text(limit=15)
-        compact_data = mem.load_compact_profile()
-        
-        ai = AIGenerator()
-        batch = ai.generate_post_batch(
-            topic=topic,
-            compact_profile=compact_data,
-            recent_context=summary["recent_context"],
-            past_posts=past_posts_text,
-            batch_size=1
-        )
-        if batch:
-            queue = mem.load_posts_queue() # reload
-            queue["pending"].append(batch[0])
-            mem.save_posts_queue(queue)
-            replenished = True
-    except Exception as e:
-        error_msg = str(e)
+    # Trigger replenishment in background thread
+    trigger_background_replenish()
 
     return jsonify({
         "status": "success",
-        "replenished": replenished,
-        "error": error_msg,
-        "message": "Draft rejected and replacement triggered." if replenished else f"Draft rejected, replacement generation failed: {error_msg}"
+        "message": "Draft rejected. Replenishment triggered in background."
     })
 
 

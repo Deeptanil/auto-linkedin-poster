@@ -918,6 +918,12 @@
 
             async saveQueue(data, commitMsg = "chore: sync queue from dashboard [skip ci]") {
                 if (this.isCloud) {
+                    try {
+                        const fileInfo = await this.ghFetch('memory/posts_queue.json');
+                        this.ghSha = fileInfo.sha;
+                    } catch (e) {
+                        console.warn("Failed to fetch fresh SHA, using cache", e);
+                    }
                     const res = await this.ghWrite('memory/posts_queue.json', data, this.ghSha, commitMsg);
                     this.ghSha = res.content.sha;
                     return { status: 'success', message: "Drafts updated directly on GitHub." };
@@ -932,6 +938,7 @@
             },
 
             async approvePost(index, postText) {
+                // Obsolete in Optimistic UI (handled via saveQueue directly), but kept for compatibility
                 if (this.isCloud) {
                     const queue = await this.fetchQueue();
                     if (index < 0 || index >= queue.pending.length) {
@@ -954,18 +961,14 @@
             },
 
             async rejectPost(index) {
+                // Obsolete in Optimistic UI (handled via saveQueue directly), but kept for compatibility
                 if (this.isCloud) {
                     const queue = await this.fetchQueue();
                     if (index < 0 || index >= queue.pending.length) {
                         throw new Error("Invalid draft index.");
                     }
                     queue.pending.splice(index, 1);
-                    await this.saveQueue(queue, "chore: decline draft from dashboard [skip ci]");
-                    
-                    // Fire-and-forget background replenishment
-                    this.replenishQueue().catch(console.error);
-                    
-                    return { status: 'success', message: "Draft declined. New replenishment workflow triggered on GitHub." };
+                    return await this.saveQueue(queue, "chore: decline draft from dashboard [skip ci]");
                 } else {
                     const res = await fetch('/api/post/reject', {
                         method: 'POST',
@@ -986,13 +989,16 @@
                             'Accept': 'application/vnd.github+json',
                             'Content-Type': 'application/json'
                         },
-                        body: JSON.stringify({ ref: 'main' })
+                        body: JSON.stringify({
+                            ref: 'main',
+                            inputs: { replenish_only: "true" }
+                        })
                     });
                     if (!res.ok) {
                         const err = await res.json();
                         throw new Error(err.message || res.statusText);
                     }
-                    return { status: 'success', message: "Gemini draft generation workflow triggered successfully on GitHub!" };
+                    return { status: 'success', message: "Draft replenishment workflow triggered successfully on GitHub!" };
                 } else {
                     const res = await fetch('/api/post/replenish', { method: 'POST' });
                     return await res.json();
@@ -1237,63 +1243,87 @@
             renderPosts();
         }
 
+        function updateCountsDisplay() {
+            document.getElementById('countPending').innerText = queueData.pending.length;
+            document.getElementById('countApproved').innerText = queueData.approved.length;
+            document.getElementById('statusPendingCount').innerText = queueData.pending.length;
+            document.getElementById('statusApprovedCount').innerText = queueData.approved.length;
+        }
+
         async function saveDraftText(index, tab) {
             const textarea = document.getElementById(`text-${tab}-${index}`);
             const newText = textarea.value.trim();
             queueData[tab][index].post_text = newText;
             
-            showLoader("Saving post...");
+            showToast("Saving changes in background...", "info");
             try {
-                const result = await storageProvider.saveQueue(queueData, `chore: update ${tab} draft text [skip ci]`);
-                showToast(result.message || "Draft updated successfully!", "success");
-                fetchQueue();
+                await storageProvider.saveQueue(queueData, `chore: update ${tab} draft text [skip ci]`);
+                showToast("Changes saved successfully!", "success");
             } catch (err) {
                 showToast("Save failed: " + err.message, "error");
-            } finally {
-                hideLoader();
             }
         }
 
         async function approvePost(index) {
             const postText = document.getElementById(`text-pending-${index}`).value.trim();
-            showLoader("Approving post...");
+            
+            // Optimistic UI updates
+            const item = queueData.pending.splice(index, 1)[0];
+            item.post_text = postText;
+            queueData.approved.push(item);
+            
+            // Instantly render UI & update counts
+            updateCountsDisplay();
+            renderPosts();
+            showToast("Approved draft! Syncing in background...", "success");
+            
+            // Save & trigger replenishment silently in the background
             try {
-                const result = await storageProvider.approvePost(index, postText);
-                showToast(result.message || "Post approved! Added to approved queue.", "success");
-                fetchQueue();
+                await storageProvider.saveQueue(queueData, "chore: approve draft from dashboard [skip ci]");
+                if (queueData.pending.length < 10) {
+                    storageProvider.replenishQueue().catch(console.error);
+                }
             } catch (err) {
-                showToast("Approval failed: " + err.message, "error");
-            } finally {
-                hideLoader();
+                showToast("Cloud sync failed: " + err.message, "error");
             }
         }
 
         async function rejectPost(index) {
-            showLoader("Declining draft... Generating a replacement...");
+            // Optimistic UI updates
+            queueData.pending.splice(index, 1);
+            
+            // Instantly render UI & update counts
+            updateCountsDisplay();
+            renderPosts();
+            showToast("Draft declined! Replenishing in background...", "success");
+            
+            // Save & trigger replenishment silently in the background
             try {
-                const result = await storageProvider.rejectPost(index);
-                showToast(result.message || "Draft declined.", "success");
-                fetchQueue();
+                await storageProvider.saveQueue(queueData, "chore: decline draft from dashboard [skip ci]");
+                if (queueData.pending.length < 10) {
+                    storageProvider.replenishQueue().catch(console.error);
+                }
             } catch (err) {
-                showToast("Rejection failed: " + err.message, "error");
-            } finally {
-                hideLoader();
+                showToast("Cloud sync failed: " + err.message, "error");
             }
         }
 
         async function removeApproved(index) {
             if (!confirm("Remove this post from approved queue?")) return;
+            
+            // Optimistic UI updates
             queueData.approved.splice(index, 1);
             
-            showLoader("Updating approved list...");
+            // Instantly render UI & update counts
+            updateCountsDisplay();
+            renderPosts();
+            showToast("Removed from approved queue! Syncing in background...", "success");
+            
+            // Save silently in the background
             try {
-                const result = await storageProvider.saveQueue(queueData, "chore: remove item from approved queue [skip ci]");
-                showToast(result.message || "Removed from approved queue.", "success");
-                fetchQueue();
+                await storageProvider.saveQueue(queueData, "chore: remove item from approved queue [skip ci]");
             } catch (err) {
-                showToast("Remove failed: " + err.message, "error");
-            } finally {
-                hideLoader();
+                showToast("Cloud sync failed: " + err.message, "error");
             }
         }
 
