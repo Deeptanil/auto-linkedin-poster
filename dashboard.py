@@ -81,7 +81,9 @@ def get_queue():
 def save_queue():
     data = request.json
     mem.save_posts_queue(data)
-    return jsonify({"status": "success", "message": "Queue updated."})
+    # Trigger auto-sync in background thread
+    trigger_background_sync()
+    return jsonify({"status": "success", "message": "Queue updated. Sync triggered in background."})
 
 
 def bg_replenish_task():
@@ -117,6 +119,57 @@ def trigger_background_replenish():
     threading.Thread(target=bg_replenish_task, daemon=True).start()
 
 
+def sync_to_github_api():
+    """Uploads memory/posts_queue.json directly to the state branch via GitHub API if GITHUB_TOKEN is set."""
+    token = config.GITHUB_TOKEN or os.getenv("GITHUB_TOKEN")
+    repo = config.GITHUB_REPOSITORY or os.getenv("GITHUB_REPOSITORY")
+    if not token or not repo:
+        print("[sync] GitHub token or repository path not configured. Skipping background auto-sync.")
+        return
+        
+    try:
+        import base64
+        import requests
+        
+        file_path = "memory/posts_queue.json"
+        url = f"https://api.github.com/repos/{repo}/contents/{file_path}"
+        headers = {
+            "Authorization": f"Bearer {token}",
+            "Accept": "application/vnd.github+json"
+        }
+        
+        # 1. Fetch current file SHA from state branch
+        r = requests.get(f"{url}?ref=state", headers=headers, timeout=10)
+        sha = None
+        if r.ok:
+            sha = r.json().get("sha")
+            
+        # 2. Upload file content to state branch
+        with open(file_path, "r", encoding="utf-8") as f:
+            content_str = f.read()
+            
+        encoded = base64.b64encode(content_str.encode("utf-8")).decode("utf-8")
+        
+        payload = {
+            "message": "chore: sync queue from local dashboard [skip ci]",
+            "content": encoded,
+            "branch": "state"
+        }
+        if sha:
+            payload["sha"] = sha
+            
+        put_r = requests.put(url, headers=headers, json=payload, timeout=15)
+        if put_r.ok:
+            print("[sync] Successfully auto-synced queue to GitHub state branch.")
+        else:
+            print(f"[sync] Failed to auto-sync queue: {put_r.text}")
+    except Exception as e:
+        print(f"[sync] Error during auto-sync: {e}")
+
+def trigger_background_sync():
+    threading.Thread(target=sync_to_github_api, daemon=True).start()
+
+
 @app.route("/api/post/approve", methods=["POST"])
 def approve_post():
     """Move a post from pending list to approved list, applying optional text updates first."""
@@ -135,10 +188,11 @@ def approve_post():
     queue["approved"].append(approved_item)
     mem.save_posts_queue(queue)
     
-    # Trigger replenishment in background thread
+    # Trigger auto-sync and replenishment in background threads
+    trigger_background_sync()
     trigger_background_replenish()
     
-    return jsonify({"status": "success", "message": "Post approved. Replenishment triggered in background."})
+    return jsonify({"status": "success", "message": "Post approved. Sync and replenishment triggered in background."})
 
 
 @app.route("/api/post/reject", methods=["POST"])
@@ -154,49 +208,21 @@ def reject_post():
     queue["pending"].pop(idx)
     mem.save_posts_queue(queue)
 
-    # Trigger replenishment in background thread
+    # Trigger auto-sync and replenishment in background threads
+    trigger_background_sync()
     trigger_background_replenish()
 
     return jsonify({
         "status": "success",
-        "message": "Draft rejected. Replenishment triggered in background."
+        "message": "Draft rejected. Sync and replenishment triggered in background."
     })
 
 
 @app.route("/api/post/replenish", methods=["POST"])
 def replenish_queue():
-    """Replenish the pending drafts list back up to a target size of 10."""
-    queue = mem.load_posts_queue()
-    pending = queue.get("pending", [])
-    target = 10
-    needed = target - len(pending)
-    
-    if needed <= 0:
-        return jsonify({"status": "success", "message": "Pending queue is already full."})
-
-    try:
-        summary = mem.build_full_context_summary()
-        topic = "See the recent context below — extract the most compelling story or insight." if summary["recent_context"] else "Share an insight from my professional background and achievements."
-        past_posts_text = mem.load_recent_posts_history_text(limit=15)
-        compact_data = mem.load_compact_profile()
-        
-        ai = AIGenerator()
-        batch = ai.generate_post_batch(
-            topic=topic,
-            compact_profile=compact_data,
-            recent_context=summary["recent_context"],
-            past_posts=past_posts_text,
-            batch_size=needed
-        )
-        if batch:
-            pending.extend(batch)
-            queue["pending"] = pending
-            mem.save_posts_queue(queue)
-            return jsonify({"status": "success", "message": f"Generated {len(batch)} new drafts."})
-        else:
-            return jsonify({"status": "error", "message": "AI generation returned an empty batch."}), 500
-    except Exception as e:
-        return jsonify({"status": "error", "message": f"Replenish generation failed: {e}"}), 500
+    """Replenish the pending drafts list back up to a target size of 10 in the background."""
+    trigger_background_replenish()
+    return jsonify({"status": "success", "message": "Replenishment triggered in background."})
 
 
 @app.route("/api/memory/add", methods=["POST"])
