@@ -376,28 +376,66 @@ class AIGenerator:
                     raise e
 
     def _call_gemini_json(self, prompt: str) -> str:
-        """Call Gemini requesting structured JSON output."""
-        try:
-            return self._call_with_retry(
-                model=config.GEMINI_MODEL,
-                contents=prompt,
-                response_config={"response_mime_type": "application/json"}
-            )
-        except Exception as e:
-            if genai_errors and isinstance(e, genai_errors.APIError):
-                raise RuntimeError(f"Gemini API error: {e}")
-            raise RuntimeError(f"Unexpected error from Gemini: {e}")
+        """Call Gemini requesting structured JSON output with automatic model fallback."""
+        models_to_try = [
+            config.GEMINI_MODEL,
+            "gemini-3.1-flash-lite-preview",
+            "gemini-2.5-flash",
+            "gemini-2.0-flash",
+            "gemini-1.5-flash"
+        ]
+        
+        unique_models = []
+        for m in models_to_try:
+            if m and m not in unique_models:
+                unique_models.append(m)
+                
+        last_error = None
+        for model in unique_models:
+            try:
+                print(f"[ai_generator] Trying model: {model}")
+                return self._call_with_retry(
+                    model=model,
+                    contents=prompt,
+                    response_config={"response_mime_type": "application/json"}
+                )
+            except Exception as e:
+                print(f"[ai_generator] Model {model} failed: {e}. Trying fallback...")
+                last_error = e
+                
+        if genai_errors and isinstance(last_error, genai_errors.APIError):
+            raise RuntimeError(f"Gemini API error (all fallbacks exhausted): {last_error}")
+        raise RuntimeError(f"Unexpected error from Gemini (all fallbacks exhausted): {last_error}")
 
     def _call_gemini_plain(self, prompt: str) -> str:
-        """Call Gemini requesting plain text output."""
-        try:
-            return self._call_with_retry(
-                model=config.GEMINI_MODEL,
-                contents=prompt,
-            )
-        except Exception as e:
-            if genai_errors and isinstance(e, genai_errors.APIError):
-                raise RuntimeError(f"Gemini API error: {e}")
-            raise RuntimeError(f"Unexpected error from Gemini: {e}")
+        """Call Gemini requesting plain text output with automatic model fallback."""
+        models_to_try = [
+            config.GEMINI_MODEL,
+            "gemini-3.1-flash-lite-preview",
+            "gemini-2.5-flash",
+            "gemini-2.0-flash",
+            "gemini-1.5-flash"
+        ]
+        
+        unique_models = []
+        for m in models_to_try:
+            if m and m not in unique_models:
+                unique_models.append(m)
+                
+        last_error = None
+        for model in unique_models:
+            try:
+                print(f"[ai_generator] Trying model: {model}")
+                return self._call_with_retry(
+                    model=model,
+                    contents=prompt,
+                )
+            except Exception as e:
+                print(f"[ai_generator] Model {model} failed: {e}. Trying fallback...")
+                last_error = e
+                
+        if genai_errors and isinstance(last_error, genai_errors.APIError):
+            raise RuntimeError(f"Gemini API error (all fallbacks exhausted): {last_error}")
+        raise RuntimeError(f"Unexpected error from Gemini (all fallbacks exhausted): {last_error}")
 
 
