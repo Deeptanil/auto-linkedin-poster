@@ -987,7 +987,7 @@
             },
 
             async ghFetch(path, isJson = true) {
-                const url = `https://api.github.com/repos/${this.ghRepo}/contents/${path}?ref=state`;
+                const url = `https://api.github.com/repos/${this.ghRepo}/contents/${path}?ref=state&t=${Date.now()}`;
                 const res = await fetch(url, {
                     headers: {
                         'Authorization': `Bearer ${this.ghToken}`,
