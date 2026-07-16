@@ -40,6 +40,8 @@ from src.discord_notifier import (
     notify_post_success,
     notify_post_error,
     notify_no_context,
+    notify_queue_warning,
+    notify_queue_empty_reminder,
 )
 
 
@@ -131,6 +133,9 @@ def main():
         print("[!] No approved posts in queue. Skipping schedule execution.")
         print("    Please run the local dashboard, approve some drafts, and sync to GitHub.")
         
+        # Send daily reminder to Discord that the queue is empty
+        notify_queue_empty_reminder()
+        
         # If we have less than 10 pending drafts, let's proactively generate some so the user has choices
         if len(pending_list) < 10:
             print("    Proactively replenishing pending drafts queue (target: 10)...")
@@ -162,6 +167,11 @@ def main():
     # Pop the first approved post
     current_item = approved_list[0]
     post_text = current_item["post_text"]
+
+    # Alert if we are posting the last remaining approved post (1 day before running out)
+    if len(approved_list) == 1:
+        print("[!] Only 1 approved post remaining in queue. Alerting Discord...")
+        notify_queue_warning(remaining_days=1)
 
     print()
     print("─" * 60)
@@ -267,7 +277,7 @@ def main():
         dry_run      = False,
     )
 
-    notify_post_success(post_text)
+    notify_post_success(post_text, post_urn)
 
     print()
     print("🎉 All done! Post is live on LinkedIn. Cache queue updated.")

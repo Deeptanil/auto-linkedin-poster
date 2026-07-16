@@ -66,15 +66,60 @@ def _build_embed(
 
 # ─── Public notification functions ────────────────────────────────────────────
 
-def notify_post_success(post_preview: str) -> bool:
+def notify_post_success(post_preview: str, post_urn: str = None) -> bool:
     """Notify that a LinkedIn post was published successfully."""
     preview = post_preview[:300] + ("…" if len(post_preview) > 300 else "")
+    
+    fields = []
+    if post_urn and post_urn != "DRY_RUN" and post_urn != "unknown":
+        post_url = f"https://www.linkedin.com/feed/update/{post_urn}"
+        fields.append({
+            "name": "🔗 Link",
+            "value": f"[Open LinkedIn Post]({post_url})",
+            "inline": False
+        })
+        
     payload = {
         "embeds": [
             _build_embed(
                 title="✅ LinkedIn Post Published!",
                 description=f"```\n{preview}\n```",
                 colour=COLOUR_SUCCESS,
+                fields=fields if fields else None
+            )
+        ]
+    }
+    return _send(payload)
+
+
+def notify_queue_warning(remaining_days: int) -> bool:
+    """Notify that the approved queue is running low."""
+    payload = {
+        "embeds": [
+            _build_embed(
+                title="⚠️ Approved Post Queue Running Low",
+                description=(
+                    f"You have only **{remaining_days} day(s)** of posts remaining in the approved queue.\n\n"
+                    "Please log into the dashboard, review pending drafts, and approve more posts to prevent scheduling gaps!"
+                ),
+                colour=COLOUR_WARNING,
+            )
+        ]
+    }
+    return _send(payload)
+
+
+def notify_queue_empty_reminder() -> bool:
+    """Send a daily reminder that there are 0 approved posts in the queue."""
+    payload = {
+        "embeds": [
+            _build_embed(
+                title="🚨 Approved Post Queue is EMPTY!",
+                description=(
+                    "The daily LinkedIn posting workflow ran but skipped posting because there are **0 approved posts** left.\n\n"
+                    "Please log into the dashboard and approve new drafts immediately to resume scheduled posting!"
+                ),
+                colour=COLOUR_DANGER,
             )
         ]
     }

@@ -834,6 +834,10 @@
                             <span class="status-label">Pending Drafts:</span>
                             <span class="status-value" id="statusPendingCount">0</span>
                         </div>
+                        <div class="status-pill">
+                            <span class="status-label">Coverage Date:</span>
+                            <span class="status-value" id="statusCoverageDate" style="color: var(--color-primary); font-weight: 500;">Calculating...</span>
+                        </div>
                     </div>
                 </div>
 
@@ -1407,6 +1411,30 @@
             document.getElementById('countApproved').innerText = queueData.approved.length;
             document.getElementById('statusPendingCount').innerText = queueData.pending.length;
             document.getElementById('statusApprovedCount').innerText = queueData.approved.length;
+            updateCoverageDate(queueData.approved.length);
+        }
+
+        function updateCoverageDate(approvedCount) {
+            const elem = document.getElementById('statusCoverageDate');
+            if (!elem) return;
+            
+            if (approvedCount === 0) {
+                elem.innerHTML = `<span style="color: #ff4757; font-weight: bold;">⚠️ Empty (Approve posts today!)</span>`;
+                return;
+            }
+            
+            const now = new Date();
+            const targetDate = new Date(now);
+            targetDate.setDate(now.getDate() + approvedCount);
+            
+            const options = { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' };
+            const dateStr = targetDate.toLocaleDateString('en-US', options);
+            
+            if (approvedCount === 1) {
+                elem.innerHTML = `<span>1 day (Runs out tomorrow: ${dateStr})</span>`;
+            } else {
+                elem.innerHTML = `<span>${approvedCount} days (Runs out: ${dateStr})</span>`;
+            }
         }
 
         async function saveDraftText(index, tab) {
