@@ -131,6 +131,10 @@ def main():
             try:
                 topic = "See the recent context below — extract the most compelling story or insight." if ctx_summary["recent_context"] else "Share an insight from my professional background and achievements."
                 past_posts_text = mem.load_recent_posts_history_text(limit=15)
+                # Prevent overlapping topics with next approved posts in the queue
+                approved_posts_text = [item.get("post_text", "") for item in approved_list if item.get("post_text")]
+                blacklist_posts = past_posts_text + approved_posts_text
+                
                 compact = mem.load_compact_profile()
                 ai = AIGenerator()
                 needed = 10 - len(pending_list)
@@ -140,7 +144,7 @@ def main():
                     extra_instructions=extra_notes,
                     compact_profile=compact,
                     recent_context=ctx_summary["recent_context"],
-                    past_posts=past_posts_text,
+                    past_posts=blacklist_posts,
                     batch_size=needed
                 )
                 if batch:
@@ -167,6 +171,10 @@ def main():
             try:
                 topic = "See the recent context below — extract the most compelling story or insight." if ctx_summary["recent_context"] else "Share an insight from my professional background and achievements."
                 past_posts_text = mem.load_recent_posts_history_text(limit=15)
+                # Prevent overlapping topics with next approved posts in the queue
+                approved_posts_text = [item.get("post_text", "") for item in approved_list if item.get("post_text")]
+                blacklist_posts = past_posts_text + approved_posts_text
+                
                 compact = mem.load_compact_profile()
                 ai = AIGenerator()
                 needed = 10 - len(pending_list)
@@ -176,7 +184,7 @@ def main():
                     extra_instructions=extra_notes,
                     compact_profile=compact,
                     recent_context=ctx_summary["recent_context"],
-                    past_posts=past_posts_text,
+                    past_posts=blacklist_posts,
                     batch_size=needed
                 )
                 if batch:
@@ -270,6 +278,10 @@ def main():
         try:
             topic = "See the recent context below — extract the most compelling story or insight." if ctx_summary["recent_context"] else "Share an insight from my professional background and achievements."
             past_posts_text = mem.load_recent_posts_history_text(limit=15)
+            # Prevent overlapping topics with next approved posts in the queue
+            approved_posts_text = [item.get("post_text", "") for item in approved_list if item.get("post_text")]
+            blacklist_posts = past_posts_text + approved_posts_text
+            
             compact = mem.load_compact_profile()
             ai = AIGenerator()
             needed = 10 - len(pending_list)
@@ -279,7 +291,7 @@ def main():
                 extra_instructions=extra_notes,
                 compact_profile=compact,
                 recent_context=ctx_summary["recent_context"],
-                past_posts=past_posts_text,
+                past_posts=blacklist_posts,
                 batch_size=needed
             )
             if batch:
