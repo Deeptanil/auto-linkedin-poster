@@ -65,50 +65,6 @@ class DualLogger:
         self.terminal.flush()
 
 
-def is_another_workflow_running() -> bool:
-    """Check if another instance of this workflow is already running on GitHub Actions."""
-    import os
-    import requests
-
-    if not os.getenv("GITHUB_ACTIONS"):
-        return False
-
-    repo = os.getenv("GITHUB_REPOSITORY")
-    run_id = os.getenv("GITHUB_RUN_ID")
-    token = os.getenv("GITHUB_TOKEN") or os.getenv("ACTIONS_RUNTIME_TOKEN")
-    
-    if not repo or not run_id or not token:
-        return False
-
-    url = f"https://api.github.com/repos/{repo}/actions/runs"
-    headers = {
-        "Authorization": f"Bearer {token}",
-        "Accept": "application/vnd.github+json"
-    }
-
-    try:
-        res = requests.get(f"{url}?status=in_progress", headers=headers, timeout=10)
-        if not res.ok:
-            return False
-
-        runs = res.json().get("workflow_runs", [])
-        current_run_id = int(run_id)
-        current_workflow_name = os.getenv("GITHUB_WORKFLOW")
-
-        for run in runs:
-            other_id = run.get("id")
-            other_workflow_name = run.get("name")
-            
-            if (other_id and other_id != current_run_id and 
-                other_workflow_name == current_workflow_name and 
-                other_id < current_run_id):
-                print(f"[!] Found active run of '{current_workflow_name}' (ID: {other_id}) started before us.")
-                return True
-    except Exception as e:
-        print(f"[!] Error checking active workflow runs: {e}")
-
-    return False
-
 
 def main():
     # Redirect output streams to local or remote state log
@@ -120,18 +76,25 @@ def main():
     print("  LinkedIn AI Auto-Poster (Batch Queue & Memory Engine)")
     print("=" * 60)
 
-    if is_another_workflow_running():
-        print("[!] Another instance of this workflow is already running. Exiting to prevent overlap.")
-        sys.exit(0)
+    # ── Fast-exit: already posted today? (IST) ────────────────────────────────
+    # Check this FIRST before any slow work (token refresh, memory load, etc.)
+    # This is the primary guard for the multi-cron retry schedule.
+    replenish_only = os.getenv("REPLENISH_ONLY", "false").strip().lower() == "true"
+    force          = os.getenv("FORCE", "false").strip().lower() == "true"
+
+    if not replenish_only and not force:
+        history = PostHistory()
+        if history.already_posted_today():
+            print("[!] A post has already been published today (IST). Nothing to do.")
+            sys.exit(0)
 
     # ── Read inputs from environment ──────────────────────────────────────────
     context_input    = os.getenv("CONTEXT", "").strip()
     tone             = os.getenv("TONE", "Auto").strip()
     extra_notes      = os.getenv("EXTRA_NOTES", "").strip()
     dry_run          = os.getenv("DRY_RUN", "false").strip().lower() == "true"
-    force            = os.getenv("FORCE", "false").strip().lower() == "true"
     skip_token_check = os.getenv("SKIP_TOKEN_CHECK", "false").strip().lower() == "true"
-    replenish_only   = os.getenv("REPLENISH_ONLY", "false").strip().lower() == "true"
+    # (replenish_only and force already read above for the fast-exit guard)
 
     print(f"  Tone:     {tone}")
     print(f"  Dry run:  {dry_run}")
@@ -211,8 +174,13 @@ def main():
         print("[!] No approved posts in queue. Skipping schedule execution.")
         print("    Please run the local dashboard, approve some drafts, and sync to GitHub.")
         
-        # Send daily reminder to Discord that the queue is empty
-        notify_queue_empty_reminder()
+        # Only send the Discord reminder once per day (on the first morning run only).
+        # We detect this by checking if the current UTC hour is in the first morning window
+        # (before 6 AM UTC = before ~11:30 AM IST), preventing repeat pings on retries.
+        from datetime import datetime, timezone
+        current_utc_hour = datetime.now(timezone.utc).hour
+        if current_utc_hour < 6:
+            notify_queue_empty_reminder()
         
         # If we have less than 10 pending drafts, let's proactively generate some so the user has choices
         if len(pending_list) < 10:
@@ -246,12 +214,9 @@ def main():
         
         sys.exit(0)
 
-    # ── Check if already posted today (IST) ───────────────────────────────────
-    from src.post_history import PostHistory
+    # already_posted_today was already checked at startup (fast-exit guard above).
+    # Instantiate history here for use in logging below.
     history = PostHistory()
-    if not force and history.already_posted_today():
-        print("[!] A post has already been successfully published today in Asia/Kolkata timezone. Skipping duplicate execution.")
-        sys.exit(0)
 
     # Pop the first approved post
     current_item = approved_list[0]
@@ -273,7 +238,7 @@ def main():
     # ── Dry run exit ─────────────────────────────────────────────────────────
     if dry_run:
         print("[4/5] DRY RUN mode — not posting to LinkedIn.")
-        history = PostHistory()
+        # history already instantiated above
         history.log(
             post_text    = post_text,
             post_urn     = "DRY_RUN",
@@ -366,7 +331,7 @@ def main():
     mem.save_posts_queue(queue)
 
     # Log history
-    history = PostHistory()
+    # history already instantiated above
     history.log(
         post_text    = post_text,
         post_urn     = post_urn,

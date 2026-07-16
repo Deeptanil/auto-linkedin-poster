@@ -64,7 +64,7 @@ jobs:
   post:
     name: "Generate & Post"
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     defaults:
       run:
         working-directory: code
@@ -122,8 +122,9 @@ jobs:
         run: python src/run.py
 
       # 5. Commit queue and history back to the state branch
+      # Only runs when the script succeeded (not on fast-exit "already posted" skips)
       - name: "💾 Commit post history & queue"
-        if: always()
+        if: success()
         run: |
           cd memory
           git config user.name  "linkedin-poster[bot]"
