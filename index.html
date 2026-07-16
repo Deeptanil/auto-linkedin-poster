@@ -1617,8 +1617,6 @@
                 startReplenishPoller();
             } catch (err) {
                 showToast("Sync failed: " + err.message, "error");
-            } finally {
-                storageProvider.isSaving = false;
             }
         }
 
@@ -1630,15 +1628,12 @@
             renderPosts();
             showToast("Declined. Generating replacement draft...", "success");
             
-            storageProvider.isSaving = true;
             try {
                 await storageProvider.saveQueue(queueData, "chore: decline draft from dashboard [skip ci]");
                 storageProvider.replenishQueue().catch(console.error);
                 startReplenishPoller();
             } catch (err) {
                 showToast("Sync failed: " + err.message, "error");
-            } finally {
-                storageProvider.isSaving = false;
             }
         }
 
