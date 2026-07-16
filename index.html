@@ -1308,12 +1308,7 @@
             showLoader("Loading queues...");
             try {
                 queueData = await storageProvider.fetchQueue();
-                document.getElementById('countPending').innerText = queueData.pending.length;
-                document.getElementById('countApproved').innerText = queueData.approved.length;
-                
-                document.getElementById('statusPendingCount').innerText = queueData.pending.length;
-                document.getElementById('statusApprovedCount').innerText = queueData.approved.length;
-                
+                updateCountsDisplay();
                 renderPosts();
             } catch (err) {
                 showToast("Failed to load queue: " + err.message, "error");
@@ -1477,9 +1472,20 @@
             // The scheduler fires at 9:30 AM IST = 04:00 UTC.
             const now = new Date();
             const todayIST = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
-            const postedTodayAlready = lastPostedAt
-                ? new Date(lastPostedAt).toDateString() === todayIST.toDateString()
-                : todayIST.getHours() >= 9; // fallback: assume posted if past 9 AM IST
+            const todayStr = todayIST.toDateString();
+
+            let postedTodayAlready;
+            if (lastPostedAt) {
+                // We have an exact timestamp — compare dates in IST
+                const postedIST = new Date(
+                    new Date(lastPostedAt).toLocaleString('en-US', { timeZone: 'Asia/Kolkata' })
+                );
+                postedTodayAlready = postedIST.toDateString() === todayStr;
+            } else {
+                // No timestamp yet (field added recently) — assume NOT posted today
+                // so the approved count is treated as starting from today.
+                postedTodayAlready = false;
+            }
 
             // If today's post hasn't been sent yet, one approved post covers today.
             // If already sent, the next post is tomorrow — so N approved = N more days from today.
