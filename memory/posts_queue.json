@@ -11,13 +11,13 @@
     {
       "post_text": "Standard e-commerce platforms make custom loyalty programs a subscription nightmare.\n\nSince we built STRAYED on MedusaJS, we decided to program our loyalty system from scratch.\n\nI wrote custom logic in our PostgreSQL database to track customer actions, automatically calculating reward points and triggering mystery gift discounts at checkout based on user history. Everything runs natively within our own backend instead of relying on third-party APIs.\n\nIt took a bit of extra development time, but our page load speed is incredibly fast, and we have complete control over how we surprise our users.\n\nIf you are building e-commerce, at what point do you decide to build custom features instead of installing pre-made plugins?\n\n#medusajs #backend #ecommerce",
       "reasoning": "Focuses on the custom loyalty mechanics built from scratch on MedusaJS, contrasting custom engineering with reliance on heavy, paid Shopify apps."
-    }
-  ],
-  "pending": [
+    },
     {
       "post_text": "Waiting for a backend response to update a cart UI feels incredibly outdated.\n\nWhen you add an item to your cart on Amazon, the UI updates instantly. There is no spinner, no lag, and no waiting for a server confirmation.\n\nI wanted that exact same zero-latency feel for STRAYED.\n\nTo get there, I implemented optimistic client-side updates in our frontend. When a user clicks 'Add to Cart', we immediately update the local React State to reflect the new item, while the actual API request to our MedusaJS backend runs silently in the background.\n\nIf the server request fails for some rare reason, we gracefully roll back the UI state and show a quick notification. But 99% of the time, the user experiences an instant, snappy transition.\n\nIt is a small detail, but these micro-interactions are what separate clean, premium products from clunky web pages.\n\nHow do you approach designing optimistic UI states in your frontend applications?\n\n#javascript #webdev #uxdesign",
       "reasoning": "Discusses Deeptanil's obsession with clean, zero-latency UX (inspired by Nothing) and how he implemented optimistic UI state updates for STRAYED."
-    },
+    }
+  ],
+  "pending": [
     {
       "post_text": "Our server went down once during a critical launch, and we had no idea.\n\nWhen you are bootstrapping, you cannot always afford expensive enterprise APM tools to monitor your production servers 24/7.\n\nBut waking up to discover your site was offline for hours is the worst feeling as a developer.\n\nTo make sure that never happens again on our Oracle VPS, I wrote a lightweight python daemon script. It runs in the background and pings our main endpoints every few minutes.\n\nIf it detects a 500 error or if the server response time spikes beyond three seconds, it instantly pings my phone via a custom Telegram DM alert with the exact system logs.\n\nIt took less than fifty lines of code to write, but it gives us total peace of mind without spending a rupee on external monitoring suites.\n\nWhat does your minimalist server monitoring setup look like when you are launching on a budget?\n\n#python #devops #solodev",
       "reasoning": "Addresses the creation of a custom server health monitor script to solve downtime alerts, highlighting low-budget developer resourcefulness."
