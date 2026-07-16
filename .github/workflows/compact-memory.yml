@@ -18,10 +18,22 @@ jobs:
     name: "Compact & Commit Memory"
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    defaults:
+      run:
+        working-directory: code
 
     steps:
-      - name: "⬇️ Checkout repository"
+      - name: "⬇️ Checkout repository code"
         uses: actions/checkout@v4
+        with:
+          ref: "main"
+          path: "code"
+
+      - name: "⬇️ Checkout memory database"
+        uses: actions/checkout@v4
+        with:
+          ref: "state"
+          path: "code/memory"
 
       - name: "🐍 Setup Python 3.11"
         uses: actions/setup-python@v5
@@ -51,7 +63,8 @@ jobs:
 
       - name: "💾 Commit changes back to repo"
         run: |
+          cd memory
           git config --global user.name "linkedin-poster[bot]"
           git config --global user.email "linkedin-poster[bot]@users.noreply.github.com"
-          git add memory/
+          git add .
           git diff --quiet && git diff --staged --quiet || (git commit -m "chore: compact memory via dashboard [skip ci]" && git push)
