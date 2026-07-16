@@ -107,6 +107,106 @@ class LinkedInAPI:
         post_urn = r.headers.get("x-restli-id") or r.headers.get("X-RestLi-Id", "unknown")
         return post_urn
 
+    def upload_image(self, image_path_or_bytes: Path | bytes | str) -> str:
+        """
+        Initialize and upload an image to LinkedIn.
+        
+        Parameters
+        ----------
+        image_path_or_bytes : Absolute path to the image, or raw bytes.
+        
+        Returns
+        -------
+        str : The LinkedIn image URN (e.g. urn:li:image:XXXX)
+        """
+        if isinstance(image_path_or_bytes, (str, Path)):
+            with open(image_path_or_bytes, "rb") as f:
+                image_bytes = f.read()
+        else:
+            image_bytes = image_path_or_bytes
+
+        author_urn = self.get_member_urn()
+        
+        # 1. Initialize upload session
+        init_url = f"{config.LINKEDIN_API_BASE}/rest/images?action=initializeUpload"
+        init_payload = {
+            "initializeUploadRequest": {
+                "owner": author_urn
+            }
+        }
+        
+        r = requests.post(
+            init_url,
+            headers=self._headers(),
+            json=init_payload,
+            timeout=30
+        )
+        self._raise_for_status(r)
+        
+        data = r.json()
+        value = data.get("value", {})
+        upload_url = value.get("uploadUrl")
+        image_urn = value.get("image")
+        
+        if not upload_url or not image_urn:
+            raise LinkedInAPIError(200, f"initializeUpload returned invalid response: {data}")
+            
+        # 2. PUT binary payload to uploadUrl
+        put_headers = {
+            "Authorization": f"Bearer {self.access_token}"
+        }
+        
+        put_r = requests.put(
+            upload_url,
+            headers=put_headers,
+            data=image_bytes,
+            timeout=60
+        )
+        if not put_r.ok:
+            raise LinkedInAPIError(put_r.status_code, f"Failed binary upload to uploadUrl: {put_r.text[:500]}")
+            
+        return image_urn
+
+    def create_image_post(
+        self,
+        text: str,
+        image_urn: str,
+        visibility: str = "PUBLIC",
+    ) -> str:
+        """
+        Create a post containing an image on LinkedIn.
+        """
+        author_urn = self.get_member_urn()
+
+        payload = {
+            "author":     author_urn,
+            "commentary": text,
+            "visibility": visibility,
+            "distribution": {
+                "feedDistribution":             "MAIN_FEED",
+                "targetEntities":               [],
+                "thirdPartyDistributionChannels": [],
+            },
+            "content": {
+                "media": {
+                    "id": image_urn
+                }
+            },
+            "lifecycleState": "PUBLISHED",
+            "isReshareDisabledByAuthor": False,
+        }
+
+        r = requests.post(
+            POSTS_URL,
+            headers=self._headers(),
+            json=payload,
+            timeout=30,
+        )
+        self._raise_for_status(r)
+
+        post_urn = r.headers.get("x-restli-id") or r.headers.get("X-RestLi-Id", "unknown")
+        return post_urn
+
     def add_first_comment(self, post_urn: str, comment_text: str) -> str:
         """
         Add a comment to a post (useful for dropping links — never put them in the body).

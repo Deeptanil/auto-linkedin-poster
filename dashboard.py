@@ -14,7 +14,7 @@ import subprocess
 import webbrowser
 import threading
 from pathlib import Path
-from flask import Flask, jsonify, request, render_template
+from flask import Flask, jsonify, request, render_template, send_from_directory
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import config
@@ -267,6 +267,40 @@ def get_logs():
     except Exception as e:
         return jsonify({"logs": f"Error reading log file: {e}"})
 
+
+@app.route("/api/image/upload", methods=["POST"])
+def upload_image():
+    """Uploads an image file, saves it to memory/images/, and returns its local path."""
+    if "file" not in request.files:
+        return jsonify({"status": "error", "message": "No file part in request."}), 400
+        
+    file = request.files["file"]
+    if file.filename == "":
+        return jsonify({"status": "error", "message": "No selected file."}), 400
+        
+    # Ensure folder exists
+    img_dir = Path("memory/images")
+    img_dir.mkdir(parents=True, exist_ok=True)
+    
+    # Save file with a safe filename
+    import time
+    from werkzeug.utils import secure_filename
+    
+    filename = f"{int(time.time())}_{secure_filename(file.filename)}"
+    file_path = img_dir / filename
+    file.save(file_path)
+    
+    # Return relative path for posts_queue.json
+    relative_path = f"memory/images/{filename}"
+    return jsonify({
+        "status": "success",
+        "image_path": relative_path
+    })
+
+@app.route("/memory/images/<path:filename>")
+def serve_image(filename):
+    """Serves uploaded images statically for card previews in local mode."""
+    return send_from_directory("memory/images", filename)
 
 
 # ─── Launcher Helper ──────────────────────────────────────────────────────────

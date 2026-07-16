@@ -552,6 +552,71 @@
             justify-content: space-between;
         }
 
+        /* ─── Image attachment preview styles ────────────────────────────────── */
+        .image-previews-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-top: 0.75rem;
+            width: 100%;
+        }
+
+        .image-preview-item {
+            position: relative;
+            width: 90px;
+            height: 90px;
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid var(--color-card-border);
+            background: #07090e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .post-image-preview-thumbnail {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .btn-remove-image-thumbnail {
+            position: absolute;
+            top: 0.25rem;
+            right: 0.25rem;
+            background: rgba(255, 71, 87, 0.95);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 11px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+            font-weight: bold;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            transition: var(--transition-smooth);
+        }
+
+        .btn-remove-image-thumbnail:hover {
+            background: var(--color-danger);
+            transform: scale(1.1);
+        }
+
+        .post-attachments-row {
+            margin-top: 0.75rem;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .file-upload-label {
+            cursor: pointer;
+        }
+
         /* ─── Mobile Responsiveness & Optimization ─────────────────────────── */
         @media (max-width: 768px) {
             .container {
@@ -904,6 +969,65 @@
                 return await res.json();
             },
 
+            async ghUploadFile(path, file) {
+                const url = `https://api.github.com/repos/${this.ghRepo}/contents/${path}`;
+                const reader = new FileReader();
+                return new Promise((resolve, reject) => {
+                    reader.onload = async () => {
+                        const arrayBuffer = reader.result;
+                        const bytes = new Uint8Array(arrayBuffer);
+                        let binary = "";
+                        for (let i = 0; i < bytes.byteLength; i++) {
+                            binary += String.fromCharCode(bytes[i]);
+                        }
+                        const base64 = btoa(binary);
+                        
+                        try {
+                            const res = await fetch(url, {
+                                method: 'PUT',
+                                headers: {
+                                    'Authorization': `Bearer ${this.ghToken}`,
+                                    'Accept': 'application/vnd.github+json',
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    message: `chore: upload post image attachment [skip ci]`,
+                                    content: base64,
+                                    branch: "state"
+                                })
+                            });
+                            if (!res.ok) {
+                                const err = await res.json();
+                                reject(new Error(err.message || res.statusText));
+                            } else {
+                                resolve();
+                            }
+                        } catch (err) {
+                            reject(err);
+                        }
+                    };
+                    reader.onerror = () => reject(reader.error);
+                    reader.readAsArrayBuffer(file);
+                });
+            },
+
+            async uploadImage(file, filename) {
+                const relativePath = `memory/images/${filename}`;
+                if (this.isCloud) {
+                    await this.ghUploadFile(relativePath, file);
+                    return { status: 'success', image_path: relativePath };
+                } else {
+                    const formData = new FormData();
+                    formData.append("file", file);
+                    const res = await fetch('/api/image/upload', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    if (!res.ok) throw new Error("Upload request failed");
+                    return await res.json();
+                }
+            },
+
             async fetchQueue() {
                 if (this.isCloud) {
                     const result = await this.ghFetch('memory/posts_queue.json');
@@ -1221,16 +1345,51 @@
                     `;
                 }
 
+                // Retrieve image paths array, falling back to legacy single image_path
+                const paths = item.image_paths || (item.image_path ? [item.image_path] : []);
+                const isFull = paths.length >= 9;
+                const attachLabel = `Attach Image (${paths.length}/9)`;
+
+                actionButtons += `
+                    <label class="btn btn-secondary btn-sm file-upload-label" style="position: relative; ${isFull ? 'opacity: 0.5; pointer-events: none;' : ''}">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+                        ${attachLabel}
+                        ${isFull ? '' : `<input type="file" accept="image/*" style="display: none;" onchange="handleImageUpload(event, ${index}, '${currentTab}')">`}
+                    </label>
+                `;
+
+                let previewsHtml = '';
+                if (paths.length > 0) {
+                    previewsHtml = `<div class="image-previews-grid">`;
+                    paths.forEach((path, imgIdx) => {
+                        previewsHtml += `
+                            <div class="image-preview-item">
+                                <img id="image-preview-${currentTab}-${index}-${imgIdx}" class="post-image-preview-thumbnail" src="" />
+                                <button class="btn-remove-image-thumbnail" onclick="removeImage(${index}, ${imgIdx}, '${currentTab}')">&times;</button>
+                            </div>
+                        `;
+                    });
+                    previewsHtml += `</div>`;
+                }
+
                 card.innerHTML = `
                     <div class="post-header">
                         <span class="post-index-tag">Draft #${index + 1}</span>
                     </div>
                     <textarea id="text-${currentTab}-${index}" class="post-textarea">${item.post_text}</textarea>
+                    
+                    ${previewsHtml}
+
                     <div class="post-actions">
                         ${actionButtons}
                     </div>
                 `;
                 listContainer.appendChild(card);
+
+                // Load preview thumbnails asynchronously
+                paths.forEach((path, imgIdx) => {
+                    loadImagePreview(path, `image-preview-${currentTab}-${index}-${imgIdx}`);
+                });
             });
         }
 
@@ -1382,6 +1541,96 @@
             }).catch(err => {
                 showToast("Failed to copy logs: " + err.message, "error");
             });
+        }
+
+        async function loadImagePreview(imagePath, imgElementId) {
+            const img = document.getElementById(imgElementId);
+            if (!img) return;
+            
+            if (storageProvider.isCloud) {
+                try {
+                    const url = `https://api.github.com/repos/${storageProvider.ghRepo}/contents/${imagePath}?ref=state`;
+                    const res = await fetch(url, {
+                        headers: {
+                            'Authorization': `Bearer ${storageProvider.ghToken}`,
+                            'Accept': 'application/vnd.github+json'
+                        }
+                    });
+                    if (!res.ok) throw new Error("Load preview failed");
+                    const json = await res.json();
+                    
+                    const cleanBase64 = json.content.replace(/\s/g, '');
+                    const ext = imagePath.split('.').pop().toLowerCase();
+                    const mime = (ext === 'png') ? 'image/png' : 'image/jpeg';
+                    img.src = `data:${mime};base64,${cleanBase64}`;
+                } catch (err) {
+                    console.error("Preview load error", err);
+                    img.src = "";
+                }
+            } else {
+                img.src = `/${imagePath}`;
+            }
+        }
+
+        async function handleImageUpload(event, index, tab) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const postItem = queueData[tab][index];
+            if (!postItem.image_paths) {
+                postItem.image_paths = postItem.image_path ? [postItem.image_path] : [];
+            }
+            
+            if (postItem.image_paths.length >= 9) {
+                showToast("Maximum of 9 images allowed per LinkedIn post.", "warning");
+                return;
+            }
+
+            showLoader("Uploading attachment...");
+            try {
+                const filename = `${Date.now()}_${file.name.replace(/\s+/g, '_')}`;
+                const result = await storageProvider.uploadImage(file, filename);
+                
+                if (result.status === 'success' && result.image_path) {
+                    // Add reference to list
+                    postItem.image_paths.push(result.image_path);
+                    delete postItem.image_path; // clear old legacy property
+                    
+                    await storageProvider.saveQueue(queueData, `chore: attach image to ${tab} draft [skip ci]`);
+                    
+                    showToast("Image attached successfully!", "success");
+                    renderPosts();
+                } else {
+                    showToast("Upload failed.", "error");
+                }
+            } catch (err) {
+                showToast("Upload failed: " + err.message, "error");
+            } finally {
+                hideLoader();
+            }
+        }
+
+        async function removeImage(index, imgIndex, tab) {
+            if (!confirm("Remove this image attachment?")) return;
+            
+            const postItem = queueData[tab][index];
+            if (!postItem.image_paths) {
+                postItem.image_paths = postItem.image_path ? [postItem.image_path] : [];
+            }
+            
+            postItem.image_paths.splice(imgIndex, 1);
+            delete postItem.image_path; // clear legacy property
+            
+            showLoader("Removing image...");
+            try {
+                await storageProvider.saveQueue(queueData, `chore: remove image from ${tab} draft [skip ci]`);
+                showToast("Image attachment removed.", "success");
+                renderPosts();
+            } catch (err) {
+                showToast("Failed to update queue: " + err.message, "error");
+            } finally {
+                hideLoader();
+            }
         }
 
         // ─── UI Helpers ──────────────────────────────────────────────────────

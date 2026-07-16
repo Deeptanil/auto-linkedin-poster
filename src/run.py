@@ -189,7 +189,27 @@ def main():
     print("[4/5] Posting to LinkedIn...")
     try:
         li = LinkedInAPI()
-        post_urn = li.create_text_post(post_text)
+        
+        image_path = current_item.get("image_path")
+        if image_path:
+            path_obj = Path(image_path)
+            if not path_obj.is_absolute():
+                path_obj = Path(__file__).resolve().parent.parent / image_path
+                
+            if path_obj.exists():
+                print(f"  [image] Found image attachment at: {path_obj}")
+                print("  [image] Uploading to LinkedIn...")
+                image_urn = li.upload_image(path_obj)
+                print(f"  [image] Upload complete. Image URN: {image_urn}")
+                print("  [image] Creating LinkedIn post with image...")
+                post_urn = li.create_image_post(post_text, image_urn)
+            else:
+                print(f"  [WARNING] Attachment path does not exist: {path_obj}")
+                print("  [WARNING] Falling back to text-only post.")
+                post_urn = li.create_text_post(post_text)
+        else:
+            post_urn = li.create_text_post(post_text)
+            
         print(f"  [OK] Post published! URN: {post_urn}")
     except LinkedInAPIError as e:
         error_msg = str(e)
