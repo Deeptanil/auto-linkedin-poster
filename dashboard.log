@@ -1,4 +1,4 @@
---- Posting Pipeline Run Started: 2026-07-16 18:54:24.836788 ---
+--- Posting Pipeline Run Started: 2026-07-16 18:55:19.269417 ---
 ============================================================
   LinkedIn AI Auto-Poster (Batch Queue & Memory Engine)
 ============================================================
@@ -12,18 +12,19 @@
   Voice profile:  [OK]
   Achievements:   [OK]
   Recent context: [X] (none found)
-  Approved posts: 16
-  Pending drafts: 9
+  Approved posts: 17
+  Pending drafts: 8
 
 [!] Replenish Only mode active. Skipping publishing logic.
-    Replenishing pending drafts queue (current: 9, target: 10)...
-[ai_generator] Starting batch generation. Batch size: 1, Tone: Auto
+    Replenishing pending drafts queue (current: 8, target: 10)...
+[ai_generator] Starting batch generation. Batch size: 2, Tone: Auto
 [ai_generator] Building prompt payload...
 [ai_generator] Calling Google Gemini API (model: gemini-3.5-flash) requesting structured JSON response...
 [ai_generator] Trying model: gemini-3.1-flash-lite-preview
-[ai_generator] Received API response from Gemini (size: 1485 characters).
-[ai_generator] Successfully parsed JSON array containing 1 posts.
+[ai_generator] Received API response from Gemini (size: 2311 characters).
+[ai_generator] Successfully parsed JSON array containing 2 posts.
 [ai_generator] Running posts through strict quality filters (URLs, minimum length, markdown markers)...
-  - Post index 0: Accepted! (length=1136)
-[ai_generator] Filter process complete. 1 of 1 generated posts were approved.
-    Added 1 new drafts to pending queue.
+  - Post index 0: Accepted! (length=967)
+  - Post index 1: Accepted! (length=826)
+[ai_generator] Filter process complete. 2 of 2 generated posts were approved.
+    Added 2 new drafts to pending queue.
