@@ -1,4 +1,4 @@
---- Posting Pipeline Run Started: 2026-07-16 17:09:09.559690 ---
+--- Posting Pipeline Run Started: 2026-07-16 17:18:49.077326 ---
 ============================================================
   LinkedIn AI Auto-Poster (Batch Queue & Memory Engine)
 ============================================================
@@ -13,26 +13,14 @@
   Achievements:   [X] (not set)
   Recent context: [X] (none found)
   Approved posts: 6
-  Pending drafts: 0
+  Pending drafts: 9
 
 [!] Replenish Only mode active. Skipping publishing logic.
-    Replenishing pending drafts queue (current: 0, target: 10)...
-[ai_generator] Starting batch generation. Batch size: 10, Tone: Auto
+    Replenishing pending drafts queue (current: 9, target: 10)...
+[ai_generator] Starting batch generation. Batch size: 1, Tone: Auto
 [ai_generator] Building prompt payload...
 [ai_generator] Calling Google Gemini API (model: gemini-3.5-flash) requesting structured JSON response...
 [ai_generator] Gemini experiencing high demand/rate limits (Attempt 1/3). Retrying in 2s...
-[ai_generator] Received API response from Gemini (size: 11413 characters).
-[ai_generator] Successfully parsed JSON array containing 10 posts.
-[ai_generator] Running posts through strict quality filters (URLs, minimum length, markdown markers)...
-  - Post index 0: Accepted! (length=921)
-  - Post index 1: Accepted! (length=987)
-  - Post index 2: Accepted! (length=1011)
-  - Post index 3: Accepted! (length=918)
-  - Post index 4: Accepted! (length=956)
-  - Post index 5: Accepted! (length=942)
-  - Post index 6: Accepted! (length=887)
-  - Post index 7: Accepted! (length=888)
-  - Post index 8: Accepted! (length=782)
-  - Post index 9: Accepted! (length=944)
-[ai_generator] Filter process complete. 10 of 10 generated posts were approved.
-    Added 10 new drafts to pending queue.
+[ai_generator] Gemini experiencing high demand/rate limits (Attempt 2/3). Retrying in 4s...
+[ai_generator] API Call Error: Gemini API error: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}
+    Failed to replenish drafts queue: Gemini API error: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}
