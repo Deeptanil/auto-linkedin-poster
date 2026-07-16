@@ -849,9 +849,15 @@
             
             <!-- Left Side: Queue Boards -->
             <div class="card">
-                <div class="tab-bar">
-                    <button id="tabPending" class="tab-btn active" onclick="switchTab('pending')">Pending Drafts (<span id="countPending">0</span>)</button>
-                    <button id="tabApproved" class="tab-btn" onclick="switchTab('approved')">Approved Queue (<span id="countApproved">0</span>)</button>
+                <div class="tab-bar" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                    <div style="display: flex; gap: 1rem;">
+                        <button id="tabPending" class="tab-btn active" onclick="switchTab('pending')">Pending Drafts (<span id="countPending">0</span>)</button>
+                        <button id="tabApproved" class="tab-btn" onclick="switchTab('approved')">Approved Queue (<span id="countApproved">0</span>)</button>
+                    </div>
+                    <button id="btnNewDraft" class="btn btn-secondary btn-sm" onclick="addNewDraft()" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; display: flex; align-items: center; gap: 0.3rem;">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                        Add Draft
+                    </button>
                 </div>
 
                 <div id="postList" class="post-list">
@@ -1537,6 +1543,40 @@
 
             const opts = { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' };
             elem.innerText = runsOutDate.toLocaleDateString('en-US', opts);
+        }
+
+        async function addNewDraft() {
+            if (currentTab !== 'pending') {
+                switchTab('pending');
+            }
+            
+            const newDraft = {
+                post_text: '',
+                reasoning: 'Custom draft added directly from dashboard.'
+            };
+            
+            // Prepend new draft at the top (index 0) so the user sees it immediately
+            queueData.pending.unshift(newDraft);
+            
+            updateCountsDisplay();
+            renderPosts();
+            
+            // Focus on the newly created textarea
+            setTimeout(() => {
+                const textarea = document.getElementById('text-pending-0');
+                if (textarea) {
+                    textarea.focus();
+                    textarea.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }, 100);
+            
+            showToast("Saving custom draft slot...", "info");
+            try {
+                await storageProvider.saveQueue(queueData, "chore: create empty draft slot [skip ci]");
+                showToast("Custom draft slot created and saved!", "success");
+            } catch (err) {
+                showToast("Failed to save draft slot: " + err.message, "error");
+            }
         }
 
         async function saveDraftText(index, tab) {
