@@ -1134,9 +1134,8 @@
             },
 
             async replenishQueue() {
-                this.checkAuth();
                 if (this.isCloud) {
-                    const url = `https://api.github.com/repos/${this.ghRepo}/actions/workflows/daily-post.yml/dispatches`;
+                    const url = `https://api.github.com/repos/${this.ghRepo}/actions/workflows/replenish-drafts.yml/dispatches`;
                     const res = await fetch(url, {
                         method: 'POST',
                         headers: {
@@ -1145,8 +1144,7 @@
                             'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({
-                            ref: 'main',
-                            inputs: { replenish_only: "true" }
+                            ref: 'main'
                         })
                     });
                     if (!res.ok) {
