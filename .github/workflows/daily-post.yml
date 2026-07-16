@@ -4,9 +4,17 @@ name: "📅 Daily LinkedIn Post"
 on:
   # Auto: runs 3x daily at 9:00 AM, 1:00 PM, and 6:00 PM IST to check/retry posting
   schedule:
+    # --- Morning Peak/Retry Window (7:30 AM - 11:15 AM IST) ---
+    - cron: "0 2 * * *"    # 7:30 AM IST
+    - cron: "45 2 * * *"   # 8:15 AM IST
     - cron: "30 3 * * *"   # 9:00 AM IST
-    - cron: "30 7 * * *"   # 1:00 PM IST
-    - cron: "30 12 * * *"  # 6:00 PM IST
+    - cron: "15 4 * * *"   # 9:45 AM IST
+    - cron: "0 5 * * *"    # 10:30 AM IST
+    - cron: "45 5 * * *"   # 11:15 AM IST
+    
+    # --- Afternoon & Evening Fallbacks ---
+    - cron: "30 8 * * *"   # 2:00 PM IST
+    - cron: "0 13 * * *"   # 6:30 PM IST
 
   # Manual: trigger with optional overrides from GitHub UI
   workflow_dispatch:
