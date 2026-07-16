@@ -912,6 +912,15 @@
 
         // ─── Storage Abstraction (Dual Local / Cloud Mode) ────────────────────
         
+        // Helper to check if local API returned HTML instead of JSON (Vercel static routing fallback)
+        async function safeJson(res) {
+            const contentType = res.headers.get("content-type");
+            if (contentType && contentType.includes("text/html")) {
+                throw new Error("Local API server is not running. If you are hosted on Vercel, please click 'Settings' and enable 'Cloud Mode'.");
+            }
+            return await res.json();
+        }
+
         const storageProvider = {
             isCloud: false,
             ghToken: '',
@@ -1065,7 +1074,7 @@
                         body: formData
                     });
                     if (!res.ok) throw new Error("Upload request failed");
-                    return await res.json();
+                    return await safeJson(res);
                 }
             },
 
@@ -1077,7 +1086,7 @@
                 } else {
                     const res = await fetch('/api/queue');
                     if (!res.ok) throw new Error("Local server request failed");
-                    return await res.json();
+                    return await safeJson(res);
                 }
             },
 
@@ -1098,7 +1107,7 @@
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(data)
                     });
-                    return await res.json();
+                    return await safeJson(res);
                 }
             },
 
@@ -1121,7 +1130,7 @@
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ index, post_text: postText })
                     });
-                    return await res.json();
+                    return await safeJson(res);
                 }
             },
 
@@ -1140,7 +1149,7 @@
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ index })
                     });
-                    return await res.json();
+                    return await safeJson(res);
                 }
             },
 
@@ -1166,7 +1175,7 @@
                     return { status: 'success', message: "Draft replenishment workflow triggered successfully on GitHub!" };
                 } else {
                     const res = await fetch('/api/post/replenish', { method: 'POST' });
-                    return await res.json();
+                    return await safeJson(res);
                 }
             },
 
@@ -1196,7 +1205,7 @@
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ text: rawText })
                     });
-                    return await res.json();
+                    return await safeJson(res);
                 }
             },
 
@@ -1205,7 +1214,7 @@
                     return { status: 'success', message: "Drafts are auto-saved directly to cloud repository." };
                 } else {
                     const res = await fetch('/api/github/sync', { method: 'POST' });
-                    return await res.json();
+                    return await safeJson(res);
                 }
             },
 
@@ -1219,7 +1228,7 @@
                     };
                 } else {
                     const res = await fetch('/api/status');
-                    return await res.json();
+                    return await safeJson(res);
                 }
             },
 
@@ -1287,7 +1296,7 @@
                     return `${actionsStatus}${runningJobLogs}=== REMOTE LOG (dashboard.log from state branch) ===\n${logContent}`;
                 } else {
                     const res = await fetch('/api/logs');
-                    const json = await res.json();
+                    const json = await safeJson(res);
                     return json.logs;
                 }
             }
