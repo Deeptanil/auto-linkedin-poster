@@ -1426,44 +1426,39 @@
         async function approvePost(index) {
             const postText = document.getElementById(`text-pending-${index}`).value.trim();
             
-            // Optimistic UI updates
+            // Optimistic UI — remove from pending, move to approved instantly
             const item = queueData.pending.splice(index, 1)[0];
             item.post_text = postText;
             queueData.approved.push(item);
             
-            // Instantly render UI & update counts
             updateCountsDisplay();
             renderPosts();
-            showToast("Approved draft! Syncing in background...", "success");
+            showToast("Approved! Generating new draft...", "success");
             
-            // Save & trigger replenishment silently in the background
             try {
                 await storageProvider.saveQueue(queueData, "chore: approve draft from dashboard [skip ci]");
-                if (queueData.pending.length < 10) {
-                    storageProvider.replenishQueue().catch(console.error);
-                }
+                // Always replenish after approve — trigger and poll until 10
+                storageProvider.replenishQueue().catch(console.error);
+                startReplenishPoller();
             } catch (err) {
-                showToast("Cloud sync failed: " + err.message, "error");
+                showToast("Sync failed: " + err.message, "error");
             }
         }
 
         async function rejectPost(index) {
-            // Optimistic UI updates
+            // Optimistic UI
             queueData.pending.splice(index, 1);
             
-            // Instantly render UI & update counts
             updateCountsDisplay();
             renderPosts();
-            showToast("Draft declined! Replenishing in background...", "success");
+            showToast("Declined. Generating replacement draft...", "success");
             
-            // Save & trigger replenishment silently in the background
             try {
                 await storageProvider.saveQueue(queueData, "chore: decline draft from dashboard [skip ci]");
-                if (queueData.pending.length < 10) {
-                    storageProvider.replenishQueue().catch(console.error);
-                }
+                storageProvider.replenishQueue().catch(console.error);
+                startReplenishPoller();
             } catch (err) {
-                showToast("Cloud sync failed: " + err.message, "error");
+                showToast("Sync failed: " + err.message, "error");
             }
         }
 
@@ -1486,12 +1481,64 @@
             }
         }
 
+        // ─── Replenish Poller ─────────────────────────────────────────────────
+        // Silently polls the queue in the background after replenishment is
+        // triggered, updating the UI in real-time as new drafts appear.
+
+        let _replenishPollTimer = null;
+
+        function startReplenishPoller() {
+            // Don't stack multiple pollers
+            if (_replenishPollTimer) return;
+
+            // Show subtle indicator on pending tab badge
+            const badge = document.getElementById('countPending');
+            if (badge) badge.style.opacity = '0.5';
+
+            // Poll every 4 seconds
+            _replenishPollTimer = setInterval(async () => {
+                try {
+                    const fresh = await storageProvider.fetchQueue();
+
+                    // Only re-render if the count actually changed (avoids flicker)
+                    if (fresh.pending.length !== queueData.pending.length) {
+                        queueData = fresh;
+                        updateCountsDisplay();
+                        renderPosts();
+                    }
+
+                    // Stop once we've hit 10 pending
+                    if (fresh.pending.length >= 10) {
+                        stopReplenishPoller();
+                        showToast(`Drafts ready! ${fresh.pending.length} pending drafts available.`, "success");
+                    }
+                } catch (err) {
+                    // Silently ignore transient fetch errors during polling
+                    console.warn("[poller] fetch error", err);
+                }
+            }, 4000);
+
+            // Safety stop after 3 minutes so the poller never runs forever
+            setTimeout(stopReplenishPoller, 3 * 60 * 1000);
+        }
+
+        function stopReplenishPoller() {
+            if (_replenishPollTimer) {
+                clearInterval(_replenishPollTimer);
+                _replenishPollTimer = null;
+            }
+            const badge = document.getElementById('countPending');
+            if (badge) badge.style.opacity = '1';
+        }
+
         async function replenishQueue() {
             showLoader("Triggering draft generation...");
             try {
                 const result = await storageProvider.replenishQueue();
-                showToast(result.message || "Workflow triggered successfully!", "success");
-                fetchQueue();
+                showToast("Generating drafts until 10... updates will appear live.", "success");
+                // Start the live poller — it will re-fetch and re-render
+                // every 4s until pending hits 10, just like approve/decline does
+                startReplenishPoller();
             } catch (err) {
                 showToast("Generation failed: " + err.message, "error");
             } finally {
