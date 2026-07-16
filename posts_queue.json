@@ -35,17 +35,13 @@
     {
       "post_text": "Our mobile load speed was terrible until we audited our asset pipeline.\n\nMost of our users visit our store on their phones. A three-second delay in page load means losing a customer before they even see our products.\n\nI ran a Lighthouse audit on our e-commerce site and was shocked by the performance score. Huge unoptimized hero images were blocking the main thread, and our bundle size was bloated with unused JavaScript.\n\nI spent the weekend converting all our product images to WebP format and setting up dynamic lazy loading. I also replaced a couple of heavy npm packages with lighter vanilla JS alternatives.\n\nReducing our main bundle size by 40% made the site feel incredibly snappy on mobile. It was a good reminder that fancy animations do not matter if your site takes forever to load on a basic connection.\n\nWhat is your go-to trick for cutting down initial page load times on mobile?\n\n#webperformance #ux #nextjs",
       "reasoning": "Addresses the real-world performance optimization of web pages. It uses technical depth without relying on corporate clichés."
+    },
+    {
+      "post_text": "We lost three orders because of a tiny coupon status mismatch.\n\nA customer would add a code, but our frontend would show it as invalid. It turned out I forgot to turn on a simple toggle.\n\nBecause we built the website and the other systems in a hurry and it was very easy to oversee something so simple. Now we will always check if that toggle is correctly set. 😂\n\nHave you ever had a critical backend bug that cost you real customer trust?\n\n#backend #javascript",
+      "reasoning": "A highly specific post on Razorpay integrations. Uses the word 'solid' instead of the banned word 'robust' and keeps the tone highly relatable for developers."
     }
   ],
   "pending": [
-    {
-      "post_text": "",
-      "reasoning": "Custom draft added directly from dashboard."
-    },
-    {
-      "post_text": "We lost three orders because of a tiny payment status mismatch.\n\nA customer would pay on the Razorpay modal, but our database still showed the order as pending. It turned out some users were closing their browser window before the redirect completed.\n\nBecause we relied on the frontend redirect to trigger the order confirmation, those payments were hanging in limbo. I had to quickly rewrite our integration to rely strictly on Razorpay webhooks instead of the frontend response.\n\nWebhooks run server-to-server, so they trigger even if the user drops off immediately after paying. Setting up a solid webhook handler with proper idempotency keys was a steep learning curve.\n\nNow, we listen for the payment authorized event and capture the charge programmatically on our backend. It fixed the entire drop-off issue overnight. 💸\n\nHave you ever had a critical backend bug that cost you real customer trust?\n\n#backend #paymentgateways #javascript",
-      "reasoning": "A highly specific post on Razorpay integrations. Uses the word 'solid' instead of the banned word 'robust' and keeps the tone highly relatable for developers."
-    },
     {
       "post_text": "Everyone told me to just use Shopify for our e-commerce store.\n\nWhen we started Prettiva & Co., the easiest choice would have been a standard Shopify template. But as a developer, I hated the idea of being locked into a closed ecosystem where every small feature requires a paid app.\n\nWe chose MedusaJS instead because it gives us absolute control over our code. I can write custom Node.js services, define my own database relations, and deploy on our own terms.\n\nTbh, it was a lot more work to set up the admin dashboard and configure the hosting. But the freedom to build custom features without hitting platform limitations is invaluable.\n\nIf you have the engineering skills, building on open-source headless commerce is a massive advantage in the long run.\n\nDo you prefer the speed of SaaS e-commerce or the flexibility of self-hosted headless tech?\n\n#medusajs #ecommerce #opensource",
       "reasoning": "Thought leadership post reflecting Deeptanil's architectural decision to go with MedusaJS over Shopify. It stays technical, authentic, and free of buzzwords."
