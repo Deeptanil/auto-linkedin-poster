@@ -18,7 +18,6 @@ on:
 # ─── Permissions ──────────────────────────────────────────────────────────────
 permissions:
   contents: read
-  secrets: write   # to update LINKEDIN_ACCESS_TOKEN secret
 
 # ─── Jobs ─────────────────────────────────────────────────────────────────────
 jobs:

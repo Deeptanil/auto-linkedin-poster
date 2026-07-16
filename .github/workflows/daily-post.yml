@@ -43,7 +43,6 @@ on:
 # ─── Permissions ──────────────────────────────────────────────────────────────
 permissions:
   contents: write    # needed to commit post_history.json back to repo
-  secrets: write     # needed for auto token refresh
 
 # ─── Jobs ─────────────────────────────────────────────────────────────────────
 jobs:
