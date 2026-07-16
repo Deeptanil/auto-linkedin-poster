@@ -208,7 +208,7 @@ def main():
         USERINFO_URL,
         headers={
             "Authorization":             f"Bearer {access_token}",
-            "LinkedIn-Version":          "202501",
+            "LinkedIn-Version":          "202606",
             "X-Restli-Protocol-Version": "2.0.0",
         },
         timeout=15,
