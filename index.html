@@ -732,23 +732,7 @@
 </head>
 <body>
 
-    <!-- Passcode Lock Screen Overlay -->
-    <div id="lockScreen" class="modal" style="display: none; align-items: center; justify-content: center; background: rgba(5, 8, 15, 0.98); backdrop-filter: blur(15px); position: fixed; z-index: 99999; top: 0; left: 0; width: 100vw; height: 100vh;">
-        <div class="modal-content" style="max-width: 380px; padding: 2.5rem; text-align: center; border: 1px solid var(--color-card-border); background: var(--color-bg-card); box-shadow: var(--shadow-glow);">
-            <div style="font-size: 3rem; margin-bottom: 1.5rem; color: var(--color-primary);">🔒</div>
-            <h3 style="margin-bottom: 0.5rem; color: var(--color-text);">Dashboard Locked</h3>
-            <p style="color: var(--color-text-muted); font-size: 0.85rem; margin-bottom: 1.5rem;">Enter access code to unlock the control panel.</p>
-            
-            <div class="form-group" style="text-align: left;">
-                <input type="password" id="lockInput" class="form-input" placeholder="Passcode" style="text-align: center; font-size: 1.2rem; letter-spacing: 0.3rem;" onkeydown="if(event.key==='Enter') unlockDashboard()">
-            </div>
-            
-            <button class="btn btn-primary" style="width: 100%; margin-top: 0.5rem; padding: 0.8rem;" onclick="unlockDashboard()">
-                Unlock Dashboard
-            </button>
-            <div id="lockError" style="color: #ff4757; font-size: 0.85rem; margin-top: 1rem; display: none;">Invalid access code. Please try again.</div>
-        </div>
-    </div>
+
 
     <!-- Loading overlay -->
     <div id="loader" class="loader-overlay">
@@ -789,13 +773,7 @@
                 <input type="text" id="cfgRepo" class="form-input" placeholder="owner/repository (e.g. Deeptanil/linkedin-poster)">
             </div>
 
-            <div class="form-group">
-                <label for="cfgPasscode">Dashboard Access Passcode (Optional Lock)</label>
-                <input type="password" id="cfgPasscode" class="form-input" placeholder="Enter a passcode to lock this dashboard">
-                <p style="font-size: 0.75rem; color: var(--color-text-muted); margin: 0;">
-                    If set, you must enter this passcode to unlock the controls whenever you load this website.
-                </p>
-            </div>
+
 
             <div style="display: flex; gap: 1rem; margin-top: 1rem;">
                 <button class="btn btn-secondary" style="flex: 1;" onclick="toggleSettingsModal()">Cancel</button>
@@ -931,12 +909,6 @@
             ghRepo: '',
             ghSha: null, // SHA for posts_queue.json content commits
 
-            checkAuth() {
-                if (localStorage.getItem('dashboard_passcode') && !sessionUnlocked) {
-                    throw new Error("Access Denied: Dashboard is locked.");
-                }
-            },
-
             init() {
                 this.ghToken = localStorage.getItem('gh_token') || '';
                 this.ghRepo = localStorage.getItem('gh_repo') || '';
@@ -967,17 +939,10 @@
                 }
             },
 
-            saveConfig(cloudMode, token, repo, passcode) {
+            saveConfig(cloudMode, token, repo) {
                 localStorage.setItem('gh_cloud_mode', cloudMode ? 'true' : 'false');
                 localStorage.setItem('gh_token', token);
                 localStorage.setItem('gh_repo', repo);
-                if (passcode !== undefined) {
-                    if (passcode) {
-                        localStorage.setItem('dashboard_passcode', passcode);
-                    } else {
-                        localStorage.removeItem('dashboard_passcode');
-                    }
-                }
                 this.init();
             },
 
@@ -1336,7 +1301,6 @@
                 document.getElementById('cfgCloudMode').checked = localStorage.getItem('gh_cloud_mode') === 'true';
                 document.getElementById('cfgToken').value = localStorage.getItem('gh_token') || '';
                 document.getElementById('cfgRepo').value = localStorage.getItem('gh_repo') || '';
-                document.getElementById('cfgPasscode').value = localStorage.getItem('dashboard_passcode') || '';
             }
         }
 
@@ -1344,14 +1308,13 @@
             const cloudMode = document.getElementById('cfgCloudMode').checked;
             const token = document.getElementById('cfgToken').value.trim();
             const repo = document.getElementById('cfgRepo').value.trim();
-            const passcode = document.getElementById('cfgPasscode').value.trim();
             
             if (cloudMode && (!token || !repo)) {
                 showToast("GitHub Token and Repo Path are required for Cloud Mode.", "error");
                 return;
             }
             
-            storageProvider.saveConfig(cloudMode, token, repo, passcode);
+            storageProvider.saveConfig(cloudMode, token, repo);
             toggleSettingsModal();
             showToast("Settings updated successfully! Reloading data...", "success");
             
@@ -1714,53 +1677,7 @@
             }
         }
 
-        // ─── Passcode Lock Screen ────────────────────────────────────────────────
-
-        let sessionUnlocked = false;
-
-        function checkLockScreen() {
-            const code = localStorage.getItem('dashboard_passcode') || '';
-            const overlay = document.getElementById('lockScreen');
-            if (!overlay) return;
-            if (code) {
-                sessionUnlocked = false;
-                overlay.style.display = 'flex';
-                setTimeout(() => document.getElementById('lockInput').focus(), 100);
-            } else {
-                sessionUnlocked = true;
-                overlay.style.display = 'none';
-                // Trigger initial loads if no passcode is set
-                fetchQueue();
-                fetchStatus();
-                fetchLogs();
-            }
-        }
-
-        function unlockDashboard() {
-            const code = localStorage.getItem('dashboard_passcode') || '';
-            const val = document.getElementById('lockInput').value;
-            const err = document.getElementById('lockError');
-            if (val === code) {
-                sessionUnlocked = true;
-                document.getElementById('lockScreen').style.display = 'none';
-                err.style.display = 'none';
-                document.getElementById('lockInput').value = '';
-                // Trigger data fetch now that we are unlocked
-                fetchQueue();
-                fetchStatus();
-                fetchLogs();
-            } else {
-                err.style.display = 'block';
-                document.getElementById('lockInput').value = '';
-                setTimeout(() => { err.style.display = 'none'; }, 3000);
-            }
-        }
-
         async function refreshDashboardData() {
-            if (localStorage.getItem('dashboard_passcode') && !sessionUnlocked) {
-                showToast("Please unlock the dashboard first.", "warning");
-                return;
-            }
             showLoader("Refreshing dashboard info...");
             try {
                 // Execute fetches concurrently
@@ -1947,14 +1864,12 @@
         }
 
         // Init & Periodic Log Polling
-        checkLockScreen();
+        fetchQueue();
+        fetchStatus();
+        fetchLogs();
         
-        // Poll console logs / runs every 10 seconds if unlocked
-        setInterval(() => {
-            if (sessionUnlocked) {
-                fetchLogs();
-            }
-        }, 10000);
+        // Poll console logs / runs every 10 seconds
+        setInterval(fetchLogs, 10000);
     </script>
 </body>
 </html>
