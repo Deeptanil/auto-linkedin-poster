@@ -1,4 +1,4 @@
---- Posting Pipeline Run Started: 2026-07-16 17:40:54.580586 ---
+--- Posting Pipeline Run Started: 2026-07-16 17:48:13.186814 ---
 ============================================================
   LinkedIn AI Auto-Poster (Batch Queue & Memory Engine)
 ============================================================
@@ -9,8 +9,8 @@
 
 [1/5] Token check skipped.
 [2/5] Loading memory...
-  Voice profile:  [X] (not set)
-  Achievements:   [X] (not set)
+  Voice profile:  [OK]
+  Achievements:   [OK]
   Recent context: [X] (none found)
   Approved posts: 8
   Pending drafts: 6
