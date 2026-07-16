@@ -1584,18 +1584,54 @@
             showToast("Draft card added locally! Type your content and click 'Save Edit' or 'Approve' to sync.", "success");
         }
 
+        let _saveQueueTimeout = null;
+
+        function queueSaveDebounced(commitMsg = "chore: sync queue from dashboard [skip ci]") {
+            if (_saveQueueTimeout) {
+                clearTimeout(_saveQueueTimeout);
+            }
+            
+            // Set the sync button state to amber/syncing
+            const syncBtn = document.getElementById('btnSync');
+            if (syncBtn && storageProvider.isCloud) {
+                syncBtn.innerHTML = `
+                    <span class="status-indicator-dot" style="background-color: #ffa502; box-shadow: 0 0 8px #ffa502; animation: pulse-dot 1s infinite alternate;"></span>
+                    Syncing changes...
+                `;
+            }
+            
+            _saveQueueTimeout = setTimeout(async () => {
+                _saveQueueTimeout = null;
+                try {
+                    await storageProvider.saveQueue(queueData, commitMsg);
+                    showToast("Queue successfully synchronized!", "success");
+                    
+                    // Reset sync button visual state
+                    storageProvider.init();
+                    
+                    // Check if replenishment is needed
+                    if (queueData.pending.length < 10) {
+                        storageProvider.replenishQueue().catch(console.error);
+                        startReplenishPoller();
+                    }
+                } catch (err) {
+                    showToast("Cloud sync failed: " + err.message, "error");
+                    // Reset sync button visual state
+                    storageProvider.init();
+                }
+            }, 1500); // 1.5s debounce
+        }
+
         async function saveDraftText(index, tab) {
             const textarea = document.getElementById(`text-${tab}-${index}`);
             const newText = textarea.value.trim();
             queueData[tab][index].post_text = newText;
             
-            showToast("Saving changes in background...", "info");
-            try {
-                await storageProvider.saveQueue(queueData, `chore: update ${tab} draft text [skip ci]`);
-                showToast("Changes saved successfully!", "success");
-            } catch (err) {
-                showToast("Save failed: " + err.message, "error");
-            }
+            updateCountsDisplay();
+            renderPosts();
+            showToast("Draft updated! Synchronizing in background...", "info");
+            
+            queueSaveDebounced(`chore: update ${tab} draft text [skip ci]`);
         }
 
         async function approvePost(index) {
@@ -1608,16 +1644,9 @@
             
             updateCountsDisplay();
             renderPosts();
-            showToast("Approved! Generating new draft...", "success");
+            showToast("Post approved! Synchronizing in background...", "success");
             
-            try {
-                await storageProvider.saveQueue(queueData, "chore: approve draft from dashboard [skip ci]");
-                // Always replenish after approve — trigger and poll until 10
-                storageProvider.replenishQueue().catch(console.error);
-                startReplenishPoller();
-            } catch (err) {
-                showToast("Sync failed: " + err.message, "error");
-            }
+            queueSaveDebounced("chore: approve draft from dashboard [skip ci]");
         }
 
         async function rejectPost(index) {
@@ -1626,15 +1655,9 @@
             
             updateCountsDisplay();
             renderPosts();
-            showToast("Declined. Generating replacement draft...", "success");
+            showToast("Draft declined! Synchronizing in background...", "success");
             
-            try {
-                await storageProvider.saveQueue(queueData, "chore: decline draft from dashboard [skip ci]");
-                storageProvider.replenishQueue().catch(console.error);
-                startReplenishPoller();
-            } catch (err) {
-                showToast("Sync failed: " + err.message, "error");
-            }
+            queueSaveDebounced("chore: decline draft from dashboard [skip ci]");
         }
 
         async function removeApproved(index) {
@@ -1646,14 +1669,9 @@
             // Instantly render UI & update counts
             updateCountsDisplay();
             renderPosts();
-            showToast("Removed from approved queue! Syncing in background...", "success");
+            showToast("Removed from approved queue! Synchronizing in background...", "success");
             
-            // Save silently in the background
-            try {
-                await storageProvider.saveQueue(queueData, "chore: remove item from approved queue [skip ci]");
-            } catch (err) {
-                showToast("Cloud sync failed: " + err.message, "error");
-            }
+            queueSaveDebounced("chore: remove item from approved queue [skip ci]");
         }
 
         // ─── Replenish Poller ─────────────────────────────────────────────────
@@ -1940,6 +1958,24 @@
         
         // Poll console logs / runs every 10 seconds
         setInterval(fetchLogs, 10000);
+        
+        // Auto-refresh the queue every 45 seconds to keep the dashboard up-to-date
+        setInterval(async () => {
+            // Only refresh if the user is not actively editing/saving, and the tab is visible
+            if (!document.hidden && !storageProvider.isSaving && !_saveQueueTimeout) {
+                try {
+                    const fresh = await storageProvider.fetchQueue();
+                    // Only re-render if the queue data actually changed on the server (prevents cursor jump)
+                    if (JSON.stringify(fresh) !== JSON.stringify(queueData)) {
+                        queueData = fresh;
+                        updateCountsDisplay();
+                        renderPosts();
+                    }
+                } catch (err) {
+                    console.warn("Background auto-refresh failed", err);
+                }
+            }
+        }, 45000);
     </script>
 </body>
 </html>
