@@ -1581,13 +1581,7 @@
                 }
             }, 100);
             
-            showToast("Saving custom draft slot...", "info");
-            try {
-                await storageProvider.saveQueue(queueData, "chore: create empty draft slot [skip ci]");
-                showToast("Custom draft slot created and saved!", "success");
-            } catch (err) {
-                showToast("Failed to save draft slot: " + err.message, "error");
-            }
+            showToast("Draft card added locally! Type your content and click 'Save Edit' or 'Approve' to sync.", "success");
         }
 
         async function saveDraftText(index, tab) {
