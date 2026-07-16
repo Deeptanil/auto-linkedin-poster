@@ -378,8 +378,8 @@ class AIGenerator:
     def _call_gemini_json(self, prompt: str) -> str:
         """Call Gemini requesting structured JSON output with automatic model fallback."""
         models_to_try = [
-            config.GEMINI_MODEL,
             "gemini-3.1-flash-lite-preview",
+            config.GEMINI_MODEL,
             "gemini-2.5-flash",
             "gemini-2.0-flash",
             "gemini-1.5-flash"
@@ -410,8 +410,8 @@ class AIGenerator:
     def _call_gemini_plain(self, prompt: str) -> str:
         """Call Gemini requesting plain text output with automatic model fallback."""
         models_to_try = [
-            config.GEMINI_MODEL,
             "gemini-3.1-flash-lite-preview",
+            config.GEMINI_MODEL,
             "gemini-2.5-flash",
             "gemini-2.0-flash",
             "gemini-1.5-flash"
