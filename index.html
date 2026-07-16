@@ -1225,6 +1225,57 @@
 
             async fetchLogs() {
                 if (this.isCloud) {
+                    let actionsStatus = "=== CLOUD MODE: GitHub Actions Run Status ===\n";
+                    let runningJobLogs = "";
+                    
+                    try {
+                        const runsUrl = `https://api.github.com/repos/${this.ghRepo}/actions/runs?per_page=1`;
+                        const runsRes = await fetch(runsUrl, {
+                            headers: {
+                                'Authorization': `Bearer ${this.ghToken}`,
+                                'Accept': 'application/vnd.github+json'
+                            }
+                        });
+                        
+                        if (runsRes.ok) {
+                            const runsData = await runsRes.json();
+                            const latestRun = runsData.workflow_runs[0];
+                            
+                            if (latestRun) {
+                                const runTime = new Date(latestRun.created_at).toLocaleString();
+                                actionsStatus += `Latest Run: #${latestRun.run_number} (${latestRun.name})\n`;
+                                actionsStatus += `Triggered:  ${runTime}\n`;
+                                actionsStatus += `Status:     ${latestRun.status.toUpperCase()} (${(latestRun.conclusion || 'IN PROGRESS').toUpperCase()})\n`;
+                                actionsStatus += `Link:       ${latestRun.html_url}\n\n`;
+                                
+                                // Fetch steps of the latest run
+                                const jobsUrl = latestRun.jobs_url;
+                                const jobsRes = await fetch(jobsUrl, {
+                                    headers: {
+                                        'Authorization': `Bearer ${this.ghToken}`,
+                                        'Accept': 'application/vnd.github+json'
+                                    }
+                                });
+                                
+                                if (jobsRes.ok) {
+                                    const jobsData = await jobsRes.json();
+                                    const mainJob = jobsData.jobs[0];
+                                    if (mainJob && mainJob.steps) {
+                                        runningJobLogs += `--- Active Execution Steps (${mainJob.name}) ---\n`;
+                                        mainJob.steps.forEach(step => {
+                                            const stepStatus = step.status.toUpperCase();
+                                            const stepConclusion = step.conclusion ? `(${step.conclusion.toUpperCase()})` : '';
+                                            runningJobLogs += `[${stepStatus}] ${step.name} ${stepConclusion}\n`;
+                                        });
+                                        runningJobLogs += `\n`;
+                                    }
+                                }
+                            }
+                        }
+                    } catch (err) {
+                        actionsStatus += `Failed to fetch GitHub Actions runs: ${err.message}\n\n`;
+                    }
+                    
                     let logContent = "";
                     try {
                         const fileInfo = await this.ghFetch('memory/dashboard.log', false);
@@ -1233,29 +1284,7 @@
                         logContent = "No remote log file found. It will sync and display here after your next run finishes.";
                     }
                     
-                    let actionsStatus = "=== CLOUD MODE: GitHub Actions Workflow Runs ===\n\n";
-                    try {
-                        const url = `https://api.github.com/repos/${this.ghRepo}/actions/runs?per_page=3`;
-                        const res = await fetch(url, {
-                            headers: {
-                                'Authorization': `Bearer ${this.ghToken}`,
-                                'Accept': 'application/vnd.github+json'
-                            }
-                        });
-                        if (res.ok) {
-                            const runs = await res.json();
-                            runs.workflow_runs.forEach(run => {
-                                actionsStatus += `[Run #${run.run_number}] ${run.name}\n`;
-                                actionsStatus += `  Status:      ${run.status.toUpperCase()} (${(run.conclusion || 'IN PROGRESS').toUpperCase()})\n`;
-                                actionsStatus += `  Triggered:   ${new Date(run.created_at).toLocaleString()}\n`;
-                                actionsStatus += `  Details Link: ${run.html_url}\n\n`;
-                            });
-                        }
-                    } catch (err) {
-                        actionsStatus += "Failed to fetch GitHub Actions runs list.\n";
-                    }
-                    
-                    return `${actionsStatus}=== REMOTE LOG (dashboard.log) ===\n${logContent}`;
+                    return `${actionsStatus}${runningJobLogs}=== REMOTE LOG (dashboard.log from state branch) ===\n${logContent}`;
                 } else {
                     const res = await fetch('/api/logs');
                     const json = await res.json();
@@ -1464,50 +1493,35 @@
             if (!elem) return;
 
             if (approvedCount === 0) {
-                elem.innerHTML = `<span style="color: #ff4757; font-weight: bold;">Empty — approve posts now!</span>`;
+                elem.innerHTML = `<span style="color: #ff4757; font-weight: bold;">Empty</span>`;
                 return;
             }
 
-            // Determine if today's post has already been sent.
-            // The scheduler fires at 9:30 AM IST = 04:00 UTC.
             const now = new Date();
             const todayIST = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
             const todayStr = todayIST.toDateString();
 
             let postedTodayAlready;
             if (lastPostedAt) {
-                // We have an exact timestamp — compare dates in IST
                 const postedIST = new Date(
                     new Date(lastPostedAt).toLocaleString('en-US', { timeZone: 'Asia/Kolkata' })
                 );
                 postedTodayAlready = postedIST.toDateString() === todayStr;
             } else {
-                // No timestamp yet (field added recently) — assume NOT posted today
-                // so the approved count is treated as starting from today.
-                postedTodayAlready = false;
+                // Fallback: If current IST time is past 9:30 AM, assume today's post has already run
+                postedTodayAlready = todayIST.getHours() > 9 || (todayIST.getHours() === 9 && todayIST.getMinutes() >= 30);
             }
 
-            // If today's post hasn't been sent yet, one approved post covers today.
-            // If already sent, the next post is tomorrow — so N approved = N more days from today.
-            const daysRemaining = postedTodayAlready ? approvedCount : approvedCount;
             const startFrom = new Date(todayIST);
             if (postedTodayAlready) {
-                startFrom.setDate(startFrom.getDate() + 1); // next post is tomorrow
+                startFrom.setDate(startFrom.getDate() + 1); // Next post covers tomorrow
             }
+
             const runsOutDate = new Date(startFrom);
-            runsOutDate.setDate(startFrom.getDate() + daysRemaining - 1);
+            runsOutDate.setDate(startFrom.getDate() + approvedCount - 1);
 
             const opts = { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' };
-            const dateStr = runsOutDate.toLocaleDateString('en-US', opts);
-            const postedLabel = postedTodayAlready
-                ? '<span style="color: var(--color-text-muted); font-size: 0.8em;"> (posted today)</span>'
-                : '<span style="color: #2ed573; font-size: 0.8em;"> (posts today)</span>';
-
-            if (daysRemaining === 1 && postedTodayAlready) {
-                elem.innerHTML = `<span style="color: #ffa502;">Runs out tomorrow: ${dateStr}</span>${postedLabel}`;
-            } else {
-                elem.innerHTML = `<span>${daysRemaining} day${daysRemaining !== 1 ? 's' : ''} (until ${dateStr})</span>${postedLabel}`;
-            }
+            elem.innerText = runsOutDate.toLocaleDateString('en-US', opts);
         }
 
         async function saveDraftText(index, tab) {
@@ -1599,6 +1613,9 @@
             // Poll every 4 seconds
             _replenishPollTimer = setInterval(async () => {
                 try {
+                    // Update logs to show real-time GitHub Actions step progression
+                    fetchLogs();
+                    
                     const fresh = await storageProvider.fetchQueue();
 
                     // Only re-render if the count actually changed (avoids flicker)
