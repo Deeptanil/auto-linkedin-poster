@@ -66,6 +66,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 1.5rem;
             padding-bottom: 1.5rem;
             border-bottom: 1px solid var(--color-card-border);
             margin-bottom: 1rem;
@@ -73,7 +75,7 @@
 
         h1 {
             font-family: var(--font-display);
-            font-size: 2.2rem;
+            font-size: 2rem;
             font-weight: 800;
             color: var(--color-primary);
             letter-spacing: -0.5px;
@@ -81,7 +83,9 @@
 
         .header-actions {
             display: flex;
-            gap: 1rem;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+            justify-content: flex-end;
         }
 
         /* ─── Layout Grid ───────────────────────────────────────────────────── */
@@ -127,15 +131,16 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            padding: 0.75rem 1.5rem;
+            padding: 0.6rem 1rem;
             border-radius: 6px;
             font-family: var(--font-sans);
             font-weight: 600;
-            font-size: 0.95rem;
+            font-size: 0.88rem;
             cursor: pointer;
             transition: var(--transition-smooth);
             border: 1px solid transparent;
             gap: 0.5rem;
+            white-space: nowrap;
         }
 
         .btn-primary {
@@ -156,6 +161,32 @@
         .btn-secondary:hover {
             background-color: rgba(255, 255, 255, 0.05);
             border-color: var(--color-primary);
+        }
+
+        /* Cloud Mode pulsing status badge look */
+        .btn-cloud-status {
+            background: rgba(102, 252, 241, 0.06) !important;
+            border: 1px solid rgba(102, 252, 241, 0.25) !important;
+            color: var(--color-primary) !important;
+            cursor: default !important;
+            opacity: 1 !important;
+            font-size: 0.85rem !important;
+            padding: 0.6rem 1rem !important;
+        }
+
+        .status-indicator-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--color-primary);
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 8px var(--color-primary);
+            animation: pulse-dot 1.5s infinite alternate;
+        }
+
+        @keyframes pulse-dot {
+            0% { transform: scale(0.9); opacity: 0.6; }
+            100% { transform: scale(1.15); opacity: 1; }
         }
 
         .btn-danger {
@@ -920,15 +951,17 @@
                 
                 if (this.isCloud) {
                     statusModelLabel.innerText = "GitHub API (Cloud Mode)";
+                    syncBtn.className = "btn btn-cloud-status";
                     syncBtn.innerHTML = `
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                        <span class="status-indicator-dot"></span>
                         Auto-Synced
                     `;
                     syncBtn.disabled = true;
-                    syncBtn.style.opacity = '0.6';
+                    syncBtn.style.opacity = '1';
                     syncBtn.style.cursor = 'default';
                 } else {
                     statusModelLabel.innerText = "Flask Local Server";
+                    syncBtn.className = "btn btn-primary";
                     syncBtn.innerHTML = `
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v16M12 2l-4 4M12 2l4 4M22 18H2v2h20v-2z"/></svg>
                         Sync to GitHub
