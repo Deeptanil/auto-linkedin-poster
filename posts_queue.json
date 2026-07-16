@@ -39,6 +39,10 @@
   ],
   "pending": [
     {
+      "post_text": "",
+      "reasoning": "Custom draft added directly from dashboard."
+    },
+    {
       "post_text": "We lost three orders because of a tiny payment status mismatch.\n\nA customer would pay on the Razorpay modal, but our database still showed the order as pending. It turned out some users were closing their browser window before the redirect completed.\n\nBecause we relied on the frontend redirect to trigger the order confirmation, those payments were hanging in limbo. I had to quickly rewrite our integration to rely strictly on Razorpay webhooks instead of the frontend response.\n\nWebhooks run server-to-server, so they trigger even if the user drops off immediately after paying. Setting up a solid webhook handler with proper idempotency keys was a steep learning curve.\n\nNow, we listen for the payment authorized event and capture the charge programmatically on our backend. It fixed the entire drop-off issue overnight. 💸\n\nHave you ever had a critical backend bug that cost you real customer trust?\n\n#backend #paymentgateways #javascript",
       "reasoning": "A highly specific post on Razorpay integrations. Uses the word 'solid' instead of the banned word 'robust' and keeps the tone highly relatable for developers."
     },
