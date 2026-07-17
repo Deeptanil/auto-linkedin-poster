@@ -1,41 +1,5 @@
---- Posting Pipeline Run Started: 2026-07-17 05:12:03.651446 ---
+--- Posting Pipeline Run Started: 2026-07-17 05:29:38.556754 ---
 ============================================================
   LinkedIn AI Auto-Poster (Batch Queue & Memory Engine)
 ============================================================
-  Tone:     Auto
-  Dry run:  False
-  Force:    False
-  Replenish Only: False
-
-[1/5] Token check skipped.
-[2/5] Loading memory...
-  Voice profile:  [OK]
-  Achievements:   [OK]
-  Recent context: [X] (none found)
-  Approved posts: 19
-  Pending drafts: 10
-
-
-────────────────────────────────────────────────────────────
-CURRENT APPROVED POST TO PUBLISH:
-────────────────────────────────────────────────────────────
-I spent two weeks chasing a single ghost checkout bug on STRAYED.
-
-We were setting up our custom payment flow and the checkout was lagging. Users would hit pay, get their money deducted, but the order confirmation screen would just hang. Tbh, it was incredibly frustrating because on paper, everything looked perfectly clean.
-
-The issue turned out to be how we handled Razorpay webhooks. The webhook was triggering a confirmation email before the local database write fully completed. This caused a weird race condition that kept mobile users staring at a spinning loader.
-
-To fix it, we refactored our state machine to prioritize optimistic UI updates. Now, the client assumes success immediately after the gateway callback, while a silent database query handles any delays in the background. Latency dropped to almost zero.
-
-It made me realize how much of good UX is just hiding backend latency from the user.
-
-How do you handle webhook race conditions without breaking your client-side state?
-
-#webdev #javascript #razerpay
-────────────────────────────────────────────────────────────
-
-[4/5] Posting to LinkedIn...
-  [OK] Post published! URN: urn:li:share:7483750346259972097
-[5/5] Updating queues and logging history...
-
-🎉 All done! Post is live on LinkedIn. Cache queue updated.
+[!] A post has already been published today (IST). Nothing to do.
