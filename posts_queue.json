@@ -1,10 +1,6 @@
 {
   "approved": [
     {
-      "post_text": "I spent two weeks chasing a single ghost checkout bug on STRAYED.\n\nWe were setting up our custom payment flow and the checkout was lagging. Users would hit pay, get their money deducted, but the order confirmation screen would just hang. Tbh, it was incredibly frustrating because on paper, everything looked perfectly clean.\n\nThe issue turned out to be how we handled Razorpay webhooks. The webhook was triggering a confirmation email before the local database write fully completed. This caused a weird race condition that kept mobile users staring at a spinning loader.\n\nTo fix it, we refactored our state machine to prioritize optimistic UI updates. Now, the client assumes success immediately after the gateway callback, while a silent database query handles any delays in the background. Latency dropped to almost zero.\n\nIt made me realize how much of good UX is just hiding backend latency from the user.\n\nHow do you handle webhook race conditions without breaking your client-side state?\n\n#webdev #javascript #razerpay",
-      "reasoning": "This post highlights a technical, real-world bug-fixing experience involving Razorpay webhooks on STRAYED. It matches Deeptanil's technical and pragmatic builder persona."
-    },
-    {
       "post_text": "Manual data entry in Odoo is the fastest way to lose your mind.\n\nWhen we launched Prettiva on December 15, we had thousands of fashion variants to upload. Doing this manually inside Odoo takes days of mind-numbing clicking, especially when you have to map every single image to its specific size and color variant.\n\nI got so tired of it after the first ten products that I shut the dashboard down. Instead, I wrote a quick Python Excel parser script.\n\nThe script automatically maps our local image hosting paths to the correct Odoo variant columns. It takes a raw spreadsheet and transforms it into an Odoo-friendly format in seconds.\n\nWhat used to take our team days now gets done in literally under three minutes. Sometimes, taking twenty hours to write a script to avoid ten hours of manual work is actually the smartest decision you can make.\n\nWhat is the most boring manual task you have automated with a quick script recently?\n\n#python #automation #ecommerce",
       "reasoning": "This post centers on the Excel parser script for Prettiva variant uploads, emphasizing Deeptanil's programmer-first approach to solving operational bottlenecks."
     },
@@ -118,5 +114,6 @@
       "post_text": "My local database was bloated with test data that made development impossible. \n\nI had been using the same local environment for months, populating it with random strings and fake customer records just to test features. Eventually, the database grew to the point where simple migrations were taking minutes to complete. It became a chore just to reset my environment. \n\nI wrote a simple cleanup script that nukes the local tables and seeds them with a minimal set of realistic data whenever I need to start a fresh sprint. It is a small change, but it makes my development workflow feel clean and fast again. You cannot expect to build a clean product if your own development environment is a mess. \n\nHow do you manage your test data to keep your local environment performant?\n\n#database #productivity #webdev",
       "reasoning": "Highlights the importance of developer experience and maintaining clean code environments, a key trait of a solo/student founder."
     }
-  ]
+  ],
+  "last_posted_at": "2026-07-17T05:12:04.151389+00:00"
 }
