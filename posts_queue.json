@@ -1,10 +1,6 @@
 {
   "approved": [
     {
-      "post_text": "Manual data entry in Odoo is the fastest way to lose your mind.\n\nWhen we launched Prettiva on December 15, we had thousands of fashion variants to upload. Doing this manually inside Odoo takes days of mind-numbing clicking, especially when you have to map every single image to its specific size and color variant.\n\nI got so tired of it after the first ten products that I shut the dashboard down. Instead, I wrote a quick Python Excel parser script.\n\nThe script automatically maps our local image hosting paths to the correct Odoo variant columns. It takes a raw spreadsheet and transforms it into an Odoo-friendly format in seconds.\n\nWhat used to take our team days now gets done in literally under three minutes. Sometimes, taking twenty hours to write a script to avoid ten hours of manual work is actually the smartest decision you can make.\n\nWhat is the most boring manual task you have automated with a quick script recently?\n\n#python #automation #ecommerce",
-      "reasoning": "This post centers on the Excel parser script for Prettiva variant uploads, emphasizing Deeptanil's programmer-first approach to solving operational bottlenecks."
-    },
-    {
       "post_text": "Standard e-commerce platforms make custom loyalty programs a subscription nightmare.\n\nSince we built STRAYED on MedusaJS, we decided to program our loyalty system from scratch.\n\nI wrote custom logic in our PostgreSQL database to track customer actions, automatically calculating reward points and triggering mystery gift discounts at checkout based on user history. Everything runs natively within our own backend instead of relying on third-party APIs.\n\nIt took a bit of extra development time, but our page load speed is incredibly fast, and we have complete control over how we surprise our users.\n\nIf you are building e-commerce, at what point do you decide to build custom features instead of installing pre-made plugins?\n\n#medusajs #backend #ecommerce",
       "reasoning": "Focuses on the custom loyalty mechanics built from scratch on MedusaJS, contrasting custom engineering with reliance on heavy, paid Shopify apps."
     },
@@ -115,5 +111,5 @@
       "reasoning": "Highlights the importance of developer experience and maintaining clean code environments, a key trait of a solo/student founder."
     }
   ],
-  "last_posted_at": "2026-07-17T05:12:04.151389+00:00"
+  "last_posted_at": "2026-07-18T04:47:11.789851+00:00"
 }

@@ -7,5 +7,14 @@
     "context_date": null,
     "dry_run": false,
     "preview": "I spent two weeks chasing a single ghost checkout bug on STRAYED.\n\nWe were setting up our custom payment flow and the checkout was lagging. Users would hit pay, get their money deducted, but the order…"
+  },
+  {
+    "id": 2,
+    "posted_at": "2026-07-18T04:47:11.790566+00:00",
+    "post_urn": "urn:li:share:7484106474902822912",
+    "tone": "Auto",
+    "context_date": null,
+    "dry_run": false,
+    "preview": "Manual data entry in Odoo is the fastest way to lose your mind.\n\nWhen we launched Prettiva on December 15, we had thousands of fashion variants to upload. Doing this manually inside Odoo takes days of…"
   }
 ]
