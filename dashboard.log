@@ -1,41 +1,5 @@
---- Posting Pipeline Run Started: 2026-07-18 04:47:11.370077 ---
+--- Posting Pipeline Run Started: 2026-07-18 05:12:23.305510 ---
 ============================================================
   LinkedIn AI Auto-Poster (Batch Queue & Memory Engine)
 ============================================================
-  Tone:     Auto
-  Dry run:  False
-  Force:    False
-  Replenish Only: False
-
-[1/5] Token check skipped.
-[2/5] Loading memory...
-  Voice profile:  [OK]
-  Achievements:   [OK]
-  Recent context: [X] (none found)
-  Approved posts: 18
-  Pending drafts: 10
-
-
-────────────────────────────────────────────────────────────
-CURRENT APPROVED POST TO PUBLISH:
-────────────────────────────────────────────────────────────
-Manual data entry in Odoo is the fastest way to lose your mind.
-
-When we launched Prettiva on December 15, we had thousands of fashion variants to upload. Doing this manually inside Odoo takes days of mind-numbing clicking, especially when you have to map every single image to its specific size and color variant.
-
-I got so tired of it after the first ten products that I shut the dashboard down. Instead, I wrote a quick Python Excel parser script.
-
-The script automatically maps our local image hosting paths to the correct Odoo variant columns. It takes a raw spreadsheet and transforms it into an Odoo-friendly format in seconds.
-
-What used to take our team days now gets done in literally under three minutes. Sometimes, taking twenty hours to write a script to avoid ten hours of manual work is actually the smartest decision you can make.
-
-What is the most boring manual task you have automated with a quick script recently?
-
-#python #automation #ecommerce
-────────────────────────────────────────────────────────────
-
-[4/5] Posting to LinkedIn...
-  [OK] Post published! URN: urn:li:share:7484106474902822912
-[5/5] Updating queues and logging history...
-
-🎉 All done! Post is live on LinkedIn. Cache queue updated.
+[!] A post has already been published today (IST). Nothing to do.
