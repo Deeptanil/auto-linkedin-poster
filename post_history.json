@@ -16,5 +16,14 @@
     "context_date": null,
     "dry_run": false,
     "preview": "Manual data entry in Odoo is the fastest way to lose your mind.\n\nWhen we launched Prettiva on December 15, we had thousands of fashion variants to upload. Doing this manually inside Odoo takes days of…"
+  },
+  {
+    "id": 3,
+    "posted_at": "2026-07-19T05:19:51.948078+00:00",
+    "post_urn": "urn:li:share:7484477084283596800",
+    "tone": "Auto",
+    "context_date": null,
+    "dry_run": false,
+    "preview": "Standard e-commerce platforms make custom loyalty programs a subscription nightmare.\n\nSince we built STRAYED on MedusaJS, we decided to program our loyalty system from scratch.\n\nI wrote custom logic i…"
   }
 ]

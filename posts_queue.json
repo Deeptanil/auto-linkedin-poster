@@ -1,10 +1,6 @@
 {
   "approved": [
     {
-      "post_text": "Standard e-commerce platforms make custom loyalty programs a subscription nightmare.\n\nSince we built STRAYED on MedusaJS, we decided to program our loyalty system from scratch.\n\nI wrote custom logic in our PostgreSQL database to track customer actions, automatically calculating reward points and triggering mystery gift discounts at checkout based on user history. Everything runs natively within our own backend instead of relying on third-party APIs.\n\nIt took a bit of extra development time, but our page load speed is incredibly fast, and we have complete control over how we surprise our users.\n\nIf you are building e-commerce, at what point do you decide to build custom features instead of installing pre-made plugins?\n\n#medusajs #backend #ecommerce",
-      "reasoning": "Focuses on the custom loyalty mechanics built from scratch on MedusaJS, contrasting custom engineering with reliance on heavy, paid Shopify apps."
-    },
-    {
       "post_text": "Waiting for a backend response to update a cart UI feels incredibly outdated.\n\nWhen you add an item to your cart on Amazon, the UI updates instantly. There is no spinner, no lag, and no waiting for a server confirmation.\n\nI wanted that exact same zero-latency feel for STRAYED.\n\nTo get there, I implemented optimistic client-side updates in our frontend. When a user clicks 'Add to Cart', we immediately update the local React State to reflect the new item, while the actual API request to our MedusaJS backend runs silently in the background.\n\nIf the server request fails for some rare reason, we gracefully roll back the UI state and show a quick notification. But 99% of the time, the user experiences an instant, snappy transition.\n\nIt is a small detail, but these micro-interactions are what separate clean, premium products from clunky web pages.\n\nHow do you approach designing optimistic UI states in your frontend applications?\n\n#javascript #webdev #uxdesign",
       "reasoning": "Discusses Deeptanil's obsession with clean, zero-latency UX (inspired by Nothing) and how he implemented optimistic UI state updates for STRAYED."
     },
@@ -111,5 +107,5 @@
       "reasoning": "Highlights the importance of developer experience and maintaining clean code environments, a key trait of a solo/student founder."
     }
   ],
-  "last_posted_at": "2026-07-18T04:47:11.789851+00:00"
+  "last_posted_at": "2026-07-19T05:19:51.947355+00:00"
 }
