@@ -1,39 +1,5 @@
---- Posting Pipeline Run Started: 2026-07-19 05:19:51.530397 ---
+--- Posting Pipeline Run Started: 2026-07-19 05:38:21.753210 ---
 ============================================================
   LinkedIn AI Auto-Poster (Batch Queue & Memory Engine)
 ============================================================
-  Tone:     Auto
-  Dry run:  False
-  Force:    False
-  Replenish Only: False
-
-[1/5] Token check skipped.
-[2/5] Loading memory...
-  Voice profile:  [OK]
-  Achievements:   [OK]
-  Recent context: [X] (none found)
-  Approved posts: 17
-  Pending drafts: 10
-
-
-────────────────────────────────────────────────────────────
-CURRENT APPROVED POST TO PUBLISH:
-────────────────────────────────────────────────────────────
-Standard e-commerce platforms make custom loyalty programs a subscription nightmare.
-
-Since we built STRAYED on MedusaJS, we decided to program our loyalty system from scratch.
-
-I wrote custom logic in our PostgreSQL database to track customer actions, automatically calculating reward points and triggering mystery gift discounts at checkout based on user history. Everything runs natively within our own backend instead of relying on third-party APIs.
-
-It took a bit of extra development time, but our page load speed is incredibly fast, and we have complete control over how we surprise our users.
-
-If you are building e-commerce, at what point do you decide to build custom features instead of installing pre-made plugins?
-
-#medusajs #backend #ecommerce
-────────────────────────────────────────────────────────────
-
-[4/5] Posting to LinkedIn...
-  [OK] Post published! URN: urn:li:share:7484477084283596800
-[5/5] Updating queues and logging history...
-
-🎉 All done! Post is live on LinkedIn. Cache queue updated.
+[!] A post has already been published today (IST). Nothing to do.
