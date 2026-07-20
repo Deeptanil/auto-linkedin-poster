@@ -247,6 +247,55 @@ def reject_post():
     })
 
 
+@app.route("/api/post/generate_from_topic", methods=["POST"])
+def generate_from_topic():
+    """
+    Given a topic or incident, add it to raw and compact memory,
+    then generate a single LinkedIn post draft and return it.
+    """
+    data = request.json or {}
+    topic = data.get("topic", "").strip()
+    
+    if not topic:
+        return jsonify({"status": "error", "message": "No topic or incident text provided."}), 400
+
+    try:
+        # 1. Save new text as context & run compaction to extract achievements/facts
+        mem.save_context(topic)
+        compactor.compact_all(new_raw_input=topic)
+        
+        # 2. Re-load context & compact profile to generate the post draft
+        summary = mem.build_full_context_summary()
+        compact = mem.load_compact_profile()
+        past_posts_text = mem.load_recent_posts_history_text(limit=15)
+        
+        # 3. Call AIGenerator to create a post using the topic
+        ai = AIGenerator()
+        batch = ai.generate_post_batch(
+            topic=topic,
+            tone="Auto",
+            compact_profile=compact,
+            recent_context=summary["recent_context"],
+            past_posts=past_posts_text,
+            batch_size=1
+        )
+        
+        if not batch:
+            return jsonify({"status": "error", "message": "Gemini generation returned 0 valid drafts. Check your API key or constraints."}), 500
+            
+        generated_post = batch[0]
+        
+        return jsonify({
+            "status": "success",
+            "post_text": generated_post["post_text"],
+            "reasoning": generated_post.get("reasoning", "Generated on-demand from topic.")
+        })
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({"status": "error", "message": f"Failed to generate post: {e}"}), 500
+
+
 @app.route("/api/post/replenish", methods=["POST"])
 def replenish_queue():
     """Replenish the pending drafts list back up to a target size of 10 in the background."""

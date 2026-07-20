@@ -1205,6 +1205,15 @@
                 }
             },
 
+            async generatePostFromTopic(topicText, index) {
+                const res = await fetch('/api/post/generate_from_topic', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ topic: topicText, index })
+                });
+                return await safeJson(res);
+            },
+
             async replenishQueue() {
                 if (this.isCloud) {
                     const url = `https://api.github.com/repos/${this.ghRepo}/actions/workflows/replenish-drafts.yml/dispatches`;
@@ -1485,6 +1494,10 @@
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
                             Save Edit
                         </button>
+                        <button class="btn btn-primary btn-sm" onclick="generateAIDraft(${index})">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275Z"/><path d="m5 3 1 2.5L8.5 6 6 7 5 9.5 4 7 1.5 6 4 5.5Z"/><path d="m19 17 1 2.5 2.5.5-2.5 1-1 2.5-1-2.5-2.5-1 2.5-1Z"/></svg>
+                            Generate Post
+                        </button>
                         <button class="btn btn-success btn-sm" onclick="approvePost(${index})">
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
                             Approve
@@ -1756,6 +1769,52 @@
             showToast("Draft updated! Synchronizing in background...", "info");
             
             queueSaveDebounced(`chore: update ${tab} draft text [skip ci]`);
+        }
+
+        async function generateAIDraft(index) {
+            const textarea = document.getElementById(`text-pending-${index}`);
+            const topicText = textarea.value.trim();
+            if (!topicText) {
+                showToast("Please type a topic, question, or incident first.", "warning");
+                return;
+            }
+
+            const card = textarea.closest('.post-card');
+            const genBtn = card.querySelector(`button[onclick^="generateAIDraft"]`);
+            
+            const originalBtnHtml = genBtn.innerHTML;
+            genBtn.disabled = true;
+            genBtn.innerHTML = `
+                <span class="status-indicator-dot" style="background-color: #ffa502; box-shadow: 0 0 8px #ffa502; animation: pulse-dot 1s infinite alternate; margin-right: 0.3rem;"></span>
+                Generating...
+            `;
+            textarea.disabled = true;
+            textarea.placeholder = "🤖 Gemini is generating your post draft based on your input...";
+            
+            showToast("Generating post with Gemini... this will also update memory database.", "info");
+
+            try {
+                const result = await storageProvider.generatePostFromTopic(topicText, index);
+                if (result.status === 'success') {
+                    queueData.pending[index].post_text = result.post_text;
+                    queueData.pending[index].reasoning = result.reasoning;
+                    
+                    renderPosts();
+                    showToast("Post draft successfully generated!", "success");
+                    
+                    queueSaveDebounced(`chore: save generated post from topic [skip ci]`);
+                    fetchStatus();
+                } else {
+                    throw new Error(result.message || "Unknown error");
+                }
+            } catch (err) {
+                showToast("Generation failed: " + err.message, "error");
+            } finally {
+                genBtn.disabled = false;
+                genBtn.innerHTML = originalBtnHtml;
+                textarea.disabled = false;
+                textarea.placeholder = "E.g. Shipped medusa coupon custom loyalty program today...";
+            }
         }
 
         async function approvePost(index) {
