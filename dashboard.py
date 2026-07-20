@@ -33,7 +33,14 @@ class DualLogger:
             f.write(f"--- Dashboard Local Server Log Started: {__import__('datetime').datetime.now()} ---\n")
 
     def write(self, message):
-        self.terminal.write(message)
+        try:
+            self.terminal.write(message)
+        except UnicodeEncodeError:
+            try:
+                encoding = self.terminal.encoding or 'utf-8'
+                self.terminal.write(message.encode(encoding, errors='replace').decode(encoding))
+            except Exception:
+                pass
         try:
             with open(self.log_path, "a", encoding="utf-8") as f:
                 f.write(message)

@@ -7,5 +7,14 @@
     "context_date": null,
     "dry_run": false,
     "preview": "I bought the STRAYED domain name while standing on a Bangalore footpath.\n\nMy co-founder and I were walking down the street, casually discussing this idea for a contemporary streetwear brand. We were s…"
+  },
+  {
+    "id": 2,
+    "posted_at": "2026-07-20T06:29:35.152865+00:00",
+    "post_urn": "DRY_RUN",
+    "tone": "Auto",
+    "context_date": null,
+    "dry_run": true,
+    "preview": "I spent three days chasing a single ghost checkout bug on STRAYED.\n\nWe were setting up our custom payment flow and the checkout was lagging. Users would hit pay, get their money deducted, but the orde…"
   }
 ]

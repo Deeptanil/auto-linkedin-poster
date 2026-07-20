@@ -58,6 +58,35 @@ class PostHistory:
             return None
         return last[-1].get("posted_at", "")[:10]  # YYYY-MM-DD
 
+    def get_days_since_last_post(self) -> int | None:
+        """Return the number of days since the last real post in Asia/Kolkata timezone."""
+        history = self.memory.load_post_history()
+        real = [e for e in history if not e.get("dry_run")]
+        if not real:
+            return None
+            
+        last_entry = real[-1]
+        posted_at_str = last_entry.get("posted_at")
+        if not posted_at_str:
+            return None
+
+        try:
+            import zoneinfo
+            dt_utc = datetime.fromisoformat(posted_at_str.replace("Z", "+00:00"))
+            tz_ist = zoneinfo.ZoneInfo("Asia/Kolkata")
+            dt_ist = dt_utc.astimezone(tz_ist)
+            
+            today_ist = datetime.now(tz_ist).date()
+            return (today_ist - dt_ist.date()).days
+        except Exception as e:
+            print(f"[post_history] Warning: failed parsing post date '{posted_at_str}': {e}")
+            try:
+                dt_utc = datetime.fromisoformat(posted_at_str.replace("Z", "+00:00"))
+                today_utc = datetime.now(timezone.utc).date()
+                return (today_utc - dt_utc.date()).days
+            except Exception:
+                return None
+
     def already_posted_today(self) -> bool:
         """True if a real (non-dry-run) post was already made today (in Asia/Kolkata timezone)."""
         history = self.memory.load_post_history()

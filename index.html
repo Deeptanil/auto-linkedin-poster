@@ -216,6 +216,14 @@
             font-size: 0.85rem;
         }
 
+        .btn-xs {
+            padding: 0.15rem 0.35rem;
+            font-size: 0.72rem;
+            border-radius: 4px;
+            min-height: auto;
+            line-height: 1;
+        }
+
         .btn:disabled {
             opacity: 0.5;
             cursor: not-allowed;
@@ -668,13 +676,19 @@
             }
 
             .header-actions {
-                flex-direction: column;
-                gap: 0.75rem;
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.5rem;
+            }
+
+            .header-actions #btnSync {
+                grid-column: span 2;
             }
 
             .header-actions .btn {
                 width: 100%;
-                padding: 0.65rem 1.25rem;
+                padding: 0.65rem 0.75rem;
+                font-size: 0.82rem;
             }
 
             .layout-grid {
@@ -721,7 +735,7 @@
 
             .post-actions {
                 display: grid;
-                grid-template-columns: 1fr;
+                grid-template-columns: repeat(2, 1fr);
                 gap: 0.5rem;
             }
 
@@ -729,6 +743,10 @@
                 width: 100%;
                 padding: 0.6rem;
                 font-size: 0.85rem;
+            }
+
+            .approved-card .post-actions .file-upload-label {
+                grid-column: span 2;
             }
 
             .modal-content {
@@ -802,6 +820,14 @@
             <div class="form-group">
                 <label for="cfgRepo">GitHub Repository Path</label>
                 <input type="text" id="cfgRepo" class="form-input" placeholder="owner/repository (e.g. Deeptanil/linkedin-poster)">
+            </div>
+
+            <div class="form-group">
+                <label for="cfgPostInterval">Post Interval (Days)</label>
+                <input type="number" id="cfgPostInterval" class="form-input" min="1" step="1" placeholder="1">
+                <p style="font-size: 0.75rem; color: var(--color-text-muted); margin: 0;">
+                    Number of days between each post. E.g., 1 for daily, 2 for every other day.
+                </p>
             </div>
 
 
@@ -1341,6 +1367,9 @@
                 document.getElementById('cfgCloudMode').checked = localStorage.getItem('gh_cloud_mode') === 'true';
                 document.getElementById('cfgToken').value = localStorage.getItem('gh_token') || '';
                 document.getElementById('cfgRepo').value = localStorage.getItem('gh_repo') || '';
+                
+                const currentInterval = (queueData.settings && queueData.settings.post_interval_days) || 1;
+                document.getElementById('cfgPostInterval').value = currentInterval;
             }
         }
 
@@ -1348,15 +1377,34 @@
             const cloudMode = document.getElementById('cfgCloudMode').checked;
             const token = document.getElementById('cfgToken').value.trim();
             const repo = document.getElementById('cfgRepo').value.trim();
+            const postInterval = parseInt(document.getElementById('cfgPostInterval').value) || 1;
             
             if (cloudMode && (!token || !repo)) {
                 showToast("GitHub Token and Repo Path are required for Cloud Mode.", "error");
                 return;
             }
+            if (postInterval < 1) {
+                showToast("Post interval must be at least 1 day.", "error");
+                return;
+            }
             
             storageProvider.saveConfig(cloudMode, token, repo);
+            
+            if (!queueData.settings) {
+                queueData.settings = {};
+            }
+            
+            const prevInterval = queueData.settings.post_interval_days;
+            queueData.settings.post_interval_days = postInterval;
+            
             toggleSettingsModal();
             showToast("Settings updated successfully! Reloading data...", "success");
+            
+            if (prevInterval !== postInterval) {
+                updateCountsDisplay();
+                renderPosts();
+                queueSaveDebounced("chore: update post interval setting [skip ci]");
+            }
             
             fetchQueue();
             fetchStatus();
@@ -1424,7 +1472,7 @@
 
             list.forEach((item, index) => {
                 const card = document.createElement('div');
-                card.className = 'post-card';
+                card.className = 'post-card ' + currentTab + '-card';
                 
                 let actionButtons = '';
                 if (currentTab === 'pending') {
@@ -1482,9 +1530,26 @@
                     previewsHtml += `</div>`;
                 }
 
+                let dateHeaderHtml = '';
+                let reorderHtml = '';
+                if (currentTab === 'approved') {
+                    const dateStr = getScheduledDateForIndex(index);
+                    dateHeaderHtml = `<span class="post-date-tag" style="background: rgba(102, 252, 241, 0.1); color: var(--color-primary); padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem; font-weight: 500;">📅 Scheduled: ${dateStr}</span>`;
+                    reorderHtml = `
+                        <div class="reorder-buttons" style="display: inline-flex; gap: 0.2rem; margin-left: 0.5rem;">
+                            <button class="btn btn-secondary btn-xs" onclick="moveUp(${index})" ${index === 0 ? 'disabled style="opacity: 0.3; cursor: not-allowed;"' : ''} title="Move Up">▲</button>
+                            <button class="btn btn-secondary btn-xs" onclick="moveDown(${index})" ${index === list.length - 1 ? 'disabled style="opacity: 0.3; cursor: not-allowed;"' : ''} title="Move Down">▼</button>
+                        </div>
+                    `;
+                }
+
                 card.innerHTML = `
-                    <div class="post-header">
-                        <span class="post-index-tag">Draft #${index + 1}</span>
+                    <div class="post-header" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                        <div style="display: flex; align-items: center;">
+                            <span class="post-index-tag">Draft #${index + 1}</span>
+                            ${reorderHtml}
+                        </div>
+                        ${dateHeaderHtml}
                     </div>
                     <textarea id="text-${currentTab}-${index}" class="post-textarea">${item.post_text}</textarea>
                     
@@ -1529,31 +1594,90 @@
                 return;
             }
 
+            const postInterval = (queueData.settings && queueData.settings.post_interval_days) || 1;
             const now = new Date();
             const todayIST = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
-            const todayStr = todayIST.toDateString();
 
-            let postedTodayAlready;
+            let nextPostDate = new Date(todayIST);
+
             if (lastPostedAt) {
-                const postedIST = new Date(
-                    new Date(lastPostedAt).toLocaleString('en-US', { timeZone: 'Asia/Kolkata' })
-                );
-                postedTodayAlready = postedIST.toDateString() === todayStr;
+                const lastPostedIST = new Date(new Date(lastPostedAt).toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+                const d1 = new Date(todayIST); d1.setHours(0,0,0,0);
+                const d2 = new Date(lastPostedIST); d2.setHours(0,0,0,0);
+                const daysElapsed = Math.round((d1 - d2) / (1000 * 60 * 60 * 24));
+
+                if (daysElapsed < postInterval) {
+                    nextPostDate = new Date(lastPostedIST);
+                    nextPostDate.setDate(lastPostedIST.getDate() + postInterval);
+                } else {
+                    nextPostDate = d1;
+                }
             } else {
-                // Fallback: If current IST time is past 9:30 AM, assume today's post has already run
-                postedTodayAlready = todayIST.getHours() > 9 || (todayIST.getHours() === 9 && todayIST.getMinutes() >= 30);
+                const postedTodayAlready = todayIST.getHours() > 9 || (todayIST.getHours() === 9 && todayIST.getMinutes() >= 30);
+                if (postedTodayAlready) {
+                    nextPostDate.setDate(todayIST.getDate() + postInterval);
+                } else {
+                    nextPostDate = new Date(todayIST);
+                }
             }
 
-            const startFrom = new Date(todayIST);
-            if (postedTodayAlready) {
-                startFrom.setDate(startFrom.getDate() + 1); // Next post covers tomorrow
-            }
-
-            const runsOutDate = new Date(startFrom);
-            runsOutDate.setDate(startFrom.getDate() + approvedCount - 1);
+            const runsOutDate = new Date(nextPostDate);
+            runsOutDate.setDate(nextPostDate.getDate() + (approvedCount - 1) * postInterval);
 
             const opts = { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' };
             elem.innerText = runsOutDate.toLocaleDateString('en-US', opts);
+        }
+
+        function getScheduledDateForIndex(index) {
+            const postInterval = (queueData.settings && queueData.settings.post_interval_days) || 1;
+            const now = new Date();
+            const todayIST = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+
+            let nextPostDate = new Date(todayIST);
+
+            if (queueData.last_posted_at) {
+                const lastPostedIST = new Date(new Date(queueData.last_posted_at).toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+                const d1 = new Date(todayIST); d1.setHours(0,0,0,0);
+                const d2 = new Date(lastPostedIST); d2.setHours(0,0,0,0);
+                const daysElapsed = Math.round((d1 - d2) / (1000 * 60 * 60 * 24));
+
+                if (daysElapsed < postInterval) {
+                    nextPostDate = new Date(lastPostedIST);
+                    nextPostDate.setDate(lastPostedIST.getDate() + postInterval);
+                } else {
+                    nextPostDate = d1;
+                }
+            } else {
+                const postedTodayAlready = todayIST.getHours() > 9 || (todayIST.getHours() === 9 && todayIST.getMinutes() >= 30);
+                if (postedTodayAlready) {
+                    nextPostDate.setDate(todayIST.getDate() + postInterval);
+                } else {
+                    nextPostDate = new Date(todayIST);
+                }
+            }
+
+            const scheduledDate = new Date(nextPostDate);
+            scheduledDate.setDate(nextPostDate.getDate() + index * postInterval);
+            const opts = { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' };
+            return scheduledDate.toLocaleDateString('en-US', opts);
+        }
+
+        function moveUp(index) {
+            if (index <= 0) return;
+            const temp = queueData.approved[index];
+            queueData.approved[index] = queueData.approved[index - 1];
+            queueData.approved[index - 1] = temp;
+            renderPosts();
+            queueSaveDebounced("chore: reorder approved queue [skip ci]");
+        }
+
+        function moveDown(index) {
+            if (index >= queueData.approved.length - 1) return;
+            const temp = queueData.approved[index];
+            queueData.approved[index] = queueData.approved[index + 1];
+            queueData.approved[index + 1] = temp;
+            renderPosts();
+            queueSaveDebounced("chore: reorder approved queue [skip ci]");
         }
 
         async function addNewDraft() {

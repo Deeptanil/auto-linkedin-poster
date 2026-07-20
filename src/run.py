@@ -54,7 +54,14 @@ class DualLogger:
             f.write(f"--- Posting Pipeline Run Started: {__import__('datetime').datetime.now()} ---\n")
 
     def write(self, message):
-        self.terminal.write(message)
+        try:
+            self.terminal.write(message)
+        except UnicodeEncodeError:
+            try:
+                encoding = self.terminal.encoding or 'utf-8'
+                self.terminal.write(message.encode(encoding, errors='replace').decode(encoding))
+            except Exception:
+                pass
         try:
             with open(self.log_path, "a", encoding="utf-8") as f:
                 f.write(message)
@@ -83,9 +90,15 @@ def main():
     force          = os.getenv("FORCE", "false").strip().lower() == "true"
 
     if not replenish_only and not force:
+        mem = MemoryManager()
+        queue = mem.load_posts_queue()
+        settings = queue.get("settings", {})
+        post_interval_days = int(settings.get("post_interval_days", 1))
+
         history = PostHistory()
-        if history.already_posted_today():
-            print("[!] A post has already been published today (IST). Nothing to do.")
+        days_since = history.get_days_since_last_post()
+        if days_since is not None and days_since < post_interval_days:
+            print(f"[!] Last post was {days_since} days ago. Current interval is {post_interval_days} days. Skipping posting.")
             sys.exit(0)
 
     # ── Read inputs from environment ──────────────────────────────────────────

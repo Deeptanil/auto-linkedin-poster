@@ -42,5 +42,8 @@
       "post_text": "I spent three days manually clicking buttons in Odoo before I lost my mind.\n\nSetting up Prettiva and Co. back in December meant dealing with thousands of product variants. Doing this manually on Odoo is a slow form of torture. You click add, upload an image, map the attributes, click save, and repeat.\n\nIt was taking us days just to list one single fashion collection. I knew there had to be a better way than spending my college evenings doing mindless data entry in my hostel room.\n\nSo I sat down and wrote a custom Excel parser script in Python. It automatically maps our hosted image links to the correct product variants and pushes them straight to our database.\n\nWhat used to take us a whole weekend now takes about four minutes ⚡. Tbh, it made me realize how much time builders waste on operational chores just because they do not write simple scripts to automate them.\n\nHow do you handle boring database entry tasks in your setup, or do you just power through them manually?\n\n#buildinpublic #python #ecommerce",
       "reasoning": "This post utilizes a real-world achievement from Deeptanil's background (writing an Excel parser script in Python to automate product variant uploads on Odoo for Prettiva & Co.). It avoids all banned buzzwords, uses no markdown, maintains a casual student-founder voice, limits emoji usage to one, and starts with a punchy hook under 15 words without asking a question."
     }
-  ]
+  ],
+  "settings": {
+    "post_interval_days": 1
+  }
 }
