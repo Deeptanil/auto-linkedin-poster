@@ -1,10 +1,6 @@
 {
   "approved": [
     {
-      "post_text": "Waiting for a backend response to update a cart UI feels incredibly outdated.\n\nWhen you add an item to your cart on Amazon, the UI updates instantly. There is no spinner, no lag, and no waiting for a server confirmation.\n\nI wanted that exact same zero-latency feel for STRAYED.\n\nTo get there, I implemented optimistic client-side updates in our frontend. When a user clicks 'Add to Cart', we immediately update the local React State to reflect the new item, while the actual API request to our MedusaJS backend runs silently in the background.\n\nIf the server request fails for some rare reason, we gracefully roll back the UI state and show a quick notification. But 99% of the time, the user experiences an instant, snappy transition.\n\nIt is a small detail, but these micro-interactions are what separate clean, premium products from clunky web pages.\n\nHow do you approach designing optimistic UI states in your frontend applications?\n\n#javascript #webdev #uxdesign",
-      "reasoning": "Discusses Deeptanil's obsession with clean, zero-latency UX (inspired by Nothing) and how he implemented optimistic UI state updates for STRAYED."
-    },
-    {
       "post_text": "I used to think my teenage video editing phase was a total waste of time.\n\nYears ago, I spent countless hours editing videos and learning how to sync clips to audio beats. Tbh, my parents probably thought I was just wasting my time in front of a screen instead of studying.\n\nBut as a student founder, those random creative skills ended up being a major advantage.\n\nWhen we were launching STRAYED, we needed high-quality promotional content but had zero budget for a production agency. I decided to write a custom script to automate some of our video transitions and help sync raw streetwear footage to trending audio loops.\n\nOne of the promotional reels we edited hit over 80,000 views on Instagram, bringing a huge wave of organic traffic to our site.\n\nIt proved to me that no skill you learn is ever truly wasted. The weird creative side projects you do at fifteen often end up powering your startup marketing at twenty.\n\nWhat random childhood hobby has unexpectedly helped you in your professional work?\n\n#founder #contentcreator #marketing",
       "reasoning": "Shows Deeptanil's belief that 'everything is for something' by linking his early video editing skills and video scripts to an 80k-view Instagram reel for STRAYED."
     },
@@ -107,5 +103,5 @@
       "reasoning": "Highlights the importance of developer experience and maintaining clean code environments, a key trait of a solo/student founder."
     }
   ],
-  "last_posted_at": "2026-07-19T05:19:51.947355+00:00"
+  "last_posted_at": "2026-07-20T05:37:26.476542+00:00"
 }

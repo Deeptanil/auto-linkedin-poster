@@ -25,5 +25,14 @@
     "context_date": null,
     "dry_run": false,
     "preview": "Standard e-commerce platforms make custom loyalty programs a subscription nightmare.\n\nSince we built STRAYED on MedusaJS, we decided to program our loyalty system from scratch.\n\nI wrote custom logic i…"
+  },
+  {
+    "id": 4,
+    "posted_at": "2026-07-20T05:37:26.477302+00:00",
+    "post_urn": "urn:li:share:7484843895026081792",
+    "tone": "Auto",
+    "context_date": null,
+    "dry_run": false,
+    "preview": "Waiting for a backend response to update a cart UI feels incredibly outdated.\n\nWhen you add an item to your cart on Amazon, the UI updates instantly. There is no spinner, no lag, and no waiting for a …"
   }
 ]
