@@ -1,5 +1,19 @@
---- Posting Pipeline Run Started: 2026-07-20 05:56:06.110988 ---
+--- Posting Pipeline Run Started: 2026-07-20 05:56:57.596398 ---
 ============================================================
   LinkedIn AI Auto-Poster (Batch Queue & Memory Engine)
 ============================================================
-[!] A post has already been published today (IST). Nothing to do.
+  Tone:     Auto
+  Dry run:  False
+  Force:    False
+  Replenish Only: True
+
+[1/5] Token check skipped.
+[2/5] Loading memory...
+  Voice profile:  [OK]
+  Achievements:   [OK]
+  Recent context: [X] (none found)
+  Approved posts: 15
+  Pending drafts: 10
+
+[!] Replenish Only mode active. Skipping publishing logic.
+    Pending queue is already full (10 drafts). No action needed.
