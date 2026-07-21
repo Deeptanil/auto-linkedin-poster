@@ -34,5 +34,14 @@
     "context_date": null,
     "dry_run": false,
     "preview": "Waiting for a backend response to update a cart UI feels incredibly outdated.\n\nWhen you add an item to your cart on Amazon, the UI updates instantly. There is no spinner, no lag, and no waiting for a …"
+  },
+  {
+    "id": 5,
+    "posted_at": "2026-07-21T05:18:39.835317+00:00",
+    "post_urn": "urn:li:share:7485201557450502144",
+    "tone": "Auto",
+    "context_date": null,
+    "dry_run": false,
+    "preview": "I used to think my teenage video editing phase was a total waste of time.\n\nYears ago, I spent countless hours editing videos and learning how to sync clips to audio beats. Tbh, my parents probably tho…"
   }
 ]
