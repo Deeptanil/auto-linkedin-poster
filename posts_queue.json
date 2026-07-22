@@ -1,10 +1,6 @@
 {
   "approved": [
     {
-      "post_text": "Shopify is great, but building your own stack gives you absolute freedom.\n\nWhen we started STRAYED, everyone advised us to just set up a quick Shopify store and call it a day. It is the standard advice given to every new brand.\n\nBut we wanted to build something highly tailored, with a clean design aesthetic, zero restrictions and zero latency.\n\nSo we chose the harder path: custom MedusaJS, PostgreSQL, and an Oracle VPS.\n\nIt meant we had to manually configure server health monitors, handle database migrations, and build custom loyalty mechanics from scratch. But the reward is a site that loads instantly, has zero monthly subscription fees, and allows us to customize the entire checkout flow exactly how we want.\n\nBootstrapping means making conscious trade-offs between ease of setup and long-term control. For us, building from scratch was worth every single line of code.\n\nWhen starting a new project, how do you decide between ready-made SaaS tools and custom self-hosted stacks?\n\n#medusajs #selfhosted #webdev",
-      "reasoning": "A thought leadership style post discussing why he chose custom MedusaJS and self-hosting on Oracle VPS over standard Shopify setups, leaning on his dev priorities."
-    },
-    {
       "post_text": "Entering 1200 product variants manually into Odoo is a form of torture.\n\nWhen we were setting up the inventory system for our brand, I thought I could just click through the Odoo UI. Ten minutes in, I realized that clicking through nested menus for every single color and size combination was going to take days.\n\nMy hands were literally cramping from the repetitive UI flow. But I didn't have the time to figure out another way.\n\nBut once I had time, I started figuring out how it works. It turns out Odoo is incredibly picky about column headers and relational IDs. One missing external ID in your CSV, and the whole import fails with a cryptic database error.\n\nBut once the formatting was perfectly aligned, importing 500 variants took less than ten seconds. Sometimes the best way to speed up your operations is to step back and build a proper data pipeline first, even if it feels like extra work upfront. \n\nWhat is the most annoying database import bug you have had to fix recently?\n\n#odoo #erp #ecommerce",
       "reasoning": "Focuses on the practical frustration of Odoo manual variants vs Excel imports. It has a compelling hook and shows how he solved an operational problem programmatically."
     },
@@ -87,5 +83,5 @@
       "reasoning": "Highlights the importance of developer experience and maintaining clean code environments, a key trait of a solo/student founder."
     }
   ],
-  "last_posted_at": "2026-07-21T05:18:39.834664+00:00"
+  "last_posted_at": "2026-07-22T05:17:43.241728+00:00"
 }
