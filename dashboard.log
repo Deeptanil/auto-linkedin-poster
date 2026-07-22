@@ -1,43 +1,5 @@
---- Posting Pipeline Run Started: 2026-07-22 05:17:42.568606 ---
+--- Posting Pipeline Run Started: 2026-07-22 05:36:20.423096 ---
 ============================================================
   LinkedIn AI Auto-Poster (Batch Queue & Memory Engine)
 ============================================================
-  Tone:     Auto
-  Dry run:  False
-  Force:    False
-  Replenish Only: False
-
-[1/5] Token check skipped.
-[2/5] Loading memory...
-  Voice profile:  [OK]
-  Achievements:   [OK]
-  Recent context: [X] (none found)
-  Approved posts: 11
-  Pending drafts: 10
-
-
-────────────────────────────────────────────────────────────
-CURRENT APPROVED POST TO PUBLISH:
-────────────────────────────────────────────────────────────
-Shopify is great, but building your own stack gives you absolute freedom.
-
-When we started STRAYED, everyone advised us to just set up a quick Shopify store and call it a day. It is the standard advice given to every new brand.
-
-But we wanted to build something highly tailored, with a clean design aesthetic, zero restrictions and zero latency.
-
-So we chose the harder path: custom MedusaJS, PostgreSQL, and an Oracle VPS.
-
-It meant we had to manually configure server health monitors, handle database migrations, and build custom loyalty mechanics from scratch. But the reward is a site that loads instantly, has zero monthly subscription fees, and allows us to customize the entire checkout flow exactly how we want.
-
-Bootstrapping means making conscious trade-offs between ease of setup and long-term control. For us, building from scratch was worth every single line of code.
-
-When starting a new project, how do you decide between ready-made SaaS tools and custom self-hosted stacks?
-
-#medusajs #selfhosted #webdev
-────────────────────────────────────────────────────────────
-
-[4/5] Posting to LinkedIn...
-  [OK] Post published! URN: urn:li:share:7485563707410866177
-[5/5] Updating queues and logging history...
-
-🎉 All done! Post is live on LinkedIn. Cache queue updated.
+[!] Last post was 0 days ago. Current interval is 1 days. Skipping posting.
