@@ -52,5 +52,14 @@
     "context_date": null,
     "dry_run": false,
     "preview": "Shopify is great, but building your own stack gives you absolute freedom.\n\nWhen we started STRAYED, everyone advised us to just set up a quick Shopify store and call it a day. It is the standard advic…"
+  },
+  {
+    "id": 7,
+    "posted_at": "2026-07-23T05:22:27.564776+00:00",
+    "post_urn": "urn:li:share:7485927287968657424",
+    "tone": "Auto",
+    "context_date": null,
+    "dry_run": false,
+    "preview": "Entering 1200 product variants manually into Odoo is a form of torture.\n\nWhen we were setting up the inventory system for our brand, I thought I could just click through the Odoo UI. Ten minutes in, I…"
   }
 ]
