@@ -61,5 +61,14 @@
     "context_date": null,
     "dry_run": false,
     "preview": "Entering 1200 product variants manually into Odoo is a form of torture.\n\nWhen we were setting up the inventory system for our brand, I thought I could just click through the Odoo UI. Ten minutes in, I…"
+  },
+  {
+    "id": 8,
+    "posted_at": "2026-07-24T05:18:27.130876+00:00",
+    "post_urn": "urn:li:share:7486288665745219584",
+    "tone": "Auto",
+    "context_date": null,
+    "dry_run": false,
+    "preview": "I spent my morning in a college lecture and my afternoon writing production code.\n\nBeing a 20-year-old student-founder in Bangalore means living in two different worlds at the same time. During the da…"
   }
 ]
