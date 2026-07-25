@@ -1,10 +1,6 @@
 {
   "approved": [
     {
-      "post_text": "Our mobile load speed was terrible until we audited our asset pipeline.\n\nMost of our users visit our store on their phones. A three-second delay in page load means losing a customer before they even see our products.\n\nI ran a Lighthouse audit on our e-commerce site and was shocked by the performance score. Huge unoptimized hero images were blocking the main thread, and our bundle size was bloated with unused JavaScript.\n\nI spent the weekend converting all our product images to WebP format and setting up dynamic lazy loading. I also replaced a couple of heavy npm packages with lighter vanilla JS alternatives.\n\nReducing our main bundle size by 40% made the site feel incredibly snappy on mobile. It was a good reminder that fancy animations do not matter if your site takes forever to load on a basic connection.\n\nWhat is your go-to trick for cutting down initial page load times on mobile?\n\n#webperformance #ux #nextjs",
-      "reasoning": "Addresses the real-world performance optimization of web pages. It uses technical depth without relying on corporate clichés."
-    },
-    {
       "post_text": "We lost three orders because of a tiny coupon status mismatch.\n\nA customer would add a code, but our frontend would show it as invalid. It turned out I forgot to turn on a simple toggle.\n\nBecause we built the website and the other systems in a hurry and it was very easy to oversee something so simple. Now we will always check if that toggle is correctly set. 😂\n\nHave you ever had a critical backend bug that cost you real customer trust?\n\n#backend #javascript",
       "reasoning": "A highly specific post on Razorpay integrations. Uses the word 'solid' instead of the banned word 'robust' and keeps the tone highly relatable for developers."
     },
@@ -75,5 +71,5 @@
       "reasoning": "Highlights the importance of developer experience and maintaining clean code environments, a key trait of a solo/student founder."
     }
   ],
-  "last_posted_at": "2026-07-24T05:18:27.130172+00:00"
+  "last_posted_at": "2026-07-25T05:12:49.212980+00:00"
 }
