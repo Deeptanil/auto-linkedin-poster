@@ -1,10 +1,6 @@
 {
   "approved": [
     {
-      "post_text": "We lost three orders because of a tiny coupon status mismatch.\n\nA customer would add a code, but our frontend would show it as invalid. It turned out I forgot to turn on a simple toggle.\n\nBecause we built the website and the other systems in a hurry and it was very easy to oversee something so simple. Now we will always check if that toggle is correctly set. 😂\n\nHave you ever had a critical backend bug that cost you real customer trust?\n\n#backend #javascript",
-      "reasoning": "A highly specific post on Razorpay integrations. Uses the word 'solid' instead of the banned word 'robust' and keeps the tone highly relatable for developers."
-    },
-    {
       "post_text": "Using two different laptops to build a website is a recipe for disaster. I learned this the hard way last month.\n\nI was bouncing between two machines to work on the site. Because a few changes hadn't been pushed to GitHub, the files on both laptops completely drifted out of sync.\n\nIn a desperate move to align them, I decided to just commit the entire root directory.\n\nBig mistake. It completely trashed my local file system.\n\nI spent the next two days doing absolutely nothing but untangling the mess. I eventually had to resort to zipping up the files and manually transferring them over. Two full days of zero development progress, all because of one impatient shortcut.\n\nLesson learned: Git is the source of truth for a reason. Trust the workflow, don't force it.\n\nFor those who bounce between multiple development machines, how do you keep your environments seamlessly in sync without losing your mind?\n\n#WebDevelopment #SoftwareEngineering #Git #Programming #TechLessons",
       "reasoning": "Shares a relatable developer struggle regarding deployment security and infrastructure, fitting the student-founder persona."
     },
@@ -71,5 +67,5 @@
       "reasoning": "Highlights the importance of developer experience and maintaining clean code environments, a key trait of a solo/student founder."
     }
   ],
-  "last_posted_at": "2026-07-25T05:12:49.212980+00:00"
+  "last_posted_at": "2026-07-26T05:29:54.870529+00:00"
 }

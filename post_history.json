@@ -79,5 +79,14 @@
     "context_date": null,
     "dry_run": false,
     "preview": "Our mobile load speed was terrible until we audited our asset pipeline.\n\nMost of our users visit our store on their phones. A three-second delay in page load means losing a customer before they even s…"
+  },
+  {
+    "id": 10,
+    "posted_at": "2026-07-26T05:29:54.871062+00:00",
+    "post_urn": "urn:li:share:7487016328235544577",
+    "tone": "Auto",
+    "context_date": null,
+    "dry_run": false,
+    "preview": "We lost three orders because of a tiny coupon status mismatch.\n\nA customer would add a code, but our frontend would show it as invalid. It turned out I forgot to turn on a simple toggle.\n\nBecause we b…"
   }
 ]
