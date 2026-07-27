@@ -1,43 +1,5 @@
---- Posting Pipeline Run Started: 2026-07-27 05:47:18.795065 ---
+--- Posting Pipeline Run Started: 2026-07-27 06:13:23.420020 ---
 ============================================================
   LinkedIn AI Auto-Poster (Batch Queue & Memory Engine)
 ============================================================
-  Tone:     Auto
-  Dry run:  False
-  Force:    False
-  Replenish Only: False
-
-[1/5] Token check skipped.
-[2/5] Loading memory...
-  Voice profile:  [OK]
-  Achievements:   [OK]
-  Recent context: [X] (none found)
-  Approved posts: 6
-  Pending drafts: 10
-
-
-────────────────────────────────────────────────────────────
-CURRENT APPROVED POST TO PUBLISH:
-────────────────────────────────────────────────────────────
-Using two different laptops to build a website is a recipe for disaster. I learned this the hard way last month.
-
-I was bouncing between two machines to work on the site. Because a few changes hadn't been pushed to GitHub, the files on both laptops completely drifted out of sync.
-
-In a desperate move to align them, I decided to just commit the entire root directory.
-
-Big mistake. It completely trashed my local file system.
-
-I spent the next two days doing absolutely nothing but untangling the mess. I eventually had to resort to zipping up the files and manually transferring them over. Two full days of zero development progress, all because of one impatient shortcut.
-
-Lesson learned: Git is the source of truth for a reason. Trust the workflow, don't force it.
-
-For those who bounce between multiple development machines, how do you keep your environments seamlessly in sync without losing your mind?
-
-#WebDevelopment #SoftwareEngineering #Git #Programming #TechLessons
-────────────────────────────────────────────────────────────
-
-[4/5] Posting to LinkedIn...
-  [OK] Post published! URN: urn:li:share:7487383096418299904
-[5/5] Updating queues and logging history...
-
-🎉 All done! Post is live on LinkedIn. Cache queue updated.
+[!] Last post was 0 days ago. Current interval is 1 days. Skipping posting.
