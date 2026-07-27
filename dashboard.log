@@ -1,4 +1,4 @@
---- Posting Pipeline Run Started: 2026-07-27 15:27:57.380001 ---
+--- Posting Pipeline Run Started: 2026-07-27 15:29:48.249710 ---
 ============================================================
   LinkedIn AI Auto-Poster (Batch Queue & Memory Engine)
 ============================================================
@@ -13,17 +13,26 @@
   Achievements:   [OK]
   Recent context: [X] (none found)
   Approved posts: 5
-  Pending drafts: 9
+  Pending drafts: 0
 
 [!] Replenish Only mode active. Skipping publishing logic.
-    Replenishing pending drafts queue (current: 9, target: 10)...
-[ai_generator] Starting batch generation. Batch size: 1, Tone: Auto
+    Replenishing pending drafts queue (current: 0, target: 10)...
+[ai_generator] Starting batch generation. Batch size: 10, Tone: Auto
 [ai_generator] Building prompt payload...
 [ai_generator] Calling Google Gemini API (model: gemini-3.5-flash) requesting structured JSON response...
 [ai_generator] Trying model: gemini-3.1-flash-lite-preview
-[ai_generator] Received API response from Gemini (size: 1380 characters).
-[ai_generator] Successfully parsed JSON array containing 1 posts.
+[ai_generator] Received API response from Gemini (size: 8915 characters).
+[ai_generator] Successfully parsed JSON array containing 10 posts.
 [ai_generator] Running posts through strict quality filters (URLs, minimum length, markdown markers)...
-  - Post index 0: Accepted! (length=1087)
-[ai_generator] Filter process complete. 1 of 1 generated posts were approved.
-    Added 1 new drafts to pending queue.
+  - Post index 0: Accepted! (length=846)
+  - Post index 1: Accepted! (length=784)
+  - Post index 2: Accepted! (length=738)
+  - Post index 3: Accepted! (length=741)
+  - Post index 4: Accepted! (length=807)
+  - Post index 5: Accepted! (length=760)
+  - Post index 6: Accepted! (length=693)
+  - Post index 7: Accepted! (length=688)
+  - Post index 8: Accepted! (length=796)
+  - Post index 9: Accepted! (length=684)
+[ai_generator] Filter process complete. 10 of 10 generated posts were approved.
+    Added 10 new drafts to pending queue.
