@@ -21,11 +21,6 @@
       "reasoning": "This post focuses on a specific technical challenge involving database latency and VPS maintenance, reflecting Deeptanil's hands-on experience with his self-hosted infrastructure. It avoids buzzwords, uses a casual but professional tone, and adheres to all formatting constraints."
     }
   ],
-  "pending": [
-    {
-      "post_text": "I used to ignore git commit messages because nobody else was reading them. \n\nDuring our early months of building STRAYED, I treated my repository history like a personal notepad. I had commits labeled as fix, working now, and please god just upload. This worked fine when I was the only person pushing code to the dev branch. \n\nThat changed the day I had to revert a buggy authentication module from three weeks prior. I spent four hours clicking through dozens of vague commit hashes just to find the state where the OAuth logic was actually functional. It was a massive waste of time that I could have avoided with a few seconds of extra typing. \n\nNow, I enforce a strict rule for myself. Every commit message must clearly state the feature or bug being addressed and the specific system component involved. It sounds like extra work, but it acts as a searchable index of every decision I have made for the brand. \n\nWhen you work on a project alone, do you maintain formal documentation habits or do you just rely on your own memory to track changes?\n\n#git #softwaredevelopment #coding",
-      "reasoning": "This post highlights a relatable technical struggle (poor commit habits) that a solo student-founder would face while building STRAYED. It reinforces the 'developer' identity and uses a real lesson learned from personal experience."
-    }
-  ],
+  "pending": [],
   "last_posted_at": "2026-07-27T05:47:19.685184+00:00"
 }
