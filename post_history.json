@@ -88,5 +88,14 @@
     "context_date": null,
     "dry_run": false,
     "preview": "We lost three orders because of a tiny coupon status mismatch.\n\nA customer would add a code, but our frontend would show it as invalid. It turned out I forgot to turn on a simple toggle.\n\nBecause we b…"
+  },
+  {
+    "id": 11,
+    "posted_at": "2026-07-27T05:47:19.685653+00:00",
+    "post_urn": "urn:li:share:7487383096418299904",
+    "tone": "Auto",
+    "context_date": null,
+    "dry_run": false,
+    "preview": "Using two different laptops to build a website is a recipe for disaster. I learned this the hard way last month.\n\nI was bouncing between two machines to work on the site. Because a few changes hadn't …"
   }
 ]
