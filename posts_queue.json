@@ -1,13 +1,6 @@
 {
   "approved": [
     {
-      "post_text": "Instagram isn't just for doomscrolling. It's actually a masterclass in UX.\n\nLately, my social feed has taught me more about practical product design than most textbooks. I’ve been quietly consuming content on UX fundamentals, layout optimizations, and perceived performance.\n\nOne concept completely blew my mind: How to make loading screens feel faster than they actually are.\n\nIt’s called Optimistic UI.\n\nInstead of forcing users to stare at a boring loading spinner, the frontend instantly updates to show the successful state before the server even responds.\n\nThink about it:\n👉 When you click \"Add to Cart\" on Amazon or Flipkart, the counter ticks up immediately.\n👉 When you double-tap a post on Instagram, the heart lights up instantly.\n\nThe backend catches up a split second later, but to the user, the app feels lightning fast. It's all about psychological perception.\n\nI spent the last two weeks obsessing over this concept and rewriting our frontend logic.\nThe result? Our websites now feel incredibly snappy, fluid, and instant. It completely transforms the user experience without actually changing our server speeds.\n\nThe biggest takeaway? Never underestimate unconventional learning sources. Sometimes your next engineering or design breakthrough is hiding right in your feed.\n\nWhat’s the most valuable thing you’ve learned from a \"non-educational\" platform? Let me know below! 👇\n\n#UXDesign #WebDevelopment #Frontend #OptimisticUI #UserExperience #ProductDesign #UIUX",
-      "reasoning": "Custom draft added directly from dashboard.",
-      "image_paths": [
-        "memory/images/1785166700424_1uN8az9DwGhHTViMCWf-PtQ.png"
-      ]
-    },
-    {
       "post_text": "Customers revealed that our checkout conversion dropped on older Android devices. \n\nI spent three days testing the site on various browser versions to find the culprit. It turned out that an obscure CSS grid property we were using was causing the entire checkout container to overflow off the screen on smaller resolutions.\n\nI refactored the layout to use flexbox with specific fallback widths. Not sure if it's fixed but It is a reminder that browser compatibility is not just a legacy concern, even for modern stacks.\n\nHow do you prioritize cross-browser testing when you have limited development time?\n\n#frontend #webperformance #css",
       "reasoning": "Highlights the impact of UI/UX on business performance and the importance of cross-browser compatibility for a startup."
     },
@@ -70,5 +63,5 @@
       "reasoning": "Reflects a shift in mindset toward readability and long-term maintainability."
     }
   ],
-  "last_posted_at": "2026-07-27T05:47:19.685184+00:00"
+  "last_posted_at": "2026-07-28T05:12:33.713357+00:00"
 }

@@ -97,5 +97,14 @@
     "context_date": null,
     "dry_run": false,
     "preview": "Using two different laptops to build a website is a recipe for disaster. I learned this the hard way last month.\n\nI was bouncing between two machines to work on the site. Because a few changes hadn't …"
+  },
+  {
+    "id": 12,
+    "posted_at": "2026-07-28T05:12:33.713858+00:00",
+    "post_urn": "urn:li:share:7487736734756032512",
+    "tone": "Auto",
+    "context_date": null,
+    "dry_run": false,
+    "preview": "Instagram isn't just for doomscrolling. It's actually a masterclass in UX.\n\nLately, my social feed has taught me more about practical product design than most textbooks. I’ve been quietly consuming co…"
   }
 ]
