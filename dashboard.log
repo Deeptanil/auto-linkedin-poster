@@ -1,37 +1,5 @@
---- Posting Pipeline Run Started: 2026-07-30 04:56:32.100206 ---
+--- Posting Pipeline Run Started: 2026-07-30 05:27:36.184845 ---
 ============================================================
   LinkedIn AI Auto-Poster (Batch Queue & Memory Engine)
 ============================================================
-  Tone:     Auto
-  Dry run:  False
-  Force:    False
-  Replenish Only: False
-
-[1/5] Token check skipped.
-[2/5] Loading memory...
-  Voice profile:  [OK]
-  Achievements:   [OK]
-  Recent context: [X] (none found)
-  Approved posts: 4
-  Pending drafts: 10
-
-
-────────────────────────────────────────────────────────────
-CURRENT APPROVED POST TO PUBLISH:
-────────────────────────────────────────────────────────────
-Documentation is the difference between a project that scales and one that breaks. 
-
-When I first started building, I skipped writing technical docs because it felt like wasted time. I thought I would remember how the authentication logic worked three months later.
-
-I was wrong. When I had to update our shipping integration recently, I spent an hour trying to decipher my own messy code. I ended up creating an internal notes doc for our architecture to stop the cycle of constant confusion.
-
-What is your go-to strategy for maintaining technical documentation while building fast?
-
-#softwareengineering #startup #coding
-────────────────────────────────────────────────────────────
-
-[4/5] Posting to LinkedIn...
-  [OK] Post published! URN: urn:li:share:7488457481195753472
-[5/5] Updating queues and logging history...
-
-🎉 All done! Post is live on LinkedIn. Cache queue updated.
+[!] Last post was 0 days ago. Current interval is 1 days. Skipping posting.
