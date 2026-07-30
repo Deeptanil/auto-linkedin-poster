@@ -115,5 +115,14 @@
     "context_date": null,
     "dry_run": false,
     "preview": "Customers revealed that our checkout conversion dropped on older Android devices. \n\nI spent three days testing the site on various browser versions to find the culprit. It turned out that an obscure C…"
+  },
+  {
+    "id": 14,
+    "posted_at": "2026-07-30T04:56:32.539510+00:00",
+    "post_urn": "urn:li:share:7488457481195753472",
+    "tone": "Auto",
+    "context_date": null,
+    "dry_run": false,
+    "preview": "Documentation is the difference between a project that scales and one that breaks. \n\nWhen I first started building, I skipped writing technical docs because it felt like wasted time. I thought I would…"
   }
 ]
