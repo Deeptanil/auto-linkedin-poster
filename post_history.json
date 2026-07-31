@@ -124,5 +124,14 @@
     "context_date": null,
     "dry_run": false,
     "preview": "Documentation is the difference between a project that scales and one that breaks. \n\nWhen I first started building, I skipped writing technical docs because it felt like wasted time. I thought I would…"
+  },
+  {
+    "id": 15,
+    "posted_at": "2026-07-31T05:33:07.779818+00:00",
+    "post_urn": "urn:li:share:7488829076594413568",
+    "tone": "Auto",
+    "context_date": null,
+    "dry_run": false,
+    "preview": "I chose to build our image hosting infrastructure instead of using a third-party CDN. \n\nMost people tell you to just plug in a service like Cloudinary, but I wanted to keep our infrastructure costs to…"
   }
 ]

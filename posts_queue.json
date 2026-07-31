@@ -1,10 +1,6 @@
 {
   "approved": [
     {
-      "post_text": "I chose to build our image hosting infrastructure instead of using a third-party CDN. \n\nMost people tell you to just plug in a service like Cloudinary, but I wanted to keep our infrastructure costs to a minimum while maintaining total control over our asset delivery. I set up a custom Nginx cache with automatic image compression on our Oracle VPS.\n\nIt took some time to fine-tune the compression settings, but our storage costs are basically zero now. For a bootstrap startup, every recurring subscription you cancel gives you more runway for actual development.\n\nAt what point do you decide that building an internal tool is cheaper than paying for a SaaS service?\n\n#selfhosting #infrastructure #bootstrapping",
-      "reasoning": "Reflects the student-founder mindset of maximizing resources and choosing technical control over convenience."
-    },
-    {
       "post_text": "I spent three hours debugging a simple currency conversion rounding error last Tuesday.\n\nWe were showing prices on STRAYED with standard floating point math in JavaScript. It seemed fine until a customer pointed out that their cart total was off by exactly one paisa due to precision drift. That tiny error multiplied across thousands of transactions would have created a massive accounting nightmare.\n\nI realized that using floats for money is a beginner mistake I should have avoided. I refactored the entire pricing module to use integer-based math by converting all prices to the smallest currency unit before performing any arithmetic.\n\nIt was a humbling reminder that the most basic concepts in computer science often cause the biggest headaches in production. When you are moving fast, it is incredibly easy to overlook the foundational rules that keep a financial system accurate.\n\nHow do you handle currency precision in your own backend architectures to avoid these floating point traps?\n\n#webdev #javascript #fintech",
       "reasoning": "This post uses a technical, honest tone to discuss a specific, relatable engineering problem (floating-point errors in currency) while adhering to the constraint of referencing real projects like STRAYED without including buzzwords or prohibited formatting."
     },
@@ -55,5 +51,5 @@
       "reasoning": "Reflects a shift in mindset toward readability and long-term maintainability."
     }
   ],
-  "last_posted_at": "2026-07-30T04:56:32.539070+00:00"
+  "last_posted_at": "2026-07-31T05:33:07.778192+00:00"
 }
