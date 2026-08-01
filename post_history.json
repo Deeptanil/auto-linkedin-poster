@@ -133,5 +133,14 @@
     "context_date": null,
     "dry_run": false,
     "preview": "I chose to build our image hosting infrastructure instead of using a third-party CDN. \n\nMost people tell you to just plug in a service like Cloudinary, but I wanted to keep our infrastructure costs to…"
+  },
+  {
+    "id": 16,
+    "posted_at": "2026-08-01T05:24:33.269077+00:00",
+    "post_urn": "urn:li:share:7489189304200527872",
+    "tone": "Auto",
+    "context_date": null,
+    "dry_run": false,
+    "preview": "I spent three hours debugging a simple currency conversion rounding error last Tuesday.\n\nWe were showing prices on STRAYED with standard floating point math in JavaScript. It seemed fine until a custo…"
   }
 ]
