@@ -1,10 +1,5 @@
 {
-  "approved": [
-    {
-      "post_text": "Last month, I had one of those moments that made me stop and think.\n\nFor almost three weeks, I had been completely focused on building new features. Everything was working as expected, so I never gave much thought to my database security.\n\nThen I finally went through my inbox.\n\nI found multiple emails from my database provider reminding me to secure my database. Somehow, I had completely missed every single one of them.\n\nThe moment I saw those emails, I immediately reviewed my database configuration, enabled the necessary security measures, and made sure everything was properly locked down.\n\nThankfully, nothing had happened.\n\nIt was a reminder that it's easy to get so caught up in building that security becomes an afterthought. We spend hours making sure our code works, but sometimes forget to make sure it's protected.\n\nThat experience changed the way I build. Since then, I've treated security as part of the development process from the very beginning, instead of something to deal with later.\n\nSometimes the biggest lessons come from the mistakes that could have turned into much bigger problems.\n\n#cybersecurity #database",
-      "reasoning": "This post focuses on a specific technical challenge involving database latency and VPS maintenance, reflecting Deeptanil's hands-on experience with his self-hosted infrastructure. It avoids buzzwords, uses a casual but professional tone, and adheres to all formatting constraints."
-    }
-  ],
+  "approved": [],
   "pending": [
     {
       "post_text": "I spent three days manually mapping product categories because our CSV import script failed. \n\nWhen we launched, I expected our Odoo inventory import to work on the first try. Instead, every single row with a special character in the description caused the entire data pipeline to crash. \n\nI realized the hard way that assuming standard library parsers handle dirty real-world data is a mistake. I ended up writing a custom Python cleaning script to strip unwanted formatting before the database upload. \n\nIt was tedious work, but it taught me that you cannot rely on out-of-the-box tools when you have unique inventory structures. Sometimes the boring data cleaning is exactly what you need to make the system actually work. \n\nHow do you handle messy legacy data when you are building a new system from scratch?\n\n#dataengineering #odoo #startups",
@@ -47,5 +42,5 @@
       "reasoning": "Reflects a shift in mindset toward readability and long-term maintainability."
     }
   ],
-  "last_posted_at": "2026-08-01T05:24:33.268620+00:00"
+  "last_posted_at": "2026-08-02T05:24:32.337799+00:00"
 }

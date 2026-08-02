@@ -142,5 +142,14 @@
     "context_date": null,
     "dry_run": false,
     "preview": "I spent three hours debugging a simple currency conversion rounding error last Tuesday.\n\nWe were showing prices on STRAYED with standard floating point math in JavaScript. It seemed fine until a custo…"
+  },
+  {
+    "id": 17,
+    "posted_at": "2026-08-02T05:24:32.338253+00:00",
+    "post_urn": "urn:li:share:7489551689809842176",
+    "tone": "Auto",
+    "context_date": null,
+    "dry_run": false,
+    "preview": "Last month, I had one of those moments that made me stop and think.\n\nFor almost three weeks, I had been completely focused on building new features. Everything was working as expected, so I never gave…"
   }
 ]
