@@ -1,47 +1,5 @@
---- Posting Pipeline Run Started: 2026-08-03 11:54:47.158898 ---
+--- Posting Pipeline Run Started: 2026-08-03 15:41:55.682877 ---
 ============================================================
   LinkedIn AI Auto-Poster (Batch Queue & Memory Engine)
 ============================================================
-  Tone:     Auto
-  Dry run:  False
-  Force:    False
-  Replenish Only: False
-
-[1/5] Token check skipped.
-[2/5] Loading memory...
-  Voice profile:  [OK]
-  Achievements:   [OK]
-  Recent context: [X] (none found)
-  Approved posts: 8
-  Pending drafts: 10
-
-
-────────────────────────────────────────────────────────────
-CURRENT APPROVED POST TO PUBLISH:
-────────────────────────────────────────────────────────────
-I used to think good design was about making things look better.
-
-The more products I build, the more I realize it's actually about making people's lives easier.
-
-Over the past few months, I've been balancing engineering, running two brands, and now diving deeper into UX through the Google UX Design Professional Certificate.
-
-One thing has become clear:
-
-The best products aren't the ones with the most features. They're the ones that remove friction.
-
-Whether it's an e-commerce checkout, a healthcare platform, or even a simple landing page, every extra click, confusing button, or unnecessary step is a chance to lose someone's trust.
-
-That's the mindset I'm trying to develop. Not just building things that work, but building experiences that people genuinely enjoy using.
-
-I'm excited to keep learning, applying these principles to real projects, and sharing the journey along the way.
-
-What was one lesson that completely changed the way you think about design or building products?
-
-#UXDesign #ProductDesign #GoogleUXDesign #DesignThinking #UserExperience #Tech
-────────────────────────────────────────────────────────────
-
-[4/5] Posting to LinkedIn...
-  [OK] Post published! URN: urn:li:share:7490012288930705408
-[5/5] Updating queues and logging history...
-
-🎉 All done! Post is live on LinkedIn. Cache queue updated.
+[!] Last post was 0 days ago. Current interval is 1 days. Skipping posting.
