@@ -1206,6 +1206,33 @@
             },
 
             async generatePostFromTopic(topicText, index) {
+                if (this.isCloud) {
+                    const url = `https://api.github.com/repos/${this.ghRepo}/actions/workflows/generate-draft-from-topic.yml/dispatches`;
+                    const res = await fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${this.ghToken}`,
+                            'Accept': 'application/vnd.github+json',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            ref: 'main',
+                            inputs: {
+                                topic: topicText,
+                                index: String(index)
+                            }
+                        })
+                    });
+                    if (!res.ok) {
+                        const err = await res.json();
+                        throw new Error(err.message || res.statusText);
+                    }
+                    return {
+                        status: 'success',
+                        message: "Draft generation workflow triggered successfully."
+                    };
+                }
+
                 const res = await fetch('/api/post/generate_from_topic', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -1774,6 +1801,7 @@
         async function generateAIDraft(index) {
             const textarea = document.getElementById(`text-pending-${index}`);
             const topicText = textarea.value.trim();
+            const previousText = topicText;
             if (!topicText) {
                 showToast("Please type a topic, question, or incident first.", "warning");
                 return;
@@ -1796,14 +1824,19 @@
             try {
                 const result = await storageProvider.generatePostFromTopic(topicText, index);
                 if (result.status === 'success') {
-                    queueData.pending[index].post_text = result.post_text;
-                    queueData.pending[index].reasoning = result.reasoning;
-                    
-                    renderPosts();
-                    showToast("Post draft successfully generated!", "success");
-                    
-                    queueSaveDebounced(`chore: save generated post from topic [skip ci]`);
-                    fetchStatus();
+                    if (storageProvider.isCloud) {
+                        showToast(result.message || "Generation triggered on GitHub. Waiting for updated draft...", "success");
+                        startDraftGenerationPoller(index, previousText);
+                    } else {
+                        queueData.pending[index].post_text = result.post_text;
+                        queueData.pending[index].reasoning = result.reasoning;
+
+                        renderPosts();
+                        showToast("Post draft successfully generated!", "success");
+
+                        queueSaveDebounced(`chore: save generated post from topic [skip ci]`);
+                        fetchStatus();
+                    }
                 } else {
                     throw new Error(result.message || "Unknown error");
                 }
@@ -1862,6 +1895,7 @@
         // triggered, updating the UI in real-time as new drafts appear.
 
         let _replenishPollTimer = null;
+        let _draftPollTimer = null;
 
         function startReplenishPoller() {
             // Don't stack multiple pollers
@@ -1909,6 +1943,41 @@
             }
             const badge = document.getElementById('countPending');
             if (badge) badge.style.opacity = '1';
+        }
+
+        function startDraftGenerationPoller(index, previousText) {
+            if (_draftPollTimer) {
+                clearInterval(_draftPollTimer);
+                _draftPollTimer = null;
+            }
+
+            let attempts = 0;
+            _draftPollTimer = setInterval(async () => {
+                attempts += 1;
+                if (storageProvider.isSaving) return;
+
+                try {
+                    fetchLogs();
+                    const fresh = await storageProvider.fetchQueue();
+                    const nextDraft = fresh.pending[index];
+                    const nextText = nextDraft && nextDraft.post_text ? nextDraft.post_text.trim() : "";
+
+                    if (nextText && nextText !== previousText.trim()) {
+                        queueData = fresh;
+                        updateCountsDisplay();
+                        renderPosts();
+                        clearInterval(_draftPollTimer);
+                        _draftPollTimer = null;
+                        showToast("Post draft successfully generated!", "success");
+                    } else if (attempts >= 30) {
+                        clearInterval(_draftPollTimer);
+                        _draftPollTimer = null;
+                        showToast("Generation is still running. Refresh in a moment to check the updated draft.", "warning");
+                    }
+                } catch (err) {
+                    console.warn("[draft-poller] fetch error", err);
+                }
+            }, 4000);
         }
 
         // ─── Post Now (trigger full posting workflow) ─────────────────────────

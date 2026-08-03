@@ -60,6 +60,19 @@ mem = MemoryManager()
 compactor = MemoryCompactor()
 
 
+def collect_blacklist_posts(queue: dict, exclude_pending_index: int | None = None) -> list[str]:
+    """Build a repetition blacklist from posted history plus current queue contents."""
+    blacklist = mem.load_recent_posts_history_text(limit=15)
+    for section in ("approved", "pending"):
+        for idx, item in enumerate(queue.get(section, [])):
+            if section == "pending" and exclude_pending_index is not None and idx == exclude_pending_index:
+                continue
+            text = item.get("post_text", "").strip()
+            if text:
+                blacklist.append(text)
+    return blacklist
+
+
 # ─── API Routes ───────────────────────────────────────────────────────────────
 
 @app.route("/")
@@ -109,9 +122,9 @@ def bg_replenish_task():
         summary = mem.build_full_context_summary()
         topic = "See the recent context below — extract the most compelling story or insight." if summary["recent_context"] else "Share an insight from my professional background and achievements."
         
-        print("[replenish] Loading recent post history to prevent AI repeating past topics...")
-        past_posts_text = mem.load_recent_posts_history_text(limit=15)
-        print(f"[replenish] Loaded {len(past_posts_text)} past posts for repetition blacklist.")
+        print("[replenish] Building repetition blacklist from post history and current queue...")
+        blacklist_posts = collect_blacklist_posts(queue)
+        print(f"[replenish] Loaded {len(blacklist_posts)} blacklist entries.")
         
         print("[replenish] Loading compact profile (experiences, banned buzzwords, voice guidelines)...")
         compact_data = mem.load_compact_profile()
@@ -124,7 +137,7 @@ def bg_replenish_task():
             topic=topic,
             compact_profile=compact_data,
             recent_context=summary["recent_context"],
-            past_posts=past_posts_text,
+            past_posts=blacklist_posts,
             batch_size=needed
         )
         
@@ -255,29 +268,36 @@ def generate_from_topic():
     """
     data = request.json or {}
     topic = data.get("topic", "").strip()
+    persist_to_memory = bool(data.get("persist_to_memory", False))
+    target_index = data.get("index")
     
     if not topic:
         return jsonify({"status": "error", "message": "No topic or incident text provided."}), 400
 
     try:
-        # 1. Save new text as context & run compaction to extract achievements/facts
-        mem.save_context(topic)
-        compactor.compact_all(new_raw_input=topic)
-        
-        # 2. Re-load context & compact profile to generate the post draft
+        # Draft generation should be ephemeral by default. The explicit
+        # "Add Context / Wins" action is what persists memory.
+        if persist_to_memory:
+            mem.save_context(topic)
+            compactor.compact_all(new_raw_input=topic)
+
+        # Re-load context & compact profile to generate the post draft
         summary = mem.build_full_context_summary()
         compact = mem.load_compact_profile()
-        past_posts_text = mem.load_recent_posts_history_text(limit=15)
+        queue = mem.load_posts_queue()
+        exclude_pending_index = int(target_index) if target_index is not None else None
+        blacklist_posts = collect_blacklist_posts(queue, exclude_pending_index=exclude_pending_index)
         
-        # 3. Call AIGenerator to create a post using the topic
+        # Call AIGenerator to create a post from the supplied topic only.
         ai = AIGenerator()
         batch = ai.generate_post_batch(
             topic=topic,
             tone="Auto",
             compact_profile=compact,
             recent_context=summary["recent_context"],
-            past_posts=past_posts_text,
-            batch_size=1
+            past_posts=blacklist_posts,
+            batch_size=1,
+            topic_is_source_of_truth=True,
         )
         
         if not batch:

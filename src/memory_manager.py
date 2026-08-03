@@ -79,7 +79,20 @@ class MemoryManager:
         self.contexts_dir.mkdir(parents=True, exist_ok=True)
         date_str = for_date or date.today().isoformat()
         path = self.contexts_dir / f"{date_str}.md"
-        path.write_text(context_text.strip(), encoding="utf-8")
+        entry = context_text.strip()
+        if not entry:
+            return path
+
+        if path.exists():
+            existing = path.read_text(encoding="utf-8").strip()
+            if entry in existing:
+                return path
+
+            timestamp = datetime.now().strftime("%H:%M")
+            combined = f"{existing}\n\n--- Added {timestamp} ---\n{entry}" if existing else entry
+            path.write_text(combined, encoding="utf-8")
+        else:
+            path.write_text(entry, encoding="utf-8")
         return path
 
     def load_post_history(self) -> list[dict]:
@@ -187,4 +200,3 @@ class MemoryManager:
             return content
         except Exception:
             return ""
-

@@ -1,0 +1,114 @@
+name: "✍️ Generate Draft From Topic"
+
+on:
+  workflow_dispatch:
+    inputs:
+      topic:
+        description: "Prompt, topic, or real incident to turn into a draft"
+        required: true
+        type: string
+      index:
+        description: "Pending draft index to replace"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    name: "Generate Draft"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: code
+
+    steps:
+      - name: "⬇️ Checkout repository code"
+        uses: actions/checkout@v4
+        with:
+          ref: "main"
+          path: "code"
+
+      - name: "⬇️ Checkout memory database"
+        uses: actions/checkout@v4
+        with:
+          ref: "state"
+          path: "code/memory"
+
+      - name: "🐍 Setup Python 3.11"
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: "📦 Install dependencies"
+        run: pip install -r requirements.txt
+
+      - name: "✍️ Generate topic-based draft"
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          TOPIC_INPUT: ${{ github.event.inputs.topic }}
+          TARGET_INDEX: ${{ github.event.inputs.index }}
+        run: |
+          python -c "
+          import os
+          import sys
+          from pathlib import Path
+
+          sys.path.insert(0, '.')
+
+          from src.ai_generator import AIGenerator
+          from src.memory_manager import MemoryManager
+
+          topic = os.environ['TOPIC_INPUT'].strip()
+          index = int(os.environ['TARGET_INDEX'])
+
+          mem = MemoryManager()
+          queue = mem.load_posts_queue()
+          pending = queue.get('pending', [])
+
+          if index < 0 or index >= len(pending):
+              raise IndexError(f'Pending draft index out of range: {index}')
+
+          summary = mem.build_full_context_summary()
+          compact = mem.load_compact_profile()
+
+          blacklist = mem.load_recent_posts_history_text(limit=15)
+          for section_name, items in (('approved', queue.get('approved', [])), ('pending', pending)):
+              for idx, item in enumerate(items):
+                  if section_name == 'pending' and idx == index:
+                      continue
+                  text = item.get('post_text', '').strip()
+                  if text:
+                      blacklist.append(text)
+
+          ai = AIGenerator()
+          batch = ai.generate_post_batch(
+              topic=topic,
+              tone='Auto',
+              compact_profile=compact,
+              recent_context=summary.get('recent_context', ''),
+              past_posts=blacklist,
+              batch_size=1,
+              topic_is_source_of_truth=True,
+          )
+
+          if not batch:
+              raise RuntimeError('Gemini generation returned 0 valid drafts.')
+
+          pending[index]['post_text'] = batch[0]['post_text']
+          pending[index]['reasoning'] = batch[0].get('reasoning', 'Generated from dashboard topic prompt.')
+          queue['pending'] = pending
+          mem.save_posts_queue(queue)
+          print(f'[generate-topic] Updated pending draft at index {index}.')
+          "
+
+      - name: "💾 Commit updated queue"
+        run: |
+          cd memory
+          git config user.name  "linkedin-poster[bot]"
+          git config user.email "linkedin-poster[bot]@users.noreply.github.com"
+          git add posts_queue.json
+          git diff --quiet && git diff --staged --quiet || (git commit -m "chore: generate draft from topic [skip ci]" && git push)

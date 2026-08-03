@@ -93,6 +93,7 @@ class AIGenerator:
         recent_context: str = "",
         past_posts: list[str] = None,
         batch_size: int = 5,
+        topic_is_source_of_truth: bool = False,
     ) -> list[dict]:
         """
         Generate a batch of LinkedIn posts as structured JSON.
@@ -102,6 +103,8 @@ class AIGenerator:
         if not self.client:
             print("[ai_generator] ERROR: Gemini API key is missing. Ensure GEMINI_API_KEY is configured in your environment or .env file.")
             raise ValueError("Gemini API client not configured. Set GEMINI_API_KEY.")
+
+        comparison_posts = [p.strip() for p in (past_posts or []) if isinstance(p, str) and p.strip()]
 
         # Format anti-repetition negative constraints
         history_blacklist = ""
@@ -114,7 +117,8 @@ class AIGenerator:
         prompt = self._build_batch_prompt(
             topic, tone, extra_instructions,
             compact_profile, recent_context,
-            history_blacklist, batch_size
+            history_blacklist, batch_size,
+            topic_is_source_of_truth=topic_is_source_of_truth,
         )
 
         print(f"[ai_generator] Calling Google Gemini API (model: {config.GEMINI_MODEL}) requesting structured JSON response...")
@@ -172,6 +176,15 @@ class AIGenerator:
                 print(f"  - Post index {idx}: Filtered out (contains markdown bold '**' or code block '```' formatting).")
                 continue
 
+            if self._contains_emoji(post_text):
+                print(f"  - Post index {idx}: Filtered out (contains emoji despite prompt constraints).")
+                continue
+
+            overlap_score = self._max_similarity(post_text, comparison_posts + [entry["post_text"] for entry in filtered_batch])
+            if overlap_score >= 0.55:
+                print(f"  - Post index {idx}: Filtered out (too similar to existing content, similarity={overlap_score:.2f}).")
+                continue
+
             print(f"  - Post index {idx}: Accepted! (length={len(post_text)})")
             filtered_batch.append({
                 "post_text": post_text,
@@ -180,6 +193,36 @@ class AIGenerator:
 
         print(f"[ai_generator] Filter process complete. {len(filtered_batch)} of {len(batch)} generated posts were approved.")
         return filtered_batch
+
+    @staticmethod
+    def _contains_emoji(text: str) -> bool:
+        return bool(re.search(r"[\U0001F300-\U0001FAFF\u2600-\u27BF]", text))
+
+    @staticmethod
+    def _normalise_words(text: str) -> set[str]:
+        cleaned = re.sub(r"#[A-Za-z0-9_]+", " ", text.lower())
+        words = re.findall(r"[a-z0-9']+", cleaned)
+        return {word for word in words if len(word) > 2}
+
+    def _max_similarity(self, text: str, other_posts: list[str]) -> float:
+        if not other_posts:
+            return 0.0
+
+        current_words = self._normalise_words(text)
+        if not current_words:
+            return 0.0
+
+        max_score = 0.0
+        for other in other_posts:
+            other_words = self._normalise_words(other)
+            if not other_words:
+                continue
+            intersection = len(current_words & other_words)
+            union = len(current_words | other_words)
+            if union == 0:
+                continue
+            max_score = max(max_score, intersection / union)
+        return max_score
 
     def generate_post(
         self,
@@ -241,6 +284,7 @@ class AIGenerator:
         recent_context: str,
         history_blacklist: str,
         batch_size: int,
+        topic_is_source_of_truth: bool = False,
     ) -> str:
         tone_desc = TONE_GUIDELINES.get(tone, TONE_GUIDELINES["Auto"])
         banned_str = ", ".join(f'"{w}"' for w in AI_BANNED_WORDS)
@@ -302,6 +346,8 @@ class AIGenerator:
             "6. NO MARKDOWN: Do not use **bold**, *italic*, or ``` code blocks. LinkedIn does not render markdown. Keep everything as raw text.\n"
             "7. LENGTH: 150–400 words per post. Enough to be substantial, not a wall of text.\n"
             "8. CTA: End with one specific, open-ended question that invites real replies — not 'What do you think?' or 'Drop a comment below'.\n"
+            "9. DIVERSITY: Do not make every post a bug-fix story. Mix angles such as product decisions, operational pain, founder trade-offs, UX principles, launch moments, tooling choices, and lessons from a specific build.\n"
+            "10. GROUNDING: Every concrete claim must be directly supported by the provided facts or context. If a detail is not clearly supported, leave it out.\n"
         )
 
         # 7. Anti-AI rules
@@ -314,6 +360,8 @@ class AIGenerator:
             f"  • Any version of 'In today's world...'\n"
             f"  • Overly dramatic humble-brags ('From nothing to everything...')\n"
             f"  • Starting a line with 'Remember:' or 'The truth is:'\n"
+            f"  • Reusing the exact same structure across posts: problem -> fix -> generic lesson -> CTA\n"
+            f"  • Inventing durations, revenue, costs, customer counts, launch outcomes, or emotional scenes unless they were explicitly given\n"
             f"Inject BURSTINESS: mix short punchy sentences with longer descriptive ones. "
             f"Include at least one specific detail (a date, a number, a name, a tool) "
             f"that makes the post impossible for anyone else to have written."
@@ -325,11 +373,18 @@ class AIGenerator:
             f"Topic: {topic}\n"
             f"Tone: {tone} — {tone_desc}"
         ]
+        if topic_is_source_of_truth:
+            task_parts.append(
+                "Use the topic text as the primary source of truth. Build the post around that exact incident or idea. "
+                "You may only pull in supporting details from the compact profile when they clearly connect to the topic. "
+                "Do not broaden into unrelated backlog facts."
+            )
         if extra_instructions:
             task_parts.append(f"Extra instructions: {extra_instructions}")
             
         task_parts.append(
             f"\nWrite exactly {batch_size} unique LinkedIn posts that fit all the guidelines above.\n\n"
+            f"If batch_size is greater than 1, each post must use a meaningfully different angle, opening line, and primary fact cluster.\n\n"
             f"Return ONLY a valid JSON array of objects with this structure:\n"
             f"[\n"
             f"  {{\n"

@@ -45,6 +45,17 @@ from src.discord_notifier import (
 )
 
 
+def collect_blacklist_posts(mem: MemoryManager, approved_list: list[dict], pending_list: list[dict]) -> list[str]:
+    """Combine recent history and queued drafts to reduce repeated angles."""
+    blacklist_posts = mem.load_recent_posts_history_text(limit=15)
+    for group in (approved_list, pending_list):
+        for item in group:
+            text = item.get("post_text", "").strip()
+            if text:
+                blacklist_posts.append(text)
+    return blacklist_posts
+
+
 class DualLogger:
     def __init__(self, log_path):
         self.terminal = sys.stdout
@@ -155,10 +166,7 @@ def main():
             print(f"    Replenishing pending drafts queue (current: {len(pending_list)}, target: 10)...")
             try:
                 topic = "See the recent context below — extract the most compelling story or insight." if ctx_summary["recent_context"] else "Share an insight from my professional background and achievements."
-                past_posts_text = mem.load_recent_posts_history_text(limit=15)
-                # Prevent overlapping topics with next approved posts in the queue
-                approved_posts_text = [item.get("post_text", "") for item in approved_list if item.get("post_text")]
-                blacklist_posts = past_posts_text + approved_posts_text
+                blacklist_posts = collect_blacklist_posts(mem, approved_list, pending_list)
                 
                 compact = mem.load_compact_profile()
                 ai = AIGenerator()
@@ -200,10 +208,7 @@ def main():
             print("    Proactively replenishing pending drafts queue (target: 10)...")
             try:
                 topic = "See the recent context below — extract the most compelling story or insight." if ctx_summary["recent_context"] else "Share an insight from my professional background and achievements."
-                past_posts_text = mem.load_recent_posts_history_text(limit=15)
-                # Prevent overlapping topics with next approved posts in the queue
-                approved_posts_text = [item.get("post_text", "") for item in approved_list if item.get("post_text")]
-                blacklist_posts = past_posts_text + approved_posts_text
+                blacklist_posts = collect_blacklist_posts(mem, approved_list, pending_list)
                 
                 compact = mem.load_compact_profile()
                 ai = AIGenerator()
@@ -311,10 +316,7 @@ def main():
         print("  Replenishing pending queue back up to 10...")
         try:
             topic = "See the recent context below — extract the most compelling story or insight." if ctx_summary["recent_context"] else "Share an insight from my professional background and achievements."
-            past_posts_text = mem.load_recent_posts_history_text(limit=15)
-            # Prevent overlapping topics with next approved posts in the queue
-            approved_posts_text = [item.get("post_text", "") for item in approved_list if item.get("post_text")]
-            blacklist_posts = past_posts_text + approved_posts_text
+            blacklist_posts = collect_blacklist_posts(mem, approved_list, pending_list)
             
             compact = mem.load_compact_profile()
             ai = AIGenerator()
