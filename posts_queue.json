@@ -1,5 +1,46 @@
 {
   "approved": [],
-  "pending": [],
+  "pending": [
+    {
+      "post_text": "I wasted six hours last week trying to sync my local database with Odoo. \n\nMy local development environment and the production server had slight version mismatches in the schema. It felt like I was chasing ghosts because the application would crash only on specific edge cases in the data validation layer. I had to manually audit 45 distinct object relationships to identify where the primary key increment logic failed. \n\nBuilding an integration without a strict staging pipeline is a lesson I only needed to learn once. Now, I run every migration script through a dry-run test container before even touching the production environment. \n\nWhat is the most annoying bug you have spent a full workday hunting down? \n\n#webdevelopment #startup #coding",
+      "reasoning": "Focuses on a technical hurdle involving Odoo and dev environment management, reflecting Deeptanil's role as a hands-on developer."
+    },
+    {
+      "post_text": "Webhooks are only as reliable as your error handling logic for failed deliveries. \n\nEarlier this month, I noticed our Razorpay integration missed two payment callbacks because of a brief network timeout. I had relied on the assumption that the response would always land perfectly on the first try. That assumption cost me a manual reconciliation of our financial logs against our bank statement. \n\nI ended up writing a secondary listener that periodically polls the API for missed events. It is not the most elegant solution, but it guarantees that our order status remains accurate. \n\nHow do you handle callback reliability when building payment integrations? \n\n#razorpay #fintech #softwareengineering",
+      "reasoning": "Highlights a specific technical struggle with Razorpay webhooks and the practical fix implemented, avoiding buzzwords."
+    },
+    {
+      "post_text": "Being a student means my best work happens in the gaps between college lectures. \n\nMost of my production code for STRAYED gets written during those hours when I am not sitting in a classroom. I used to feel stressed about splitting my focus, but now I treat these sessions as high-intensity sprints. If I have forty minutes before a core finance class, I commit to solving exactly one ticket in our project backlog. \n\nThis approach forced me to become faster at scoping tasks and writing clean code that does not require hours of deep context switching. \n\nHow do you manage to stay productive when you have limited time blocks for deep work? \n\n#studentfounder #bangalore #productivity",
+      "reasoning": "Connects his dual life as a student and founder, emphasizing a practical approach to time management."
+    },
+    {
+      "post_text": "My obsession with minimizing dependency bloat has changed how I ship software. \n\nWhen we were building the early internal tools for Prettiva, I kept adding npm packages for every minor requirement. I soon realized that our build times for the frontend were creeping past the four-minute mark on our local machines. I spent a weekend stripping out half of those libraries and writing native functions to handle tasks like date formatting and state management. \n\nIt shaved our bundle size by 30 percent and made the codebase much easier to reason about. The best library is often the one you do not need to install. \n\nWhat is one dependency you regretted adding to your codebase? \n\n#javascript #webperformance #softwarearchitecture",
+      "reasoning": "Shares a technical decision-making process regarding code bloat and performance, aligning with his developer persona."
+    },
+    {
+      "post_text": "Inventory management is not just about tracking items in a spreadsheet. \n\nIt is about understanding how the front-end display logic interacts with the back-end database queries. When we were setting up variant tracking for STRAYED, I realized that simple table joins were killing our query performance. I had to restructure our data model to prioritize faster lookups for the specific variants we sell most often. \n\nIt was a tough realization that our initial database design was not built for scale. Refactoring that mid-launch was the most stressful week of my life. \n\nWhat design mistake did you realize only after your project was already live? \n\n#database #ecommerce #fullstack",
+      "reasoning": "Describes a technical challenge with inventory scaling that bridges the gap between DB design and front-end performance."
+    },
+    {
+      "post_text": "I used to ignore logs until a feature failed to show up in production. \n\nEarly on, I relied on console logs to debug errors as I built, assuming everything would just work once it was deployed. That changed when a critical feature for our checkout flow broke without leaving any trace in the browser console. I spent six hours digging through our server access logs to find that an API response was returning an unexpected null value. \n\nNow, I spend as much time designing our error reporting as I do building the actual UI. A good logging system turns a nightmare debugging session into a simple five-minute fix. \n\nHow do you handle observability for your personal projects? \n\n#debugging #softwareengineering #devops",
+      "reasoning": "Uses a 'learned the hard way' narrative to discuss technical observability and error tracking."
+    },
+    {
+      "post_text": "Choosing the right stack for a startup is rarely about picking the trendiest tools. \n\nI see many peers chasing the latest frameworks every six months. For me, the focus remains on tools I can debug comfortably at three in the morning. When we chose our stack for Prettiva, we stuck to technologies that have stable documentation and a community we can actually rely on. \n\nI would rather work with a tool that I know inside and out than switch to something faster that I do not understand yet. Depth of knowledge beats breadth of tools every time. \n\nWhat is the one technology you feel like you have truly mastered? \n\n#coding #techstack #founderlife",
+      "reasoning": "Offers a grounded perspective on technology choices, avoiding the 'latest trend' bias."
+    },
+    {
+      "post_text": "Documentation is just as important as the code you write for yourself. \n\nSix months ago, I pushed a major update to our site and then took a week off from touching that specific module. When I came back to add a small feature, I spent an hour trying to decipher why I wrote a specific conditional logic block that way. I had no comments and zero documentation to explain my thought process. \n\nI realized that my future self is essentially a stranger who needs clear instructions. Now, I write brief documentation for every complex function I create. \n\nWhat habit do you use to keep your code maintainable for your future self? \n\n#programming #developer #documentation",
+      "reasoning": "Reflects on the personal impact of bad documentation, a common problem for solo or small-team developers."
+    },
+    {
+      "post_text": "I stopped testing my site only on high-end monitors a long time ago. \n\nOur usage data showed that a significant portion of our users access our store from budget devices with smaller screens. I started using a set of older Android phones to test our UI responsiveness because emulators do not capture how the hardware actually handles heavy JavaScript execution. I found that animations which looked fine on my laptop were causing a jittery experience on those devices. \n\nBuilding for the hardware people actually use is far more important than building for the hardware you own. \n\nHow do you perform mobile-first testing for your own web projects? \n\n#uxdesign #mobileweb #webdevelopment",
+      "reasoning": "Addresses the practical reality of web development in a market like India where device variety is high."
+    },
+    {
+      "post_text": "Learning to read code is often harder than writing it yourself. \n\nI spent a significant amount of time yesterday looking through open-source repos to understand how to handle complex session state management. It is humbling to see how other engineers structure their logic to handle similar problems I am currently solving. I realized that my own code was becoming overly complicated simply because I was not looking at existing, cleaner implementations. \n\nSometimes, the best way to get better is to stop typing and start reading how someone else solved the same issue. \n\nWhat is one open-source project that taught you the most about code structure? \n\n#opensource #learning #codingtips",
+      "reasoning": "Focuses on the continuous learning aspect of development, reflecting a student-founder's growth mindset."
+    }
+  ],
   "last_posted_at": "2026-08-02T05:24:32.337799+00:00"
 }
