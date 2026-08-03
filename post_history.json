@@ -151,5 +151,14 @@
     "context_date": null,
     "dry_run": false,
     "preview": "Last month, I had one of those moments that made me stop and think.\n\nFor almost three weeks, I had been completely focused on building new features. Everything was working as expected, so I never gave…"
+  },
+  {
+    "id": 18,
+    "posted_at": "2026-08-03T11:54:47.654139+00:00",
+    "post_urn": "urn:li:share:7490012288930705408",
+    "tone": "Auto",
+    "context_date": null,
+    "dry_run": false,
+    "preview": "I used to think good design was about making things look better.\n\nThe more products I build, the more I realize it's actually about making people's lives easier.\n\nOver the past few months, I've been b…"
   }
 ]
