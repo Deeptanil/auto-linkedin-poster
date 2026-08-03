@@ -1,46 +1,5 @@
 {
   "approved": [],
-  "pending": [
-    {
-      "post_text": "I spent three days manually mapping product categories because our CSV import script failed. \n\nWhen we launched, I expected our Odoo inventory import to work on the first try. Instead, every single row with a special character in the description caused the entire data pipeline to crash. \n\nI realized the hard way that assuming standard library parsers handle dirty real-world data is a mistake. I ended up writing a custom Python cleaning script to strip unwanted formatting before the database upload. \n\nIt was tedious work, but it taught me that you cannot rely on out-of-the-box tools when you have unique inventory structures. Sometimes the boring data cleaning is exactly what you need to make the system actually work. \n\nHow do you handle messy legacy data when you are building a new system from scratch?\n\n#dataengineering #odoo #startups",
-      "reasoning": "Highlights the technical struggle of data migration and custom scripting in a relatable, honest way."
-    },
-    {
-      "post_text": "Production logs are usually ignored until something breaks at two in the morning. \n\nEarly on, I relied on simple print statements to track errors across our stack. It worked fine while we were in development, but it became impossible to trace user errors once we went live. \n\nI eventually set up a centralized log aggregator to filter out the noise and highlight actual stack traces. The difference in my anxiety levels during deployment has been massive. \n\nIgnoring your logs is basically choosing to fly blind during a storm. It takes thirty minutes to set up proper logging, yet most student founders skip it because they want to build the next feature instead. \n\nWhat is the most helpful diagnostic tool you added to your stack this year?\n\n#softwaredevelopment #debugging #backend",
-      "reasoning": "Focuses on the transition from amateur developer habits to professional reliability."
-    },
-    {
-      "post_text": "I used to think my laptop specs were the bottleneck for my slow build times. \n\nI was constantly checking my CPU usage and blaming the hardware while waiting for my local environment to recompile. Then I decided to audit my build pipeline. \n\nIt turned out the issue was not the computer at all. I had hundreds of redundant development dependencies that were causing the cache to invalidate every single time I saved a file. \n\nOnce I cleaned up the configuration, the build time dropped from minutes to seconds. It was a wake-up call that poor configuration often hides behind perceived hardware limitations. \n\nDo you prioritize optimizing your local dev environment or just buy more RAM when things get slow?\n\n#webdev #productivity #coding",
-      "reasoning": "Addresses a common developer frustration with a practical, hardware-vs-software insight."
-    },
-    {
-      "post_text": "My obsession with UI perfection almost ruined our conversion rate during the first week. \n\nI spent days obsessing over the exact border radius of our buttons and the specific shade of gray for our text. I thought the design needed to be perfect to attract customers. \n\nWhen I finally watched a screen recording of a real user, I saw them struggling to find the checkout button because it was hidden behind my fancy animations. I killed the animations and made the button static and bright red. \n\nConversion went up overnight. That was the day I learned that beautiful code and great design are not always the same thing. \n\nWhat is a design element you had to remove because it was hurting your user experience?\n\n#uxdesign #startups #frontend",
-      "reasoning": "Reflects the lesson that utility beats aesthetics in e-commerce."
-    },
-    {
-      "post_text": "Technical debt is like a credit card that never stops charging interest. \n\nWhen we were building the authentication layer for our brand, I took a shortcut to get the login flow working before a deadline. I figured I would fix it later once we had some breathing room. \n\nThat later never arrived, and I spent the next month fighting against that same bad logic every time I wanted to add a new user feature. I ended up rewriting the entire module over a weekend just to stop the bleeding. \n\nFixing it immediately would have taken two hours, but fixing it later took twelve. I now treat every hack as a formal ticket in my backlog so I know exactly how much debt I am carrying. \n\nWhat is your strategy for balancing speed of development with long-term code health?\n\n#coding #softwareengineering #technicaldebt",
-      "reasoning": "Addresses the common startup trap of technical debt."
-    },
-    {
-      "post_text": "Monitoring your API usage is the only way to avoid a surprise server bill. \n\nEarly on, I connected our frontend to a third-party service without adding any rate limiting or cost caps. I was worried about features and completely forgot about the financial impact of a spike in traffic. \n\nI now have alerts set up for when we hit 50 percent of our monthly quota on any external service. It changed the way I look at third-party integrations from a convenience perspective to a risk perspective. \n\nIf you do not have a budget alert for your cloud services, you are one bad deployment away from a very expensive mistake. \n\nWhat is the most unexpected cost you have ever encountered while scaling a small application?\n\n#cloudcomputing #bootstrapping #infrastructure",
-      "reasoning": "Focuses on the financial responsibility of a founder who builds his own stack."
-    },
-    {
-      "post_text": "I learned to stop chasing every shiny new framework that pops up on Twitter. \n\nSix months ago, I would have spent a weekend refactoring our site to use the latest trending tool just because it promised slightly better performance. I was a serial re-builder. \n\nNow I measure the cost of learning and implementation against the actual value it brings to the user. If the current stack is stable and performant, I keep it and focus on product features instead. \n\nBeing a developer is about shipping value, not just collecting tools for your personal tech stack. \n\nWhat helps you decide when it is worth switching your tech stack vs sticking to what works?\n\n#webdevelopment #startups #productivity",
-      "reasoning": "Offers a mature perspective on developer discipline and avoiding shiny object syndrome."
-    },
-    {
-      "post_text": "Testing in production is only fun until it breaks a live checkout flow. \n\nI was tweaking a CSS grid layout on our store directly on the live server because I thought it was a minor change. A customer was mid-checkout, and the entire page layout broke on their device. \n\nThey did not finish the order, and I lost a customer because I was too lazy to open my local dev environment. I have a strict policy now where no CSS goes live without a cross-browser check. \n\nIt sounds obvious, but when you move fast, you start thinking that minor changes cannot break major workflows. \n\nHow do you handle your deployment process to ensure you do not break live features?\n\n#webdev #css #startupgrowth",
-      "reasoning": "Uses a personal story about a live site error to discuss deployment discipline."
-    },
-    {
-      "post_text": "Writing code for one person is a different game than writing it for a hundred. \n\nWhen it was just me, I could keep the entire state management logic in my head without any documentation. As soon as I started adding complex features, I began to lose track of how components interacted with each other. \n\nI spent three hours yesterday untangling a state bug because I forgot a single dependency chain I wrote last month. I realized that my own brain is not a reliable source of documentation. \n\nNow I keep a living document of our system architecture that gets updated every time I push a major change. It makes onboarding features so much faster. \n\nWhat do you use to keep your architecture documentation updated while you are in the middle of a sprint?\n\n#softwarearchitecture #coding #development",
-      "reasoning": "Emphasizes the transition from solo hobbyist to systematic founder."
-    },
-    {
-      "post_text": "I used to think that the best code was the one that looked the cleverest. \n\nI spent hours trying to condense functions into single lines and using obscure syntax to show off. It looked cool, but it was impossible for me to debug three weeks later. \n\nI now prefer boring, readable code that any developer can scan and understand in seconds. Debugging your own complex code is the ultimate punishment for trying to be smart. \n\nSometimes the best engineering decision is to write the simplest code possible, even if it feels less impressive. \n\nWhat has been your experience with writing code that is meant to be read rather than just executed?\n\n#cleanode #softwareengineering #javascript",
-      "reasoning": "Reflects a shift in mindset toward readability and long-term maintainability."
-    }
-  ],
+  "pending": [],
   "last_posted_at": "2026-08-02T05:24:32.337799+00:00"
 }
