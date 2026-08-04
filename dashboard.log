@@ -1,55 +1,5 @@
---- Posting Pipeline Run Started: 2026-08-04 05:12:50.762330 ---
+--- Posting Pipeline Run Started: 2026-08-04 05:34:11.398189 ---
 ============================================================
   LinkedIn AI Auto-Poster (Batch Queue & Memory Engine)
 ============================================================
-  Tone:     Auto
-  Dry run:  False
-  Force:    False
-  Replenish Only: False
-
-[1/5] Token check skipped.
-[2/5] Loading memory...
-  Voice profile:  [OK]
-  Achievements:   [OK]
-  Recent context: [X] (none found)
-  Approved posts: 7
-  Pending drafts: 10
-
-
-────────────────────────────────────────────────────────────
-CURRENT APPROVED POST TO PUBLISH:
-────────────────────────────────────────────────────────────
-I spent way too much time trying to build the "perfect" product.
-
-Turns out, perfection isn't what moves a project forward. Progress is.
-
-Over the last year, I've worked on everything from building e-commerce websites and managing databases to learning UX design and experimenting with new ideas.
-
-One thing every project has taught me is this:
-
-You rarely get it right on the first try.
-
-A design that felt perfect needed user feedback.
-
-A feature I thought people would love ended up being unnecessary.
-
-A bug that took hours to fix taught me more than an entire tutorial.
-
-Building things has made me appreciate the process more than the outcome.
-
-Every mistake leaves you with a better system, a better product, and a better way of thinking.
-
-Still learning.
-Still building.
-Still improving.
-
-What's one lesson you've learned from a project that completely changed how you work?
-
-#BuildInPublic #ProductDevelopment #UXDesign #WebDevelopment #Entrepreneurship #Learning #Tech
-────────────────────────────────────────────────────────────
-
-[4/5] Posting to LinkedIn...
-  [OK] Post published! URN: urn:li:share:7490273525262528513
-[5/5] Updating queues and logging history...
-
-🎉 All done! Post is live on LinkedIn. Cache queue updated.
+[!] Last post was 0 days ago. Current interval is 1 days. Skipping posting.
