@@ -187,5 +187,14 @@
     "context_date": null,
     "dry_run": false,
     "preview": "One of the hardest lessons I've learned is this:\n\nUsers don't see your effort.\n\nThey don't know that you spent 10 hours fixing a bug.\n\nThey don't know you redesigned the same screen five times.\n\nThey …"
+  },
+  {
+    "id": 22,
+    "posted_at": "2026-08-07T04:23:47.879042+00:00",
+    "post_urn": "urn:li:share:7491348342891806720",
+    "tone": "Auto",
+    "context_date": null,
+    "dry_run": false,
+    "preview": "One question has completely changed the way I approach projects.\n\nNot...\n\n\"Can I build this?\"\n\nBut...\n\n\"Should I build this?\"\n\nWhen I first started, I thought adding more features made a product bette…"
   }
 ]
