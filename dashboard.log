@@ -1,38 +1,5 @@
---- Posting Pipeline Run Started: 2026-08-08 11:35:01.436426 ---
+--- Posting Pipeline Run Started: 2026-08-08 13:43:21.671847 ---
 ============================================================
   LinkedIn AI Auto-Poster (Batch Queue & Memory Engine)
 ============================================================
-  Tone:     Auto
-  Dry run:  False
-  Force:    False
-  Replenish Only: True
-
-[1/5] Token check skipped.
-[2/5] Loading memory...
-  Voice profile:  [OK]
-  Achievements:   [OK]
-  Recent context: [X] (none found)
-  Approved posts: 2
-  Pending drafts: 0
-
-[!] Replenish Only mode active. Skipping publishing logic.
-    Replenishing pending drafts queue (current: 0, target: 10)...
-[ai_generator] Starting batch generation. Batch size: 10, Tone: Auto
-[ai_generator] Building prompt payload...
-[ai_generator] Calling Google Gemini API (model: gemini-3.5-flash) requesting structured JSON response...
-[ai_generator] Trying model: gemini-3.1-flash-lite-preview
-[ai_generator] Received API response from Gemini (size: 8152 characters).
-[ai_generator] Successfully parsed JSON array containing 10 posts.
-[ai_generator] Running posts through strict quality filters (URLs, minimum length, markdown markers)...
-  - Post index 0: Accepted! (length=649)
-  - Post index 1: Accepted! (length=723)
-  - Post index 2: Accepted! (length=625)
-  - Post index 3: Accepted! (length=667)
-  - Post index 4: Accepted! (length=642)
-  - Post index 5: Accepted! (length=621)
-  - Post index 6: Accepted! (length=711)
-  - Post index 7: Accepted! (length=611)
-  - Post index 8: Accepted! (length=617)
-  - Post index 9: Accepted! (length=649)
-[ai_generator] Filter process complete. 10 of 10 generated posts were approved.
-    Added 10 new drafts to pending queue.
+[!] Last post was 0 days ago. Current interval is 1 days. Skipping posting.
