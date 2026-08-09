@@ -205,5 +205,14 @@
     "context_date": null,
     "dry_run": false,
     "preview": "It's easy to look at LinkedIn and feel like you're behind.\n\nSomeone landed an internship.\n\nSomeone launched a startup.\n\nSomeone got into their dream company.\n\nBut here's something I remind myself ofte…"
+  },
+  {
+    "id": 24,
+    "posted_at": "2026-08-09T03:38:51.837485+00:00",
+    "post_urn": "urn:li:share:7492061809114304512",
+    "tone": "Auto",
+    "context_date": null,
+    "dry_run": false,
+    "preview": "You rarely notice good design.\n\nBut you almost always notice bad design.\n\nA confusing checkout.\n\nA button that doesn't work.\n\nA form that keeps throwing errors.\n\nA door that says \"Pull\" when you insti…"
   }
 ]
