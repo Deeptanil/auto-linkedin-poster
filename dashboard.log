@@ -1,56 +1,5 @@
---- Posting Pipeline Run Started: 2026-08-10 03:50:45.571403 ---
+--- Posting Pipeline Run Started: 2026-08-10 04:19:02.546769 ---
 ============================================================
   LinkedIn AI Auto-Poster (Batch Queue & Memory Engine)
 ============================================================
-  Tone:     Auto
-  Dry run:  False
-  Force:    False
-  Replenish Only: False
-
-[1/5] Token check skipped.
-[2/5] Loading memory...
-  Voice profile:  [OK]
-  Achievements:   [OK]
-  Recent context: [X] (none found)
-  Approved posts: 1
-  Pending drafts: 10
-
-[!] Only 1 approved post remaining in queue. Alerting Discord...
-
-────────────────────────────────────────────────────────────
-CURRENT APPROVED POST TO PUBLISH:
-────────────────────────────────────────────────────────────
-People often ask what tools I use while building projects.
-
-Here's what's open on my computer almost every day:
-
-• ChatGPT – Brainstorming ideas, solving roadblocks, and learning faster.
-
-• VS Code – Where I build and experiment.
-
-• GitHub – Version control and collaboration.
-
-• Supabase – Managing databases and authentication without the usual headache.
-
-• Cursor – My AI-powered code editor that has completely changed how I build.
-
-• Oracle Cloud – Hosting and running the infrastructure behind my projects.
-
-I've learned that productivity isn't about using every new tool that comes out.
-
-It's about building a workflow you know inside out.
-
-These are the tools that help me spend less time fighting my setup and more time actually building.
-
-I'm always curious to discover better tools.
-
-What's one tool you use almost every day that you couldn't work without?
-
-#Tech #BuildInPublic #Productivity #Supabase #GitHub #AI #Developers
-────────────────────────────────────────────────────────────
-
-[4/5] Posting to LinkedIn...
-  [OK] Post published! URN: urn:li:share:7492427199447461888
-[5/5] Updating queues and logging history...
-
-🎉 All done! Post is live on LinkedIn. Cache queue updated.
+[!] Last post was 0 days ago. Current interval is 1 days. Skipping posting.
