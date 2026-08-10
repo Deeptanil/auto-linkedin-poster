@@ -214,5 +214,14 @@
     "context_date": null,
     "dry_run": false,
     "preview": "You rarely notice good design.\n\nBut you almost always notice bad design.\n\nA confusing checkout.\n\nA button that doesn't work.\n\nA form that keeps throwing errors.\n\nA door that says \"Pull\" when you insti…"
+  },
+  {
+    "id": 25,
+    "posted_at": "2026-08-10T03:50:47.304280+00:00",
+    "post_urn": "urn:li:share:7492427199447461888",
+    "tone": "Auto",
+    "context_date": null,
+    "dry_run": false,
+    "preview": "People often ask what tools I use while building projects.\n\nHere's what's open on my computer almost every day:\n\n• ChatGPT – Brainstorming ideas, solving roadblocks, and learning faster.\n\n• VS Code – …"
   }
 ]

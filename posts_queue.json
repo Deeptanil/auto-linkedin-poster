@@ -1,10 +1,5 @@
 {
-  "approved": [
-    {
-      "post_text": "People often ask what tools I use while building projects.\n\nHere's what's open on my computer almost every day:\n\n• ChatGPT – Brainstorming ideas, solving roadblocks, and learning faster.\n\n• VS Code – Where I build and experiment.\n\n• GitHub – Version control and collaboration.\n\n• Supabase – Managing databases and authentication without the usual headache.\n\n• Cursor – My AI-powered code editor that has completely changed how I build.\n\n• Oracle Cloud – Hosting and running the infrastructure behind my projects.\n\nI've learned that productivity isn't about using every new tool that comes out.\n\nIt's about building a workflow you know inside out.\n\nThese are the tools that help me spend less time fighting my setup and more time actually building.\n\nI'm always curious to discover better tools.\n\nWhat's one tool you use almost every day that you couldn't work without?\n\n#Tech #BuildInPublic #Productivity #Supabase #GitHub #AI #Developers",
-      "reasoning": "Custom draft added directly from dashboard."
-    }
-  ],
+  "approved": [],
   "pending": [
     {
       "post_text": "Manual data entry is a silent killer for small e-commerce teams.\n\nWe spent days trying to manage product variants in Odoo manually before I finally forced a move to Excel imports. Trying to update every SKU one by one in the backend was not just slow, it was prone to constant human error.\n\nAutomating the import process saved us from having mismatched inventory counts across our stores. It is a boring fix, but it is the kind of work that actually keeps the business running without needing a full-time operations manager.\n\nWhat is the most tedious operational task you have automated to save your sanity?\n\n#Odoo #Ecommerce #Automation #Operations",
@@ -47,5 +42,5 @@
       "reasoning": "Reflects on the Bangalore startup environment while grounding it in his experience as a founder of his two ventures."
     }
   ],
-  "last_posted_at": "2026-08-09T03:38:51.836978+00:00"
+  "last_posted_at": "2026-08-10T03:50:47.303749+00:00"
 }
