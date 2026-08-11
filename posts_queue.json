@@ -19,13 +19,13 @@
     {
       "post_text": "I've started noticing bad websites everywhere.\n\nNot because I'm trying to.\n\nIt's just hard to unsee things once you start paying attention to UX.\n\nConfusing navigation, unnecessary pop-ups, buttons that don't look clickable, forms asking for information they don't need...\n\nNow I can't visit some websites without thinking, \"Why did they make me do this?\"\n\nI guess that's what happens when you start getting into UX.\n\n#UXDesign #UserExperience #WebDesign #ProductDesign",
       "reasoning": "Custom draft added directly from dashboard."
+    },
+    {
+      "post_text": "One underrated advantage of being a student is that you're allowed to experiment.\n\nYou can learn something completely unrelated to your degree, build a random project, try a business idea, learn a new tool, or completely mess something up.\n\nNobody expects you to have it all figured out yet.\n\nI'm trying to take advantage of that while I can.\n\n#StudentLife #Learning #Entrepreneurship #Technology",
+      "reasoning": "Custom draft added directly from dashboard."
     }
   ],
   "pending": [
-    {
-      "post_text": "",
-      "reasoning": "Custom draft added directly from dashboard."
-    },
     {
       "post_text": "My obsession with custom loyalty features almost broke our checkout flow.\n\nWe were trying to build a unique rewards layer on top of MedusaJS to keep our customers coming back. The logic seemed sound on paper, but integrating it into the core checkout meant overriding default behaviors that were never meant to be touched.\n\nI eventually had to strip back the custom logic and rebuild it as a modular plugin to keep the core codebase stable. Customizing an open-source framework is great until you realize you are fighting against the architecture instead of working with it.\n\nHow do you balance adding unique features against maintaining the integrity of your base framework?\n\n#MedusaJS #WebDevelopment #SoftwareEngineering",
       "reasoning": "Discusses the technical trade-off of building custom features on MedusaJS, reflecting the student-developer experience."
