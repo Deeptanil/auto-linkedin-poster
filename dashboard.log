@@ -1,29 +1,61 @@
---- Posting Pipeline Run Started: 2026-08-11 04:58:53.129253 ---
+--- Posting Pipeline Run Started: 2026-08-11 05:30:02.928164 ---
 ============================================================
   LinkedIn AI Auto-Poster (Batch Queue & Memory Engine)
 ============================================================
   Tone:     Auto
   Dry run:  False
   Force:    False
-  Replenish Only: True
+  Replenish Only: False
 
 [1/5] Token check skipped.
 [2/5] Loading memory...
   Voice profile:  [OK]
   Achievements:   [OK]
   Recent context: [X] (none found)
-  Approved posts: 1
-  Pending drafts: 9
+  Approved posts: 13
+  Pending drafts: 10
 
-[!] Replenish Only mode active. Skipping publishing logic.
-    Replenishing pending drafts queue (current: 9, target: 10)...
-[ai_generator] Starting batch generation. Batch size: 1, Tone: Auto
-[ai_generator] Building prompt payload...
-[ai_generator] Calling Google Gemini API (model: gemini-3.5-flash) requesting structured JSON response...
-[ai_generator] Trying model: gemini-3.1-flash-lite-preview
-[ai_generator] Received API response from Gemini (size: 1036 characters).
-[ai_generator] Successfully parsed JSON array containing 1 posts.
-[ai_generator] Running posts through strict quality filters (URLs, minimum length, markdown markers)...
-  - Post index 0: Accepted! (length=774)
-[ai_generator] Filter process complete. 1 of 1 generated posts were approved.
-    Added 1 new drafts to pending queue.
+
+────────────────────────────────────────────────────────────
+CURRENT APPROVED POST TO PUBLISH:
+────────────────────────────────────────────────────────────
+The most useful skill I've developed isn't coding.
+
+It's figuring things out.
+
+I've had plenty of moments where I didn't know how to do something.
+
+A technical problem I couldn't solve.
+
+A design decision I wasn't sure about.
+
+A tool I'd never used before.
+
+Instead of stopping, I learned to break the problem down.
+
+Search.
+
+Experiment.
+
+Ask questions.
+
+Try something.
+
+Break it.
+
+Try again.
+
+That process has become more valuable to me than memorizing another programming concept.
+
+Because technology changes constantly.
+
+The ability to learn doesn't.
+
+#Learning #Technology #Students #Entrepreneurship #Growth
+────────────────────────────────────────────────────────────
+
+[4/5] Posting to LinkedIn...
+  [OK] Post published! URN: urn:li:share:7492814569812221952
+[5/5] Updating queues and logging history...
+
+🎉 All done! Post is live on LinkedIn. Cache queue updated.
