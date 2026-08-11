@@ -41,6 +41,10 @@
     {
       "post_text": "Learning to build in Bangalore requires a different kind of patience.\n\nBuilding both Prettiva and Co and STRAYED has taught me that the environment you build in impacts how you solve problems. Being in the middle of a tech hub means you are constantly surrounded by people trying to solve things the fastest way possible.\n\nI have found that the most lasting solutions are the ones where you slow down to build things correctly. It is easy to rush, but it is rarely effective for a project you want to keep for the long run.\n\nWhat has your location taught you about your approach to building products?\n\n#Bangalore #Startup #FounderLife #BuildInPublic",
       "reasoning": "Reflects on the Bangalore startup environment while grounding it in his experience as a founder of his two ventures."
+    },
+    {
+      "post_text": "Manual data entry for product variants in Odoo is a massive time sink. \n\nWhen we were scaling the catalog for Prettiva and Co, I found myself clicking through the interface to create variations for each item. It was repetitive and error-prone, turning what should be a ten-minute task into an hour of administrative frustration. \n\nI eventually stopped fighting the manual UI and shifted everything to Excel imports. It allowed me to map out all the variants and attributes in a structured grid before pushing them into the system in one go. Sometimes the most advanced software feature you can use is the one that lets you bypass the interface entirely. \n\nWhat is the most tedious workflow you have ever automated to save your sanity? \n\n#Odoo #Ecommerce #Automation #Startup",
+      "reasoning": "This post highlights a specific operational pain point (manual Odoo variant entry) and provides a practical solution (Excel imports), staying true to the student-founder persona without using buzzwords."
     }
   ],
   "last_posted_at": "2026-08-10T03:50:47.303749+00:00"
