@@ -3,13 +3,13 @@
     {
       "post_text": "The most useful skill I've developed isn't coding.\n\nIt's figuring things out.\n\nI've had plenty of moments where I didn't know how to do something.\n\nA technical problem I couldn't solve.\n\nA design decision I wasn't sure about.\n\nA tool I'd never used before.\n\nInstead of stopping, I learned to break the problem down.\n\nSearch.\n\nExperiment.\n\nAsk questions.\n\nTry something.\n\nBreak it.\n\nTry again.\n\nThat process has become more valuable to me than memorizing another programming concept.\n\nBecause technology changes constantly.\n\nThe ability to learn doesn't.\n\n#Learning #Technology #Students #Entrepreneurship #Growth",
       "reasoning": "Custom draft added directly from dashboard."
-    }
-  ],
-  "pending": [
+    },
     {
       "post_text": "Manual data entry is a silent killer for small e-commerce teams.\n\nWe spent days trying to manage product variants in Odoo manually before I finally forced a move to Excel imports. Trying to update every SKU one by one in the backend was not just slow, it was prone to constant human error.\n\nAutomating the import process saved us from having mismatched inventory counts across our stores. It is a boring fix, but it is the kind of work that actually keeps the business running without needing a full-time operations manager.\n\nWhat is the most tedious operational task you have automated to save your sanity?\n\n#Odoo #Ecommerce #Automation #Operations",
       "reasoning": "Focuses on the specific technical frustration of managing Odoo variants versus the efficiency of Excel, highlighting operational pragmatism."
-    },
+    }
+  ],
+  "pending": [
     {
       "post_text": "My obsession with custom loyalty features almost broke our checkout flow.\n\nWe were trying to build a unique rewards layer on top of MedusaJS to keep our customers coming back. The logic seemed sound on paper, but integrating it into the core checkout meant overriding default behaviors that were never meant to be touched.\n\nI eventually had to strip back the custom logic and rebuild it as a modular plugin to keep the core codebase stable. Customizing an open-source framework is great until you realize you are fighting against the architecture instead of working with it.\n\nHow do you balance adding unique features against maintaining the integrity of your base framework?\n\n#MedusaJS #WebDevelopment #SoftwareEngineering",
       "reasoning": "Discusses the technical trade-off of building custom features on MedusaJS, reflecting the student-developer experience."
