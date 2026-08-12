@@ -1,55 +1,5 @@
---- Posting Pipeline Run Started: 2026-08-12 04:03:58.035199 ---
+--- Posting Pipeline Run Started: 2026-08-12 04:28:05.898131 ---
 ============================================================
   LinkedIn AI Auto-Poster (Batch Queue & Memory Engine)
 ============================================================
-  Tone:     Auto
-  Dry run:  False
-  Force:    False
-  Replenish Only: False
-
-[1/5] Token check skipped.
-[2/5] Loading memory...
-  Voice profile:  [OK]
-  Achievements:   [OK]
-  Recent context: [X] (none found)
-  Approved posts: 13
-  Pending drafts: 10
-
-
-────────────────────────────────────────────────────────────
-CURRENT APPROVED POST TO PUBLISH:
-────────────────────────────────────────────────────────────
-A year ago, I wanted to know everything before starting.
-
-Now I just want to know enough to start.
-
-That shift has made a huge difference.
-
-Because there will always be something you don't know.
-
-Another programming language.
-
-Another framework.
-
-Another design principle.
-
-Another business concept.
-
-If you wait until you've learned everything, you'll never actually build anything.
-
-So I've started treating projects differently.
-
-I don't need to know everything before I begin.
-
-I just need to be willing to learn whatever the project demands.
-
-That's probably the most useful mindset I've developed so far.
-
-#GrowthMindset #Learning #Students #Technology #Entrepreneurship
-────────────────────────────────────────────────────────────
-
-[4/5] Posting to LinkedIn...
-  [OK] Post published! URN: urn:li:share:7493155294215340032
-[5/5] Updating queues and logging history...
-
-🎉 All done! Post is live on LinkedIn. Cache queue updated.
+[!] Last post was 0 days ago. Current interval is 1 days. Skipping posting.
