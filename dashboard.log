@@ -1,39 +1,5 @@
---- Posting Pipeline Run Started: 2026-08-13 04:08:52.447235 ---
+--- Posting Pipeline Run Started: 2026-08-13 04:30:05.052003 ---
 ============================================================
   LinkedIn AI Auto-Poster (Batch Queue & Memory Engine)
 ============================================================
-  Tone:     Auto
-  Dry run:  False
-  Force:    False
-  Replenish Only: False
-
-[1/5] Token check skipped.
-[2/5] Loading memory...
-  Voice profile:  [OK]
-  Achievements:   [OK]
-  Recent context: [X] (none found)
-  Approved posts: 12
-  Pending drafts: 10
-
-
-────────────────────────────────────────────────────────────
-CURRENT APPROVED POST TO PUBLISH:
-────────────────────────────────────────────────────────────
-I think knowing how to find the right tool is becoming a skill in itself.
-
-There are so many tools online that can save you hours. Whether it's removing a background, upscaling an image, finding a free alternative to Photoshop or Illustrator, or solving some random problem you're stuck with, there's probably already a tool for it.
-
-I use Reddit a lot for this. If I have a problem, I’ll search for it there first because someone has usually faced the same thing and found a solution I wouldn't have thought of.
-
-I've realised that being good at work isn't always about knowing how to do everything yourself. Sometimes it's about knowing what to search for.
-
-What’s a tool you discovered recently that you wish you knew about earlier?
-
-#Productivity #Technology #Tools #Reddit #AI
-────────────────────────────────────────────────────────────
-
-[4/5] Posting to LinkedIn...
-  [OK] Post published! URN: urn:li:share:7493518916955066368
-[5/5] Updating queues and logging history...
-
-🎉 All done! Post is live on LinkedIn. Cache queue updated.
+[!] Last post was 0 days ago. Current interval is 1 days. Skipping posting.
