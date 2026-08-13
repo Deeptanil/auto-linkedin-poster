@@ -1,10 +1,6 @@
 {
   "approved": [
     {
-      "post_text": "I think knowing how to find the right tool is becoming a skill in itself.\n\nThere are so many tools online that can save you hours. Whether it's removing a background, upscaling an image, finding a free alternative to Photoshop or Illustrator, or solving some random problem you're stuck with, there's probably already a tool for it.\n\nI use Reddit a lot for this. If I have a problem, I’ll search for it there first because someone has usually faced the same thing and found a solution I wouldn't have thought of.\n\nI've realised that being good at work isn't always about knowing how to do everything yourself. Sometimes it's about knowing what to search for.\n\nWhat’s a tool you discovered recently that you wish you knew about earlier?\n\n#Productivity #Technology #Tools #Reddit #AI",
-      "reasoning": "Custom draft added directly from dashboard."
-    },
-    {
       "post_text": "AI has completely changed the way I search for things.\n\nI used to spend 20 minutes trying to find the right combination of keywords on Google.\n\nNow I can explain what I'm trying to do, what I've already tried, and where I'm stuck, and get somewhere much faster.\n\nBut I still end up on Reddit, GitHub, documentation, and random forums pretty often.\n\nAI is great at getting you started.\n\nThe internet is still where you find the really specific stuff.\n\n#AI #Technology #Learning #Productivity",
       "reasoning": "Custom draft added directly from dashboard."
     },
@@ -91,5 +87,5 @@
       "reasoning": "This post highlights a specific operational pain point (manual Odoo variant entry) and provides a practical solution (Excel imports), staying true to the student-founder persona without using buzzwords."
     }
   ],
-  "last_posted_at": "2026-08-12T04:03:58.507646+00:00"
+  "last_posted_at": "2026-08-13T04:08:52.872689+00:00"
 }
