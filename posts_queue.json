@@ -1,10 +1,6 @@
 {
   "approved": [
     {
-      "post_text": "AI has completely changed the way I search for things.\n\nI used to spend 20 minutes trying to find the right combination of keywords on Google.\n\nNow I can explain what I'm trying to do, what I've already tried, and where I'm stuck, and get somewhere much faster.\n\nBut I still end up on Reddit, GitHub, documentation, and random forums pretty often.\n\nAI is great at getting you started.\n\nThe internet is still where you find the really specific stuff.\n\n#AI #Technology #Learning #Productivity",
-      "reasoning": "Custom draft added directly from dashboard."
-    },
-    {
       "post_text": "I've started noticing bad websites everywhere.\n\nNot because I'm trying to.\n\nIt's just hard to unsee things once you start paying attention to UX.\n\nConfusing navigation, unnecessary pop-ups, buttons that don't look clickable, forms asking for information they don't need...\n\nNow I can't visit some websites without thinking, \"Why did they make me do this?\"\n\nI guess that's what happens when you start getting into UX.\n\n#UXDesign #UserExperience #WebDesign #ProductDesign",
       "reasoning": "Custom draft added directly from dashboard."
     },
@@ -87,5 +83,5 @@
       "reasoning": "This post highlights a specific operational pain point (manual Odoo variant entry) and provides a practical solution (Excel imports), staying true to the student-founder persona without using buzzwords."
     }
   ],
-  "last_posted_at": "2026-08-13T04:08:52.872689+00:00"
+  "last_posted_at": "2026-08-14T04:04:53.070279+00:00"
 }
