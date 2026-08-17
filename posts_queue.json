@@ -1,10 +1,6 @@
 {
   "approved": [
     {
-      "post_text": "Some of the hardest problems I've worked on started with, \"This should be a quick fix.\"\n\nA tiny website issue turns into three hours.\n\nA small database change breaks something completely unrelated.\n\nA simple design change somehow affects five other things.\n\nI've learned to be a little suspicious whenever I say, \"This will only take 10 minutes.\"\n\n#Building #Technology #WebDevelopment #Learning",
-      "reasoning": "Custom draft added directly from dashboard."
-    },
-    {
       "post_text": "I probably learn more when something breaks than when everything works.\n\nWhen everything goes right, you move on.\n\nWhen something breaks, you have to actually understand what happened.\n\nThat's happened to me countless times while working on websites and projects.\n\nA frustrating problem at the time usually becomes something I'm glad I experienced later.\n\nStill annoying, though.\n\n#Learning #Technology #BuildInPublic",
       "reasoning": "Custom draft added directly from dashboard."
     },
@@ -75,5 +71,5 @@
       "reasoning": "This post highlights a specific operational pain point (manual Odoo variant entry) and provides a practical solution (Excel imports), staying true to the student-founder persona without using buzzwords."
     }
   ],
-  "last_posted_at": "2026-08-16T02:56:25.377803+00:00"
+  "last_posted_at": "2026-08-17T02:56:20.121070+00:00"
 }

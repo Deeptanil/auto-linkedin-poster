@@ -277,5 +277,14 @@
     "context_date": null,
     "dry_run": false,
     "preview": "One underrated advantage of being a student is that you're allowed to experiment.\n\nYou can learn something completely unrelated to your degree, build a random project, try a business idea, learn a new…"
+  },
+  {
+    "id": 32,
+    "posted_at": "2026-08-17T02:56:20.121639+00:00",
+    "post_urn": "urn:li:share:7494950211866251264",
+    "tone": "Auto",
+    "context_date": null,
+    "dry_run": false,
+    "preview": "Some of the hardest problems I've worked on started with, \"This should be a quick fix.\"\n\nA tiny website issue turns into three hours.\n\nA small database change breaks something completely unrelated.\n\nA…"
   }
 ]
