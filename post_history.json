@@ -286,5 +286,14 @@
     "context_date": null,
     "dry_run": false,
     "preview": "Some of the hardest problems I've worked on started with, \"This should be a quick fix.\"\n\nA tiny website issue turns into three hours.\n\nA small database change breaks something completely unrelated.\n\nA…"
+  },
+  {
+    "id": 33,
+    "posted_at": "2026-08-18T02:52:39.272181+00:00",
+    "post_urn": "urn:li:share:7495311673147174912",
+    "tone": "Auto",
+    "context_date": null,
+    "dry_run": false,
+    "preview": "I probably learn more when something breaks than when everything works.\n\nWhen everything goes right, you move on.\n\nWhen something breaks, you have to actually understand what happened.\n\nThat's happene…"
   }
 ]

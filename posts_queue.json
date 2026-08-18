@@ -1,10 +1,6 @@
 {
   "approved": [
     {
-      "post_text": "I probably learn more when something breaks than when everything works.\n\nWhen everything goes right, you move on.\n\nWhen something breaks, you have to actually understand what happened.\n\nThat's happened to me countless times while working on websites and projects.\n\nA frustrating problem at the time usually becomes something I'm glad I experienced later.\n\nStill annoying, though.\n\n#Learning #Technology #BuildInPublic",
-      "reasoning": "Custom draft added directly from dashboard."
-    },
-    {
       "post_text": "Sometimes I forget how crazy the internet actually is.\n\nIf I want to learn something today, I can find a 2-hour course, a 10-minute YouTube video, documentation, a GitHub repository, a Reddit thread from someone who had the exact same problem, or an AI that can explain it to me.\n\nAnd most of it is free.\n\nIt's probably never been easier to teach yourself something.\n\nThe difficult part isn't finding information anymore.\n\nIt's deciding what information is actually worth your time.\n\n#Learning #Technology #Internet #AI",
       "reasoning": "Custom draft added directly from dashboard."
     },
@@ -71,5 +67,5 @@
       "reasoning": "This post highlights a specific operational pain point (manual Odoo variant entry) and provides a practical solution (Excel imports), staying true to the student-founder persona without using buzzwords."
     }
   ],
-  "last_posted_at": "2026-08-17T02:56:20.121070+00:00"
+  "last_posted_at": "2026-08-18T02:52:39.271663+00:00"
 }
