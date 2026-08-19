@@ -295,5 +295,14 @@
     "context_date": null,
     "dry_run": false,
     "preview": "I probably learn more when something breaks than when everything works.\n\nWhen everything goes right, you move on.\n\nWhen something breaks, you have to actually understand what happened.\n\nThat's happene…"
+  },
+  {
+    "id": 34,
+    "posted_at": "2026-08-19T02:54:45.957193+00:00",
+    "post_urn": "urn:li:share:7495674592267673600",
+    "tone": "Auto",
+    "context_date": null,
+    "dry_run": false,
+    "preview": "Sometimes I forget how crazy the internet actually is.\n\nIf I want to learn something today, I can find a 2-hour course, a 10-minute YouTube video, documentation, a GitHub repository, a Reddit thread f…"
   }
 ]
