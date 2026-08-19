@@ -1,41 +1,5 @@
---- Posting Pipeline Run Started: 2026-08-19 02:54:45.453502 ---
+--- Posting Pipeline Run Started: 2026-08-19 03:29:41.546372 ---
 ============================================================
   LinkedIn AI Auto-Poster (Batch Queue & Memory Engine)
 ============================================================
-  Tone:     Auto
-  Dry run:  False
-  Force:    False
-  Replenish Only: False
-
-[1/5] Token check skipped.
-[2/5] Loading memory...
-  Voice profile:  [OK]
-  Achievements:   [OK]
-  Recent context: [X] (none found)
-  Approved posts: 6
-  Pending drafts: 10
-
-
-────────────────────────────────────────────────────────────
-CURRENT APPROVED POST TO PUBLISH:
-────────────────────────────────────────────────────────────
-Sometimes I forget how crazy the internet actually is.
-
-If I want to learn something today, I can find a 2-hour course, a 10-minute YouTube video, documentation, a GitHub repository, a Reddit thread from someone who had the exact same problem, or an AI that can explain it to me.
-
-And most of it is free.
-
-It's probably never been easier to teach yourself something.
-
-The difficult part isn't finding information anymore.
-
-It's deciding what information is actually worth your time.
-
-#Learning #Technology #Internet #AI
-────────────────────────────────────────────────────────────
-
-[4/5] Posting to LinkedIn...
-  [OK] Post published! URN: urn:li:share:7495674592267673600
-[5/5] Updating queues and logging history...
-
-🎉 All done! Post is live on LinkedIn. Cache queue updated.
+[!] Last post was 0 days ago. Current interval is 1 days. Skipping posting.
