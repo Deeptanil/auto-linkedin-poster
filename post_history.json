@@ -313,5 +313,14 @@
     "context_date": null,
     "dry_run": false,
     "preview": "Running two brands has made me much less attached to my ideas.\n\nSomething can look amazing to you and still not work.\n\nA product you were excited about might barely get attention.\n\nA random idea you w…"
+  },
+  {
+    "id": 36,
+    "posted_at": "2026-08-21T02:59:18.900522+00:00",
+    "post_urn": "urn:li:share:7496400512834244608",
+    "tone": "Auto",
+    "context_date": null,
+    "dry_run": false,
+    "preview": "What I like about UX is that it's basically problem-solving disguised as design.\n\nYou're constantly asking:\n\nWhy is this confusing?\n\nWhy did the user stop here?\n\nCan this be simpler?\n\nWhat happens if …"
   }
 ]
