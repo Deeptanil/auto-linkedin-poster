@@ -322,5 +322,14 @@
     "context_date": null,
     "dry_run": false,
     "preview": "What I like about UX is that it's basically problem-solving disguised as design.\n\nYou're constantly asking:\n\nWhy is this confusing?\n\nWhy did the user stop here?\n\nCan this be simpler?\n\nWhat happens if …"
+  },
+  {
+    "id": 37,
+    "posted_at": "2026-08-22T02:50:57.959757+00:00",
+    "post_urn": "urn:li:share:7496760799676444672",
+    "tone": "Auto",
+    "context_date": null,
+    "dry_run": false,
+    "preview": "Some of the most useful things I've learned came from projects that didn't really matter.\n\nA random website.\n\nA small automation.\n\nA design experiment.\n\nSomething I built just because I was curious.\n\n…"
   }
 ]

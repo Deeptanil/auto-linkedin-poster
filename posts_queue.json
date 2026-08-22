@@ -1,10 +1,6 @@
 {
   "approved": [
     {
-      "post_text": "Some of the most useful things I've learned came from projects that didn't really matter.\n\nA random website.\n\nA small automation.\n\nA design experiment.\n\nSomething I built just because I was curious.\n\nThere was no grade. No deadline. No one telling me what to do.\n\nI just wanted to see if I could make it work.\n\nThose projects taught me how to figure things out on my own.\n\nI think that's a pretty valuable skill to have.\n\n#Projects #Learning #Students #Technology",
-      "reasoning": "Custom draft added directly from dashboard."
-    },
-    {
       "post_text": "What's a website you genuinely enjoy using?\n\nNot because it looks good.\n\nNot because it's popular.\n\nJust because it makes whatever you're trying to do incredibly easy.\n\nI've been collecting examples lately because I find myself learning a lot more from using good products than just reading about UX.\n\nDrop your favourite one below. I want to check them out.\n\n#UXDesign #WebDesign #ProductDesign #UserExperience",
       "reasoning": "Custom draft added directly from dashboard."
     },
@@ -55,5 +51,5 @@
       "reasoning": "This post highlights a specific operational pain point (manual Odoo variant entry) and provides a practical solution (Excel imports), staying true to the student-founder persona without using buzzwords."
     }
   ],
-  "last_posted_at": "2026-08-21T02:59:18.899986+00:00"
+  "last_posted_at": "2026-08-22T02:50:57.959254+00:00"
 }
