@@ -207,6 +207,48 @@ class LinkedInAPI:
         post_urn = r.headers.get("x-restli-id") or r.headers.get("X-RestLi-Id", "unknown")
         return post_urn
 
+    def create_multi_image_post(
+        self,
+        text: str,
+        image_urns: list[str],
+        visibility: str = "PUBLIC",
+    ) -> str:
+        """
+        Create a post containing multiple images (carousel) on LinkedIn.
+        """
+        author_urn = self.get_member_urn()
+
+        images_payload = [{"id": urn} for urn in image_urns]
+
+        payload = {
+            "author":     author_urn,
+            "commentary": text,
+            "visibility": visibility,
+            "distribution": {
+                "feedDistribution":             "MAIN_FEED",
+                "targetEntities":               [],
+                "thirdPartyDistributionChannels": [],
+            },
+            "content": {
+                "multiImage": {
+                    "images": images_payload
+                }
+            },
+            "lifecycleState": "PUBLISHED",
+            "isReshareDisabledByAuthor": False,
+        }
+
+        r = requests.post(
+            POSTS_URL,
+            headers=self._headers(),
+            json=payload,
+            timeout=30,
+        )
+        self._raise_for_status(r)
+
+        post_urn = r.headers.get("x-restli-id") or r.headers.get("X-RestLi-Id", "unknown")
+        return post_urn
+
     def add_first_comment(self, post_urn: str, comment_text: str) -> str:
         """
         Add a comment to a post (useful for dropping links — never put them in the body).

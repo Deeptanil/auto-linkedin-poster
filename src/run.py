@@ -272,25 +272,45 @@ def main():
     try:
         li = LinkedInAPI()
         
-        image_path = current_item.get("image_path")
-        if image_path:
-            path_obj = Path(image_path)
+        # Retrieve image paths array, falling back to legacy single image_path
+        image_paths = current_item.get("image_paths")
+        if not image_paths:
+            legacy_path = current_item.get("image_path")
+            image_paths = [legacy_path] if legacy_path else []
+            
+        valid_paths = []
+        for img_p in image_paths:
+            if not img_p:
+                continue
+            path_obj = Path(img_p)
             if not path_obj.is_absolute():
-                path_obj = Path(__file__).resolve().parent.parent / image_path
-                
+                path_obj = Path(__file__).resolve().parent.parent / img_p
             if path_obj.exists():
-                print(f"  [image] Found image attachment at: {path_obj}")
-                print("  [image] Uploading to LinkedIn...")
-                image_urn = li.upload_image(path_obj)
-                print(f"  [image] Upload complete. Image URN: {image_urn}")
-                print("  [image] Creating LinkedIn post with image...")
-                post_urn = li.create_image_post(post_text, image_urn)
+                valid_paths.append(path_obj)
             else:
                 print(f"  [WARNING] Attachment path does not exist: {path_obj}")
-                print("  [WARNING] Falling back to text-only post.")
-                post_urn = li.create_text_post(post_text)
-        else:
+
+        if not valid_paths:
+            if image_paths:
+                print("  [WARNING] None of the specified image paths exist. Falling back to text-only post.")
             post_urn = li.create_text_post(post_text)
+        elif len(valid_paths) == 1:
+            print(f"  [image] Found 1 image attachment at: {valid_paths[0]}")
+            print("  [image] Uploading to LinkedIn...")
+            image_urn = li.upload_image(valid_paths[0])
+            print(f"  [image] Upload complete. Image URN: {image_urn}")
+            print("  [image] Creating LinkedIn post with image...")
+            post_urn = li.create_image_post(post_text, image_urn)
+        else:
+            print(f"  [image] Found {len(valid_paths)} image attachments.")
+            image_urns = []
+            for i, p_obj in enumerate(valid_paths, 1):
+                print(f"  [image] Uploading image {i}/{len(valid_paths)}: {p_obj}...")
+                urn = li.upload_image(p_obj)
+                print(f"  [image] Image {i} uploaded. URN: {urn}")
+                image_urns.append(urn)
+            print("  [image] Creating LinkedIn post with multiple images...")
+            post_urn = li.create_multi_image_post(post_text, image_urns)
             
         print(f"  [OK] Post published! URN: {post_urn}")
     except LinkedInAPIError as e:
