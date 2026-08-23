@@ -1,10 +1,6 @@
 {
   "approved": [
     {
-      "post_text": "What's a website you genuinely enjoy using?\n\nNot because it looks good.\n\nNot because it's popular.\n\nJust because it makes whatever you're trying to do incredibly easy.\n\nI've been collecting examples lately because I find myself learning a lot more from using good products than just reading about UX.\n\nDrop your favourite one below. I want to check them out.\n\n#UXDesign #WebDesign #ProductDesign #UserExperience",
-      "reasoning": "Custom draft added directly from dashboard."
-    },
-    {
       "post_text": "Have you ever wondered how apps like Swiggy, Blinkit and Zepto get their data so fast?\n\nChange your location and the entire home page changes almost instantly.\n\nEven things already in your cart can suddenly show as unavailable if that store can't deliver to your new location.\n\nHow is all of this happening so quickly?\n\nThere’s probably a lot going on behind the scenes: location-based inventory, APIs, caching, databases and real-time updates, all working together.\n\nWe use these apps every day, but it's pretty crazy when you actually stop and think about the backend powering them.\n\nNow I'm curious: how would you design a system like this?\n\n#SystemDesign #BackendDevelopment #Technology #SoftwareEngineering",
       "reasoning": "Custom draft added directly from dashboard."
     }
@@ -51,5 +47,5 @@
       "reasoning": "This post highlights a specific operational pain point (manual Odoo variant entry) and provides a practical solution (Excel imports), staying true to the student-founder persona without using buzzwords."
     }
   ],
-  "last_posted_at": "2026-08-22T02:50:57.959254+00:00"
+  "last_posted_at": "2026-08-23T02:58:50.354456+00:00"
 }

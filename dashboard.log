@@ -1,5 +1,41 @@
---- Posting Pipeline Run Started: 2026-08-22 13:29:53.994599 ---
+--- Posting Pipeline Run Started: 2026-08-23 02:58:49.891439 ---
 ============================================================
   LinkedIn AI Auto-Poster (Batch Queue & Memory Engine)
 ============================================================
-[!] Last post was 0 days ago. Current interval is 1 days. Skipping posting.
+  Tone:     Auto
+  Dry run:  False
+  Force:    False
+  Replenish Only: False
+
+[1/5] Token check skipped.
+[2/5] Loading memory...
+  Voice profile:  [OK]
+  Achievements:   [OK]
+  Recent context: [X] (none found)
+  Approved posts: 2
+  Pending drafts: 10
+
+
+────────────────────────────────────────────────────────────
+CURRENT APPROVED POST TO PUBLISH:
+────────────────────────────────────────────────────────────
+What's a website you genuinely enjoy using?
+
+Not because it looks good.
+
+Not because it's popular.
+
+Just because it makes whatever you're trying to do incredibly easy.
+
+I've been collecting examples lately because I find myself learning a lot more from using good products than just reading about UX.
+
+Drop your favourite one below. I want to check them out.
+
+#UXDesign #WebDesign #ProductDesign #UserExperience
+────────────────────────────────────────────────────────────
+
+[4/5] Posting to LinkedIn...
+  [OK] Post published! URN: urn:li:share:7497125168889085952
+[5/5] Updating queues and logging history...
+
+🎉 All done! Post is live on LinkedIn. Cache queue updated.
