@@ -1,10 +1,5 @@
 {
-  "approved": [
-    {
-      "post_text": "Have you ever wondered how apps like Swiggy, Blinkit and Zepto get their data so fast?\n\nChange your location and the entire home page changes almost instantly.\n\nEven things already in your cart can suddenly show as unavailable if that store can't deliver to your new location.\n\nHow is all of this happening so quickly?\n\nThere’s probably a lot going on behind the scenes: location-based inventory, APIs, caching, databases and real-time updates, all working together.\n\nWe use these apps every day, but it's pretty crazy when you actually stop and think about the backend powering them.\n\nNow I'm curious: how would you design a system like this?\n\n#SystemDesign #BackendDevelopment #Technology #SoftwareEngineering",
-      "reasoning": "Custom draft added directly from dashboard."
-    }
-  ],
+  "approved": [],
   "pending": [
     {
       "post_text": "My obsession with custom loyalty features almost broke our checkout flow.\n\nWe were trying to build a unique rewards layer on top of MedusaJS to keep our customers coming back. The logic seemed sound on paper, but integrating it into the core checkout meant overriding default behaviors that were never meant to be touched.\n\nI eventually had to strip back the custom logic and rebuild it as a modular plugin to keep the core codebase stable. Customizing an open-source framework is great until you realize you are fighting against the architecture instead of working with it.\n\nHow do you balance adding unique features against maintaining the integrity of your base framework?\n\n#MedusaJS #WebDevelopment #SoftwareEngineering",
@@ -47,5 +42,5 @@
       "reasoning": "This post highlights a specific operational pain point (manual Odoo variant entry) and provides a practical solution (Excel imports), staying true to the student-founder persona without using buzzwords."
     }
   ],
-  "last_posted_at": "2026-08-23T02:58:50.354456+00:00"
+  "last_posted_at": "2026-08-24T02:59:44.869029+00:00"
 }
