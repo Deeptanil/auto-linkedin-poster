@@ -1,4 +1,4 @@
---- Posting Pipeline Run Started: 2026-08-26 03:39:40.885837 ---
+--- Posting Pipeline Run Started: 2026-08-26 04:08:53.064778 ---
 ============================================================
   LinkedIn AI Auto-Poster (Batch Queue & Memory Engine)
 ============================================================
@@ -13,7 +13,7 @@
   Achievements:   [OK]
   Recent context: [X] (none found)
   Approved posts: 0
-  Pending drafts: 10
+  Pending drafts: 11
 
 [!] No approved posts in queue. Skipping schedule execution.
     Please run the local dashboard, approve some drafts, and sync to GitHub.
