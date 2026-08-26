@@ -1,13 +1,14 @@
 {
-  "approved": [],
-  "pending": [
+  "approved": [
     {
-      "post_text": "",
+      "post_text": "I recently discovered Sketchfab while working on my portfolio website, and honestly, I didn't expect to find something this cool.\n\nI was looking for 3D models to use on my Minecraft-themed portfolio and came across Sketchfab.\n\nAnd then I went down a rabbit hole. 😂\n\nThere are so many 3D models on there, from characters and environments to completely random things I never would have thought someone had already created in 3D.\n\nWhat surprised me even more was how easy it is to actually view and interact with the models directly in the browser.\n\nI ended up spending way more time exploring models than I probably should have.\n\nIt also made me realize how much work goes into creating the 3D assets that we usually just see as part of a website or game.\n\nDefinitely one of those things I wish I'd discovered earlier.\n\n#Sketchfab #3DDesign #WebDevelopment #WebDesign #Minecraft #Portfolio #Learning",
       "reasoning": "Custom draft added directly from dashboard.",
       "image_paths": [
         "memory/images/1787722557537_Screenshot_2026-08-26_093830.png"
       ]
-    },
+    }
+  ],
+  "pending": [
     {
       "post_text": "My obsession with custom loyalty features almost broke our checkout flow.\n\nWe were trying to build a unique rewards layer on top of MedusaJS to keep our customers coming back. The logic seemed sound on paper, but integrating it into the core checkout meant overriding default behaviors that were never meant to be touched.\n\nI eventually had to strip back the custom logic and rebuild it as a modular plugin to keep the core codebase stable. Customizing an open-source framework is great until you realize you are fighting against the architecture instead of working with it.\n\nHow do you balance adding unique features against maintaining the integrity of your base framework?\n\n#MedusaJS #WebDevelopment #SoftwareEngineering",
       "reasoning": "Discusses the technical trade-off of building custom features on MedusaJS, reflecting the student-developer experience."
