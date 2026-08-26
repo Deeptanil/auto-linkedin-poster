@@ -13,17 +13,17 @@
       "image_paths": [
         "memory/images/1787722729963_images.jpg"
       ]
-    }
-  ],
-  "pending": [
+    },
     {
-      "post_text": "",
+      "post_text": "The hardest part of building my portfolio wasn't the code.\n\nIt was figuring out what I actually wanted it to be.\n\nI knew I didn't want to make another portfolio with a few sections, some project cards, and a contact button.\n\nI wanted it to feel like me.\n\nThat's how I ended up making **Deeptanil.in** a Minecraft-themed portfolio.\n\nI've loved Minecraft since I was around 10, and it was also one of the things that got me interested in tech in the first place. So it felt natural to bring that into my portfolio.\n\nFrom there, I started experimenting with 3D models, 3D text, smooth scrolling, animations, and interactive elements.\n\nAnd honestly, getting all of those things to work together was much harder than I expected. 😂\n\nBut that's also what made the project fun.\n\nI'm still working on it and have a lot more I want to add, but it's already become one of my favourite projects I've built.\n\nYou can check it out at Deeptanil.in 👀\n\n#WebDevelopment #WebDesign #Portfolio #UXDesign #Minecraft #BuildInPublic",
       "reasoning": "Custom draft added directly from dashboard.",
       "image_paths": [
         "memory/images/1787723216579_Screenshot_2026-08-26_093830.png",
         "memory/images/1787723260858_Screenshot_2026-08-26_111731.png"
       ]
-    },
+    }
+  ],
+  "pending": [
     {
       "post_text": "My obsession with custom loyalty features almost broke our checkout flow.\n\nWe were trying to build a unique rewards layer on top of MedusaJS to keep our customers coming back. The logic seemed sound on paper, but integrating it into the core checkout meant overriding default behaviors that were never meant to be touched.\n\nI eventually had to strip back the custom logic and rebuild it as a modular plugin to keep the core codebase stable. Customizing an open-source framework is great until you realize you are fighting against the architecture instead of working with it.\n\nHow do you balance adding unique features against maintaining the integrity of your base framework?\n\n#MedusaJS #WebDevelopment #SoftwareEngineering",
       "reasoning": "Discusses the technical trade-off of building custom features on MedusaJS, reflecting the student-developer experience.",
