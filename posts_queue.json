@@ -6,16 +6,16 @@
       "image_paths": [
         "memory/images/1787722557537_Screenshot_2026-08-26_093830.png"
       ]
-    }
-  ],
-  "pending": [
+    },
     {
-      "post_text": "",
+      "post_text": "Minecraft is probably one of the reasons I'm into tech today.\n\nI started playing Minecraft when I was around 10 years old. At first, it was just a game I loved playing.\n\nBut as I got older, I became more curious about what was happening behind the game.\n\nI started experimenting with Minecraft servers, plugins, configurations, and eventually server development.\n\nI remember spending hours trying to figure out why something wasn't working, searching for solutions, changing things, breaking them, and trying again.\n\nLooking back, I think that was one of my first experiences with actually learning through building and experimenting.\n\nIt wasn't a coding course or a textbook that got me interested in technology.\n\nIt was Minecraft.\n\nAnd now, years later, I'm studying Information Technology, building websites, working on my own businesses, and even making my portfolio Minecraft themed.\n\nFunny how things come full circle. 🎮\n\n#Minecraft #Technology #WebDevelopment #Programming #Learning #BuildInPublic",
       "reasoning": "Custom draft added directly from dashboard.",
       "image_paths": [
         "memory/images/1787722729963_images.jpg"
       ]
-    },
+    }
+  ],
+  "pending": [
     {
       "post_text": "My obsession with custom loyalty features almost broke our checkout flow.\n\nWe were trying to build a unique rewards layer on top of MedusaJS to keep our customers coming back. The logic seemed sound on paper, but integrating it into the core checkout meant overriding default behaviors that were never meant to be touched.\n\nI eventually had to strip back the custom logic and rebuild it as a modular plugin to keep the core codebase stable. Customizing an open-source framework is great until you realize you are fighting against the architecture instead of working with it.\n\nHow do you balance adding unique features against maintaining the integrity of your base framework?\n\n#MedusaJS #WebDevelopment #SoftwareEngineering",
       "reasoning": "Discusses the technical trade-off of building custom features on MedusaJS, reflecting the student-developer experience.",
