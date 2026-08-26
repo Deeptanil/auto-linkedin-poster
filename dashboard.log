@@ -1,4 +1,4 @@
---- Posting Pipeline Run Started: 2026-08-26 04:08:53.064778 ---
+--- Posting Pipeline Run Started: 2026-08-26 04:56:49.862120 ---
 ============================================================
   LinkedIn AI Auto-Poster (Batch Queue & Memory Engine)
 ============================================================
@@ -12,8 +12,41 @@
   Voice profile:  [OK]
   Achievements:   [OK]
   Recent context: [X] (none found)
-  Approved posts: 0
-  Pending drafts: 11
+  Approved posts: 1
+  Pending drafts: 10
 
-[!] No approved posts in queue. Skipping schedule execution.
-    Please run the local dashboard, approve some drafts, and sync to GitHub.
+[!] Only 1 approved post remaining in queue. Alerting Discord...
+
+────────────────────────────────────────────────────────────
+CURRENT APPROVED POST TO PUBLISH:
+────────────────────────────────────────────────────────────
+Finally, my portfolio website is live! 🎉
+
+I've been working on deeptanil.in, a portfolio that I wanted to feel a little different from the usual developer portfolio.
+
+I decided to make it Minecraft themed, and there's actually a reason behind it.
+
+I've loved Minecraft since I was around 10 years old. As I got older, that interest turned into experimenting with Minecraft servers, development, and other tech around the game.
+
+So when I started building my own portfolio, using Minecraft as the theme just felt right.
+
+I built the website to experiment and showcase my skills with 3D models, 3D text, smooth scrolling animations, interactive elements, and custom UI to bring the idea together.
+
+It's not just a portfolio for me. It's also a project where I get to combine the things I enjoy most: technology, design, and building products.
+
+There's still more I want to add, but I'm really happy with how it's turned out so far.
+
+Take a look: deeptanil.in👀
+
+#WebDevelopment #Portfolio #Minecraft #UIDesign #UXDesign #3DDesign #BuildInPublic
+────────────────────────────────────────────────────────────
+
+[4/5] Posting to LinkedIn...
+  [image] Found 1 image attachment at: /home/runner/work/linkedin-poster/linkedin-poster/code/memory/images/1787717315727_Screenshot_2026-08-26_093830.png
+  [image] Uploading to LinkedIn...
+  [image] Upload complete. Image URN: urn:li:image:D5610AQHb5sJOwrNouA
+  [image] Creating LinkedIn post with image...
+  [OK] Post published! URN: urn:li:share:7498242030981152768
+[5/5] Updating queues and logging history...
+
+🎉 All done! Post is live on LinkedIn. Cache queue updated.

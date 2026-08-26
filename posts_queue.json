@@ -1,13 +1,5 @@
 {
-  "approved": [
-    {
-      "post_text": "Finally, my portfolio website is live! 🎉\n\nI've been working on deeptanil.in, a portfolio that I wanted to feel a little different from the usual developer portfolio.\n\nI decided to make it Minecraft themed, and there's actually a reason behind it.\n\nI've loved Minecraft since I was around 10 years old. As I got older, that interest turned into experimenting with Minecraft servers, development, and other tech around the game.\n\nSo when I started building my own portfolio, using Minecraft as the theme just felt right.\n\nI built the website to experiment and showcase my skills with 3D models, 3D text, smooth scrolling animations, interactive elements, and custom UI to bring the idea together.\n\nIt's not just a portfolio for me. It's also a project where I get to combine the things I enjoy most: technology, design, and building products.\n\nThere's still more I want to add, but I'm really happy with how it's turned out so far.\n\nTake a look: deeptanil.in👀\n\n#WebDevelopment #Portfolio #Minecraft #UIDesign #UXDesign #3DDesign #BuildInPublic",
-      "reasoning": "Custom draft added directly from dashboard.",
-      "image_paths": [
-        "memory/images/1787717315727_Screenshot_2026-08-26_093830.png"
-      ]
-    }
-  ],
+  "approved": [],
   "pending": [
     {
       "post_text": "My obsession with custom loyalty features almost broke our checkout flow.\n\nWe were trying to build a unique rewards layer on top of MedusaJS to keep our customers coming back. The logic seemed sound on paper, but integrating it into the core checkout meant overriding default behaviors that were never meant to be touched.\n\nI eventually had to strip back the custom logic and rebuild it as a modular plugin to keep the core codebase stable. Customizing an open-source framework is great until you realize you are fighting against the architecture instead of working with it.\n\nHow do you balance adding unique features against maintaining the integrity of your base framework?\n\n#MedusaJS #WebDevelopment #SoftwareEngineering",
@@ -50,5 +42,5 @@
       "reasoning": "This post highlights a specific operational pain point (manual Odoo variant entry) and provides a practical solution (Excel imports), staying true to the student-founder persona without using buzzwords."
     }
   ],
-  "last_posted_at": "2026-08-24T02:59:44.869029+00:00"
+  "last_posted_at": "2026-08-26T04:56:51.112238+00:00"
 }
