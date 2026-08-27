@@ -1,13 +1,6 @@
 {
   "approved": [
     {
-      "post_text": "Minecraft is probably one of the reasons I'm into tech today.\n\nI started playing Minecraft when I was around 10 years old. At first, it was just a game I loved playing.\n\nBut as I got older, I became more curious about what was happening behind the game.\n\nI started experimenting with Minecraft servers, plugins, configurations, and eventually server development.\n\nI remember spending hours trying to figure out why something wasn't working, searching for solutions, changing things, breaking them, and trying again.\n\nLooking back, I think that was one of my first experiences with actually learning through building and experimenting.\n\nIt wasn't a coding course or a textbook that got me interested in technology.\n\nIt was Minecraft.\n\nAnd now, years later, I'm studying Information Technology, building websites, working on my own businesses, and even making my portfolio Minecraft themed.\n\nFunny how things come full circle. 🎮\n\n#Minecraft #Technology #WebDevelopment #Programming #Learning #BuildInPublic",
-      "reasoning": "Custom draft added directly from dashboard.",
-      "image_paths": [
-        "memory/images/1787722729963_images.jpg"
-      ]
-    },
-    {
       "post_text": "The hardest part of building my portfolio wasn't the code.\n\nIt was figuring out what I actually wanted it to be.\n\nI knew I didn't want to make another portfolio with a few sections, some project cards, and a contact button.\n\nI wanted it to feel like me.\n\nThat's how I ended up making Deeptanil.in a Minecraft-themed portfolio.\n\nI've loved Minecraft since I was around 10, and it was also one of the things that got me interested in tech in the first place. So it felt natural to bring that into my portfolio.\n\nFrom there, I started experimenting with 3D models, 3D text, smooth scrolling, animations, and interactive elements.\n\nAnd honestly, getting all of those things to work together was much harder than I expected. 😂\n\nBut that's also what made the project fun.\n\nI'm still working on it and have a lot more I want to add, but it's already become one of my favourite projects I've built.\n\nYou can check it out at Deeptanil.in 👀\n\n#WebDevelopment #WebDesign #Portfolio #UXDesign #Minecraft #BuildInPublic",
       "reasoning": "Custom draft added directly from dashboard.",
       "image_paths": [
@@ -59,5 +52,5 @@
       "reasoning": "This post highlights a specific operational pain point (manual Odoo variant entry) and provides a practical solution (Excel imports), staying true to the student-founder persona without using buzzwords."
     }
   ],
-  "last_posted_at": "2026-08-27T12:18:51.096545+00:00"
+  "last_posted_at": "2026-08-27T19:10:59.203040+00:00"
 }
