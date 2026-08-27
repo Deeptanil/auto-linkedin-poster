@@ -1,53 +1,5 @@
---- Posting Pipeline Run Started: 2026-08-27 19:10:57.659372 ---
+--- Posting Pipeline Run Started: 2026-08-27 22:48:14.825189 ---
 ============================================================
   LinkedIn AI Auto-Poster (Batch Queue & Memory Engine)
 ============================================================
-  Tone:     Auto
-  Dry run:  False
-  Force:    False
-  Replenish Only: False
-
-[1/5] Token check skipped.
-[2/5] Loading memory...
-  Voice profile:  [OK]
-  Achievements:   [OK]
-  Recent context: [X] (none found)
-  Approved posts: 2
-  Pending drafts: 10
-
-
-────────────────────────────────────────────────────────────
-CURRENT APPROVED POST TO PUBLISH:
-────────────────────────────────────────────────────────────
-Minecraft is probably one of the reasons I'm into tech today.
-
-I started playing Minecraft when I was around 10 years old. At first, it was just a game I loved playing.
-
-But as I got older, I became more curious about what was happening behind the game.
-
-I started experimenting with Minecraft servers, plugins, configurations, and eventually server development.
-
-I remember spending hours trying to figure out why something wasn't working, searching for solutions, changing things, breaking them, and trying again.
-
-Looking back, I think that was one of my first experiences with actually learning through building and experimenting.
-
-It wasn't a coding course or a textbook that got me interested in technology.
-
-It was Minecraft.
-
-And now, years later, I'm studying Information Technology, building websites, working on my own businesses, and even making my portfolio Minecraft themed.
-
-Funny how things come full circle. 🎮
-
-#Minecraft #Technology #WebDevelopment #Programming #Learning #BuildInPublic
-────────────────────────────────────────────────────────────
-
-[4/5] Posting to LinkedIn...
-  [image] Found 1 image attachment at: /home/runner/work/linkedin-poster/linkedin-poster/code/memory/images/1787722729963_images.jpg
-  [image] Uploading to LinkedIn...
-  [image] Upload complete. Image URN: urn:li:image:D5610AQFWY8teYCuUcA
-  [image] Creating LinkedIn post with image...
-  [OK] Post published! URN: urn:li:share:7498819367435112448
-[5/5] Updating queues and logging history...
-
-🎉 All done! Post is live on LinkedIn. Cache queue updated.
+[!] Last post was 0 days ago. Current interval is 1 days. Skipping posting.
