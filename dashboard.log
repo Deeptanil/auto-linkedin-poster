@@ -1,5 +1,49 @@
---- Posting Pipeline Run Started: 2026-08-26 13:53:07.281132 ---
+--- Posting Pipeline Run Started: 2026-08-27 12:18:49.150536 ---
 ============================================================
   LinkedIn AI Auto-Poster (Batch Queue & Memory Engine)
 ============================================================
-[!] Last post was 0 days ago. Current interval is 1 days. Skipping posting.
+  Tone:     Auto
+  Dry run:  False
+  Force:    False
+  Replenish Only: False
+
+[1/5] Token check skipped.
+[2/5] Loading memory...
+  Voice profile:  [OK]
+  Achievements:   [OK]
+  Recent context: [X] (none found)
+  Approved posts: 3
+  Pending drafts: 10
+
+
+────────────────────────────────────────────────────────────
+CURRENT APPROVED POST TO PUBLISH:
+────────────────────────────────────────────────────────────
+I recently discovered Sketchfab while working on my portfolio website, and honestly, I didn't expect to find something this cool.
+
+I was looking for 3D models to use on my Minecraft-themed portfolio and came across Sketchfab.
+
+And then I went down a rabbit hole. 😂
+
+There are so many 3D models on there, from characters and environments to completely random things I never would have thought someone had already created in 3D.
+
+What surprised me even more was how easy it is to actually view and interact with the models directly in the browser.
+
+I ended up spending way more time exploring models than I probably should have.
+
+It also made me realize how much work goes into creating the 3D assets that we usually just see as part of a website or game.
+
+Definitely one of those things I wish I'd discovered earlier.
+
+#Sketchfab #3DDesign #WebDevelopment #WebDesign #Minecraft #Portfolio #Learning
+────────────────────────────────────────────────────────────
+
+[4/5] Posting to LinkedIn...
+  [image] Found 1 image attachment at: /home/runner/work/linkedin-poster/linkedin-poster/code/memory/images/1787722557537_Screenshot_2026-08-26_093830.png
+  [image] Uploading to LinkedIn...
+  [image] Upload complete. Image URN: urn:li:image:D5610AQGL3rM5y9UaEw
+  [image] Creating LinkedIn post with image...
+  [OK] Post published! URN: urn:li:share:7498715648118833152
+[5/5] Updating queues and logging history...
+
+🎉 All done! Post is live on LinkedIn. Cache queue updated.

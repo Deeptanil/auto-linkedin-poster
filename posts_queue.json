@@ -1,13 +1,6 @@
 {
   "approved": [
     {
-      "post_text": "I recently discovered Sketchfab while working on my portfolio website, and honestly, I didn't expect to find something this cool.\n\nI was looking for 3D models to use on my Minecraft-themed portfolio and came across Sketchfab.\n\nAnd then I went down a rabbit hole. 😂\n\nThere are so many 3D models on there, from characters and environments to completely random things I never would have thought someone had already created in 3D.\n\nWhat surprised me even more was how easy it is to actually view and interact with the models directly in the browser.\n\nI ended up spending way more time exploring models than I probably should have.\n\nIt also made me realize how much work goes into creating the 3D assets that we usually just see as part of a website or game.\n\nDefinitely one of those things I wish I'd discovered earlier.\n\n#Sketchfab #3DDesign #WebDevelopment #WebDesign #Minecraft #Portfolio #Learning",
-      "reasoning": "Custom draft added directly from dashboard.",
-      "image_paths": [
-        "memory/images/1787722557537_Screenshot_2026-08-26_093830.png"
-      ]
-    },
-    {
       "post_text": "Minecraft is probably one of the reasons I'm into tech today.\n\nI started playing Minecraft when I was around 10 years old. At first, it was just a game I loved playing.\n\nBut as I got older, I became more curious about what was happening behind the game.\n\nI started experimenting with Minecraft servers, plugins, configurations, and eventually server development.\n\nI remember spending hours trying to figure out why something wasn't working, searching for solutions, changing things, breaking them, and trying again.\n\nLooking back, I think that was one of my first experiences with actually learning through building and experimenting.\n\nIt wasn't a coding course or a textbook that got me interested in technology.\n\nIt was Minecraft.\n\nAnd now, years later, I'm studying Information Technology, building websites, working on my own businesses, and even making my portfolio Minecraft themed.\n\nFunny how things come full circle. 🎮\n\n#Minecraft #Technology #WebDevelopment #Programming #Learning #BuildInPublic",
       "reasoning": "Custom draft added directly from dashboard.",
       "image_paths": [
@@ -66,5 +59,5 @@
       "reasoning": "This post highlights a specific operational pain point (manual Odoo variant entry) and provides a practical solution (Excel imports), staying true to the student-founder persona without using buzzwords."
     }
   ],
-  "last_posted_at": "2026-08-26T04:56:51.112238+00:00"
+  "last_posted_at": "2026-08-27T12:18:51.096545+00:00"
 }
