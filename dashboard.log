@@ -1,5 +1,58 @@
---- Posting Pipeline Run Started: 2026-08-28 17:42:45.635636 ---
+--- Posting Pipeline Run Started: 2026-08-28 20:17:14.473693 ---
 ============================================================
   LinkedIn AI Auto-Poster (Batch Queue & Memory Engine)
 ============================================================
-[!] Last post was 0 days ago. Current interval is 1 days. Skipping posting.
+  Tone:     Auto
+  Dry run:  False
+  Force:    False
+  Replenish Only: False
+
+[1/5] Token check skipped.
+[2/5] Loading memory...
+  Voice profile:  [OK]
+  Achievements:   [OK]
+  Recent context: [X] (none found)
+  Approved posts: 1
+  Pending drafts: 10
+
+[!] Only 1 approved post remaining in queue. Alerting Discord...
+
+────────────────────────────────────────────────────────────
+CURRENT APPROVED POST TO PUBLISH:
+────────────────────────────────────────────────────────────
+The hardest part of building my portfolio wasn't the code.
+
+It was figuring out what I actually wanted it to be.
+
+I knew I didn't want to make another portfolio with a few sections, some project cards, and a contact button.
+
+I wanted it to feel like me.
+
+That's how I ended up making Deeptanil.in a Minecraft-themed portfolio.
+
+I've loved Minecraft since I was around 10, and it was also one of the things that got me interested in tech in the first place. So it felt natural to bring that into my portfolio.
+
+From there, I started experimenting with 3D models, 3D text, smooth scrolling, animations, and interactive elements.
+
+And honestly, getting all of those things to work together was much harder than I expected. 😂
+
+But that's also what made the project fun.
+
+I'm still working on it and have a lot more I want to add, but it's already become one of my favourite projects I've built.
+
+You can check it out at Deeptanil.in 👀
+
+#WebDevelopment #WebDesign #Portfolio #UXDesign #Minecraft #BuildInPublic
+────────────────────────────────────────────────────────────
+
+[4/5] Posting to LinkedIn...
+  [image] Found 2 image attachments.
+  [image] Uploading image 1/2: /home/runner/work/linkedin-poster/linkedin-poster/code/memory/images/1787723216579_Screenshot_2026-08-26_093830.png...
+  [image] Image 1 uploaded. URN: urn:li:image:D5610AQFPg4jp0oniwQ
+  [image] Uploading image 2/2: /home/runner/work/linkedin-poster/linkedin-poster/code/memory/images/1787723375722_Screenshot_2026-08-26_111731.png...
+  [image] Image 2 uploaded. URN: urn:li:image:D5610AQGvhY5uCI8AIQ
+  [image] Creating LinkedIn post with multiple images...
+  [OK] Post published! URN: urn:li:ugcPost:7499198442276069376
+[5/5] Updating queues and logging history...
+
+🎉 All done! Post is live on LinkedIn. Cache queue updated.
