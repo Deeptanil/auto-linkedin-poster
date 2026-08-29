@@ -843,17 +843,13 @@
         <!-- Header -->
         <header>
             <div>
-                <h1>LinkedIn AI Content Dashboard</h1>
-                <p style="color: var(--color-text-muted); font-size: 0.9rem;">Human-in-the-Loop Content & Compaction Manager</p>
+                <h1>LinkedIn Post Creator & Scheduler</h1>
+                <p style="color: var(--color-text-muted); font-size: 0.9rem;">Create, personalize, attach images, and schedule your LinkedIn posts</p>
             </div>
             <div class="header-actions">
                 <button class="btn btn-secondary" onclick="toggleSettingsModal()">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
                     Settings
-                </button>
-                <button class="btn btn-secondary" onclick="replenishQueue()">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
-                    Generate Drafts
                 </button>
                 <button class="btn btn-secondary" onclick="triggerPostNow()">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
@@ -875,15 +871,21 @@
             
             <!-- Left Side: Queue Boards -->
             <div class="card">
-                <div class="tab-bar" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                <div class="tab-bar" style="display: flex; justify-content: space-between; align-items: center; width: 100%; flex-wrap: wrap; gap: 0.5rem;">
                     <div style="display: flex; gap: 1rem;">
                         <button id="tabPending" class="tab-btn active" onclick="switchTab('pending')">Pending Drafts (<span id="countPending">0</span>)</button>
                         <button id="tabApproved" class="tab-btn" onclick="switchTab('approved')">Approved Queue (<span id="countApproved">0</span>)</button>
                     </div>
-                    <button id="btnNewDraft" class="btn btn-secondary btn-sm" onclick="addNewDraft()" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; display: flex; align-items: center; gap: 0.3rem;">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                        Add Draft
-                    </button>
+                    <div style="display: flex; gap: 0.5rem; align-items: center;">
+                        <button id="btnNewDraft" class="btn btn-primary btn-sm" onclick="addNewDraft()" style="padding: 0.45rem 0.85rem; font-size: 0.8rem; display: flex; align-items: center; gap: 0.3rem;">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                            + Add Blank Draft
+                        </button>
+                        <button class="btn btn-secondary btn-sm" onclick="promptGeneratePost()" style="padding: 0.45rem 0.85rem; font-size: 0.8rem; display: flex; align-items: center; gap: 0.3rem;">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275Z"/><path d="m5 3 1 2.5L8.5 6 6 7 5 9.5 4 7 1.5 6 4 5.5Z"/></svg>
+                            ✨ Generate from Topic
+                        </button>
+                    </div>
                 </div>
 
                 <div id="postList" class="post-list">
@@ -891,7 +893,7 @@
                 </div>
             </div>
 
-            <!-- Right Side: Memory and Status -->
+            <!-- Right Side: System Status & Tips -->
             <div class="sidebar-section">
                 <!-- Status & Engine Card -->
                 <div class="card" style="padding: 1.5rem;">
@@ -899,7 +901,7 @@
                     <div style="display: flex; flex-direction: column; gap: 0.8rem;">
                         <div class="status-pill">
                             <span class="status-label">Engine Model:</span>
-                            <span class="status-value" id="statusModel">Gemini 3.5 Flash</span>
+                            <span class="status-value" id="statusModel">Gemini Flash (On-Demand)</span>
                         </div>
                         <div class="status-pill">
                             <span class="status-label">Approved Queue:</span>
@@ -916,17 +918,15 @@
                     </div>
                 </div>
 
-                <!-- Add Memory / Voice note Card -->
+                <!-- How to Use / Tips Card -->
                 <div class="card" style="padding: 1.5rem;">
-                    <h2>Add Context / Wins</h2>
-                    <p style="color: var(--color-text-muted); font-size: 0.85rem; margin-bottom: 1rem;">
-                        Paste your raw developer thoughts, wins, or voice-to-text transcripts. The compactor will merge it into your database.
-                    </p>
-                    <textarea id="memoryInput" class="memory-textarea" placeholder="E.g. Shipped medusa coupon custom loyalty program today. Took 1 week of data migrations. Users can redeem codes instantly at check-out."></textarea>
-                    <button class="btn btn-primary btn-sm" style="width: 100%; margin-top: 1rem;" onclick="addMemory()">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path><path d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3"></path></svg>
-                        Compact & Save Memory
-                    </button>
+                    <h2 style="font-size: 1.05rem;">💡 Post Creator Guide</h2>
+                    <ul style="color: var(--color-text-muted); font-size: 0.82rem; margin: 0; padding-left: 1.2rem; display: flex; flex-direction: column; gap: 0.6rem; line-height: 1.4;">
+                        <li><strong>Real-time Auto-Save:</strong> Anything you type in a draft textarea auto-saves instantly. Reloading the page will never lose your progress!</li>
+                        <li><strong>Manual or AI:</strong> Click <em>+ Add Blank Draft</em> to write posts manually, or click <em>✨ Generate from Topic</em> for Gemini assistance.</li>
+                        <li><strong>Attach Images:</strong> Attach up to 9 image files per post using the <em>Attach Image</em> button.</li>
+                        <li><strong>Approve & Schedule:</strong> Click <em>Approve</em> to queue your post. It schedules automatically based on your 3-day interval.</li>
+                    </ul>
                 </div>
             </div>
 
@@ -1461,9 +1461,26 @@
         // ─── Core Loaders ────────────────────────────────────────────────────
         
         async function fetchQueue() {
+            const activeEl = document.activeElement;
+            const isTypingInDraft = activeEl && activeEl.classList && activeEl.classList.contains('post-textarea');
+            
             showLoader("Loading queues...");
             try {
-                queueData = await storageProvider.fetchQueue();
+                const fresh = await storageProvider.fetchQueue();
+                
+                // Preserve unsaved active textarea text if user is typing right now
+                if (isTypingInDraft) {
+                    const idParts = activeEl.id.split('-');
+                    if (idParts.length === 3) {
+                        const tab = idParts[1];
+                        const idx = parseInt(idParts[2]);
+                        if (fresh[tab] && fresh[tab][idx]) {
+                            fresh[tab][idx].post_text = activeEl.value;
+                        }
+                    }
+                }
+                
+                queueData = fresh;
                 if (!queueData.settings) {
                     queueData.settings = { post_interval_days: 3 };
                 }
@@ -1479,7 +1496,7 @@
         async function fetchStatus() {
             try {
                 const status = await storageProvider.fetchStatus();
-                document.getElementById('statusModel').innerText = status.summary.has_voice ? "Gemini 3.5 Flash (Voice active)" : "Gemini 3.5 Flash";
+                document.getElementById('statusModel').innerText = "Gemini Flash (On-Demand)";
             } catch (err) {
                 console.error("Status fetch failed", err);
             }
@@ -1502,10 +1519,26 @@
             }
         }
 
+        // ─── Real-time Auto-Save Input Handler ───────────────────────────────
+        
+        function handleDraftTextInput(tab, index, val) {
+            if (queueData[tab] && queueData[tab][index]) {
+                queueData[tab][index].post_text = val;
+                queueSaveDebounced(`chore: auto-save ${tab} draft text [skip ci]`);
+            }
+        }
+
         // ─── Rendering ───────────────────────────────────────────────────────
         
         function renderPosts() {
             const listContainer = document.getElementById('postList');
+            
+            // Preserve active element and selection positions
+            const activeEl = document.activeElement;
+            const activeId = (activeEl && activeEl.classList && activeEl.classList.contains('post-textarea')) ? activeEl.id : null;
+            const selStart = activeEl ? activeEl.selectionStart : 0;
+            const selEnd = activeEl ? activeEl.selectionEnd : 0;
+
             listContainer.innerHTML = '';
             
             const list = queueData[currentTab] || [];
@@ -1514,7 +1547,7 @@
                 listContainer.innerHTML = `
                     <div style="text-align: center; padding: 3rem; color: var(--color-text-muted);">
                         <p style="font-size: 1.1rem; margin-bottom: 0.5rem;">No posts in this section.</p>
-                        <p style="font-size: 0.9rem;">${currentTab === 'pending' ? 'Click "Generate Drafts" above to query Gemini.' : 'Approve some drafts from the Pending tab to fill your queue.'}</p>
+                        <p style="font-size: 0.9rem;">${currentTab === 'pending' ? 'Click "+ Add Blank Draft" or "✨ Generate from Topic" above to create posts.' : 'Approve drafts from the Pending tab to fill your scheduled queue.'}</p>
                     </div>
                 `;
                 return;
@@ -1531,12 +1564,8 @@
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                             Decline
                         </button>
-                        <button class="btn btn-secondary btn-sm" onclick="saveDraftText(${index}, '${currentTab}')">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
-                            Save Edit
-                        </button>
-                        <button class="btn btn-primary btn-sm" onclick="generateAIDraft(${index})">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275Z"/><path d="m5 3 1 2.5L8.5 6 6 7 5 9.5 4 7 1.5 6 4 5.5Z"/><path d="m19 17 1 2.5 2.5.5-2.5 1-1 2.5-1-2.5-2.5-1 2.5-1Z"/></svg>
+                        <button class="btn btn-primary btn-sm" onclick="generateAIDraft(${index})" title="Polish or rewrite this post using Gemini">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275Z"/><path d="m5 3 1 2.5L8.5 6 6 7 5 9.5 4 7 1.5 6 4 5.5Z"/></svg>
                             Generate Post
                         </button>
                         <button class="btn btn-success btn-sm" onclick="approvePost(${index})">
@@ -1549,10 +1578,6 @@
                         <button class="btn btn-danger btn-sm" onclick="removeApproved(${index})">
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
                             Delete
-                        </button>
-                        <button class="btn btn-secondary btn-sm" onclick="saveDraftText(${index}, '${currentTab}')">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
-                            Save Edit
                         </button>
                     `;
                 }
@@ -1605,7 +1630,7 @@
                         </div>
                         ${dateHeaderHtml}
                     </div>
-                    <textarea id="text-${currentTab}-${index}" class="post-textarea">${item.post_text}</textarea>
+                    <textarea id="text-${currentTab}-${index}" class="post-textarea" oninput="handleDraftTextInput('${currentTab}', ${index}, this.value)" placeholder="Type your LinkedIn post content here...">${item.post_text || ''}</textarea>
                     
                     ${previewsHtml}
 
@@ -1620,6 +1645,15 @@
                     loadImagePreview(path, `image-preview-${currentTab}-${index}-${imgIdx}`);
                 });
             });
+
+            // Restore active element focus and selection position
+            if (activeId) {
+                const restoredEl = document.getElementById(activeId);
+                if (restoredEl) {
+                    restoredEl.focus();
+                    try { restoredEl.setSelectionRange(selStart, selEnd); } catch(e){}
+                }
+            }
         }
 
         // ─── Event Handlers ──────────────────────────────────────────────────
@@ -1741,7 +1775,7 @@
             
             const newDraft = {
                 post_text: '',
-                reasoning: 'Custom draft added directly from dashboard.'
+                reasoning: 'Custom draft added from dashboard.'
             };
             
             // Prepend new draft at the top (index 0) so the user sees it immediately
@@ -1749,6 +1783,13 @@
             
             updateCountsDisplay();
             renderPosts();
+            
+            // SAVE IMMEDIATELY to disk/cloud so the new draft is persisted right away!
+            try {
+                await storageProvider.saveQueue(queueData, "chore: add new blank draft [skip ci]");
+            } catch (err) {
+                console.error("Save new draft failed", err);
+            }
             
             // Focus on the newly created textarea
             setTimeout(() => {
@@ -1759,7 +1800,29 @@
                 }
             }, 100);
             
-            showToast("Draft card added locally! Type your content and click 'Save Edit' or 'Approve' to sync.", "success");
+            showToast("New draft added! Type your post text — it auto-saves in real time.", "success");
+        }
+
+        async function promptGeneratePost() {
+            const topic = prompt("Enter a topic, incident, or prompt for Gemini to write a LinkedIn post about:");
+            if (!topic || !topic.trim()) return;
+
+            if (currentTab !== 'pending') switchTab('pending');
+
+            const newDraft = {
+                post_text: topic.trim(),
+                reasoning: 'Generating draft with Gemini...'
+            };
+
+            queueData.pending.unshift(newDraft);
+            updateCountsDisplay();
+            renderPosts();
+
+            try {
+                await storageProvider.saveQueue(queueData, "chore: create topic draft [skip ci]");
+            } catch (err) {}
+
+            await generateAIDraft(0);
         }
 
         let _saveQueueTimeout = null;
@@ -1769,7 +1832,7 @@
                 clearTimeout(_saveQueueTimeout);
             }
             
-            // Set the sync button state to amber/syncing
+            // Set sync indicator state
             const syncBtn = document.getElementById('btnSync');
             if (syncBtn && storageProvider.isCloud) {
                 syncBtn.innerHTML = `
@@ -1782,90 +1845,65 @@
                 _saveQueueTimeout = null;
                 try {
                     await storageProvider.saveQueue(queueData, commitMsg);
-                    showToast("Queue successfully synchronized!", "success");
-                    
-                    // Reset sync button visual state
                     storageProvider.init();
-                    
-                    // Check if replenishment is needed
-                    if (queueData.pending.length < 10) {
-                        storageProvider.replenishQueue().catch(console.error);
-                        startReplenishPoller();
-                    }
                 } catch (err) {
-                    showToast("Cloud sync failed: " + err.message, "error");
-                    // Reset sync button visual state
+                    showToast("Sync failed: " + err.message, "error");
                     storageProvider.init();
                 }
-            }, 1500); // 1.5s debounce
-        }
-
-        async function saveDraftText(index, tab) {
-            const textarea = document.getElementById(`text-${tab}-${index}`);
-            const newText = textarea.value.trim();
-            queueData[tab][index].post_text = newText;
-            
-            updateCountsDisplay();
-            renderPosts();
-            showToast("Draft updated! Synchronizing in background...", "info");
-            
-            queueSaveDebounced(`chore: update ${tab} draft text [skip ci]`);
+            }, 1000); // 1.0s debounce
         }
 
         async function generateAIDraft(index) {
             const textarea = document.getElementById(`text-pending-${index}`);
             const topicText = textarea.value.trim();
-            const previousText = topicText;
             if (!topicText) {
-                showToast("Please type a topic, question, or incident first.", "warning");
+                showToast("Please type a topic or prompt first.", "warning");
                 return;
             }
 
             const card = textarea.closest('.post-card');
             const genBtn = card.querySelector(`button[onclick^="generateAIDraft"]`);
             
-            const originalBtnHtml = genBtn.innerHTML;
-            genBtn.disabled = true;
-            genBtn.innerHTML = `
-                <span class="status-indicator-dot" style="background-color: #ffa502; box-shadow: 0 0 8px #ffa502; animation: pulse-dot 1s infinite alternate; margin-right: 0.3rem;"></span>
-                Generating...
-            `;
+            const originalBtnHtml = genBtn ? genBtn.innerHTML : "Generate Post";
+            if (genBtn) {
+                genBtn.disabled = true;
+                genBtn.innerHTML = `
+                    <span class="status-indicator-dot" style="background-color: #ffa502; box-shadow: 0 0 8px #ffa502; animation: pulse-dot 1s infinite alternate; margin-right: 0.3rem;"></span>
+                    Generating...
+                `;
+            }
             textarea.disabled = true;
-            textarea.placeholder = "🤖 Gemini is generating your post draft based on your input...";
+            textarea.placeholder = "🤖 Gemini is generating your post based on your prompt...";
             
-            showToast("Generating post with Gemini... this will also update memory database.", "info");
+            showToast("Generating post with Gemini...", "info");
 
             try {
                 const result = await storageProvider.generatePostFromTopic(topicText, index);
                 if (result.status === 'success') {
-                    if (storageProvider.isCloud) {
-                        showToast(result.message || "Generation triggered on GitHub. Waiting for updated draft...", "success");
-                        startDraftGenerationPoller(index, previousText);
-                    } else {
-                        queueData.pending[index].post_text = result.post_text;
-                        queueData.pending[index].reasoning = result.reasoning;
+                    queueData.pending[index].post_text = result.post_text;
+                    queueData.pending[index].reasoning = result.reasoning || "Generated from prompt";
 
-                        renderPosts();
-                        showToast("Post draft successfully generated!", "success");
-
-                        queueSaveDebounced(`chore: save generated post from topic [skip ci]`);
-                        fetchStatus();
-                    }
+                    renderPosts();
+                    showToast("Post successfully generated!", "success");
+                    queueSaveDebounced(`chore: save generated post [skip ci]`);
                 } else {
-                    throw new Error(result.message || "Unknown error");
+                    throw new Error(result.message || "Generation error");
                 }
             } catch (err) {
                 showToast("Generation failed: " + err.message, "error");
             } finally {
-                genBtn.disabled = false;
-                genBtn.innerHTML = originalBtnHtml;
+                if (genBtn) {
+                    genBtn.disabled = false;
+                    genBtn.innerHTML = originalBtnHtml;
+                }
                 textarea.disabled = false;
-                textarea.placeholder = "E.g. Shipped medusa coupon custom loyalty program today...";
+                textarea.placeholder = "Type your LinkedIn post content here...";
             }
         }
 
         async function approvePost(index) {
-            const postText = document.getElementById(`text-pending-${index}`).value.trim();
+            const textarea = document.getElementById(`text-pending-${index}`);
+            const postText = textarea ? textarea.value.trim() : queueData.pending[index].post_text;
             
             // Optimistic UI — remove from pending, move to approved instantly
             const item = queueData.pending.splice(index, 1)[0];
@@ -1874,7 +1912,7 @@
             
             updateCountsDisplay();
             renderPosts();
-            showToast("Post approved! Synchronizing in background...", "success");
+            showToast("Post approved and scheduled!", "success");
             
             queueSaveDebounced("chore: approve draft from dashboard [skip ci]");
         }
@@ -1885,7 +1923,7 @@
             
             updateCountsDisplay();
             renderPosts();
-            showToast("Draft declined! Synchronizing in background...", "success");
+            showToast("Draft declined!", "info");
             
             queueSaveDebounced("chore: decline draft from dashboard [skip ci]");
         }
@@ -1896,102 +1934,11 @@
             // Optimistic UI updates
             queueData.approved.splice(index, 1);
             
-            // Instantly render UI & update counts
             updateCountsDisplay();
             renderPosts();
-            showToast("Removed from approved queue! Synchronizing in background...", "success");
+            showToast("Removed from approved queue!", "info");
             
             queueSaveDebounced("chore: remove item from approved queue [skip ci]");
-        }
-
-        // ─── Replenish Poller ─────────────────────────────────────────────────
-        // Silently polls the queue in the background after replenishment is
-        // triggered, updating the UI in real-time as new drafts appear.
-
-        let _replenishPollTimer = null;
-        let _draftPollTimer = null;
-
-        function startReplenishPoller() {
-            // Don't stack multiple pollers
-            if (_replenishPollTimer) return;
-
-            // Show subtle indicator on pending tab badge
-            const badge = document.getElementById('countPending');
-            if (badge) badge.style.opacity = '0.5';
-
-            // Poll every 4 seconds
-            _replenishPollTimer = setInterval(async () => {
-                if (storageProvider.isSaving) return;
-                try {
-                    // Update logs to show real-time GitHub Actions step progression
-                    fetchLogs();
-                    
-                    const fresh = await storageProvider.fetchQueue();
-
-                    // Only re-render if the count actually changed (avoids flicker)
-                    if (fresh.pending.length !== queueData.pending.length) {
-                        queueData = fresh;
-                        updateCountsDisplay();
-                        renderPosts();
-                    }
-
-                    // Stop once we've hit 10 pending
-                    if (fresh.pending.length >= 10) {
-                        stopReplenishPoller();
-                        showToast(`Drafts ready! ${fresh.pending.length} pending drafts available.`, "success");
-                    }
-                } catch (err) {
-                    // Silently ignore transient fetch errors during polling
-                    console.warn("[poller] fetch error", err);
-                }
-            }, 4000);
-
-            // Safety stop after 3 minutes so the poller never runs forever
-            setTimeout(stopReplenishPoller, 3 * 60 * 1000);
-        }
-
-        function stopReplenishPoller() {
-            if (_replenishPollTimer) {
-                clearInterval(_replenishPollTimer);
-                _replenishPollTimer = null;
-            }
-            const badge = document.getElementById('countPending');
-            if (badge) badge.style.opacity = '1';
-        }
-
-        function startDraftGenerationPoller(index, previousText) {
-            if (_draftPollTimer) {
-                clearInterval(_draftPollTimer);
-                _draftPollTimer = null;
-            }
-
-            let attempts = 0;
-            _draftPollTimer = setInterval(async () => {
-                attempts += 1;
-                if (storageProvider.isSaving) return;
-
-                try {
-                    fetchLogs();
-                    const fresh = await storageProvider.fetchQueue();
-                    const nextDraft = fresh.pending[index];
-                    const nextText = nextDraft && nextDraft.post_text ? nextDraft.post_text.trim() : "";
-
-                    if (nextText && nextText !== previousText.trim()) {
-                        queueData = fresh;
-                        updateCountsDisplay();
-                        renderPosts();
-                        clearInterval(_draftPollTimer);
-                        _draftPollTimer = null;
-                        showToast("Post draft successfully generated!", "success");
-                    } else if (attempts >= 30) {
-                        clearInterval(_draftPollTimer);
-                        _draftPollTimer = null;
-                        showToast("Generation is still running. Refresh in a moment to check the updated draft.", "warning");
-                    }
-                } catch (err) {
-                    console.warn("[draft-poller] fetch error", err);
-                }
-            }, 4000);
         }
 
         // ─── Post Now (trigger full posting workflow) ─────────────────────────
@@ -2001,7 +1948,7 @@
                 showToast("Post Now only works in Cloud Mode (GitHub Actions). Enable Cloud Mode in Settings.", "warning");
                 return;
             }
-            if (!confirm("This will trigger the full posting workflow on GitHub Actions, which will publish the next approved post to LinkedIn. Continue?")) return;
+            if (!confirm("This will trigger the posting workflow on GitHub Actions to publish the next approved post to LinkedIn. Continue?")) return;
 
             showLoader("Triggering post workflow on GitHub Actions...");
             try {
@@ -2020,8 +1967,6 @@
                     throw new Error(err.message || res.statusText);
                 }
                 showToast("Post workflow triggered! Check logs for progress.", "success");
-                // Start polling logs to show progress
-                startReplenishPoller();
                 setTimeout(fetchLogs, 3000);
             } catch (err) {
                 showToast("Failed to trigger: " + err.message, "error");
@@ -2033,7 +1978,6 @@
         async function refreshDashboardData() {
             showLoader("Refreshing dashboard info...");
             try {
-                // Execute fetches concurrently
                 await Promise.all([
                     fetchQueue(),
                     fetchStatus(),
@@ -2044,43 +1988,6 @@
                 showToast("Refresh failed: " + err.message, "error");
             } finally {
                 hideLoader();
-            }
-        }
-
-        async function replenishQueue() {
-            showLoader("Triggering draft generation...");
-            try {
-                const result = await storageProvider.replenishQueue();
-                showToast("Generating drafts until 10... updates will appear live.", "success");
-                // Start the live poller — it will re-fetch and re-render
-                // every 4s until pending hits 10, just like approve/decline does
-                startReplenishPoller();
-            } catch (err) {
-                showToast("Generation failed: " + err.message, "error");
-            } finally {
-                hideLoader();
-                setTimeout(fetchLogs, 1500);
-            }
-        }
-
-        async function addMemory() {
-            const text = document.getElementById('memoryInput').value.trim();
-            if (!text) {
-                showToast("Please enter some text wins / context.", "warning");
-                return;
-            }
-
-            showLoader("Triggering memory compaction...");
-            try {
-                const result = await storageProvider.addMemory(text);
-                showToast(result.message || "Compaction triggered successfully!", "success");
-                document.getElementById('memoryInput').value = '';
-                fetchStatus();
-            } catch (err) {
-                showToast("Memory compaction failed: " + err.message, "error");
-            } finally {
-                hideLoader();
-                setTimeout(fetchLogs, 1500);
             }
         }
 
@@ -2229,23 +2136,7 @@
         // Poll console logs / runs every 10 seconds
         setInterval(fetchLogs, 10000);
         
-        // Auto-refresh the queue every 45 seconds to keep the dashboard up-to-date
-        setInterval(async () => {
-            // Only refresh if the user is not actively editing/saving, and the tab is visible
-            if (!document.hidden && !storageProvider.isSaving && !_saveQueueTimeout) {
-                try {
-                    const fresh = await storageProvider.fetchQueue();
-                    // Only re-render if the queue data actually changed on the server (prevents cursor jump)
-                    if (JSON.stringify(fresh) !== JSON.stringify(queueData)) {
-                        queueData = fresh;
-                        updateCountsDisplay();
-                        renderPosts();
-                    }
-                } catch (err) {
-                    console.warn("Background auto-refresh failed", err);
-                }
-            }
-        }, 45000);
+
     </script>
 </body>
 </html>
