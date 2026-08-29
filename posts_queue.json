@@ -1,26 +1,6 @@
 {
   "approved": [
     {
-      "post_text": "Building a brand is not just about the visuals.\n\nWith Prettiva and Co, I quickly realized that the technical backbone has to support the creative vision. If your site looks good but the backend logic for variants or shipping is a mess, the customer experience falls apart the moment they try to buy something.\n\nI spent weeks ensuring the technical foundation could actually handle the growth we wanted to see. Design is the first thing people notice, but the architecture is the reason they come back for a second order.\n\nHow do you prioritize technical stability when you have pressure to keep the front end looking polished?\n\n#StartupLife #Founder #WebDev #Prettiva",
-      "reasoning": "Reflects on the founder perspective of Prettiva and Co, bridging the gap between aesthetics and technical foundations."
-    },
-    {
-      "post_text": "I used to think that shipping early meant shipping everything at once.\n\nWhen we were setting up the early versions of STRAYED, I wanted to include every feature that crossed my mind. That was until I saw how much bloat it added to our development cycle and our final page load speeds.\n\nI learned to cut features that did not directly improve the checkout flow. Focusing on a smaller set of features meant we could actually refine them until they worked perfectly instead of having a site full of broken promises.\n\nWhat is the one feature you decided to remove to make your product better?\n\n#BuildingInPublic #ProductStrategy #Startup #Strayed",
-      "reasoning": "Highlights the learning process behind feature prioritization for STRAYED, moving away from 'more is better'."
-    },
-    {
-      "post_text": "Refactoring code is not just for cleaning up messes.\n\nI recently went back through our earlier commits and realized how much redundant logic I had packed into the checkout process. By cleaning it up, the code became easier to read and significantly faster to deploy.\n\nIt is easy to get caught up in the excitement of adding new things, but taking a step back to audit your own work is what builds long-term maintainability. You are usually your own worst critic, and that is a good thing.\n\nHow often do you go back and rewrite your own code just to simplify the process?\n\n#Coding #SoftwareRefactoring #DeveloperLife #Tech",
-      "reasoning": "Focuses on the importance of code hygiene and self-reflection as a developer."
-    },
-    {
-      "post_text": "Infrastructure choices are long-term commitments, not temporary solutions.\n\nWhen I decided to handle our own infrastructure needs instead of relying on common third-party services, it felt like an unnecessary extra step. The truth is that learning how to manage our own hosting setups has given us much more control than a plug-and-play solution ever could.\n\nIt takes more time to set up, but the flexibility is worth every extra hour of configuration. You start to understand how the entire stack actually connects instead of treating your hosting as a black box.\n\nDo you prefer the control of building your own stack or the convenience of managed services?\n\n#DevOps #Infrastructure #CloudComputing #SelfTaught",
-      "reasoning": "Covers the decision-making process behind infrastructure management, avoiding buzzwords."
-    },
-    {
-      "post_text": "Debugging is mostly about learning to trust your own logs.\n\nThere was a time when I spent an entire afternoon looking for a logical error in our database queries while the fix was hidden in plain sight in the console logs. I was looking for complexity where there was only a simple mapping mistake.\n\nSometimes the best way to solve a bug is to step away from the keyboard and rethink the assumption you made at the start. The code rarely lies, but your perspective on it might be skewed.\n\nWhat is the most helpful debugging trick you have learned over the years?\n\n#Debugging #Programming #TechStories #Developer",
-      "reasoning": "Discusses a classic developer scenario of overcomplicating a simple bug."
-    },
-    {
       "post_text": "Customer feedback is the only real metrics report that matters.\n\nWhen we started seeing issues with our checkout flow on specific devices, I did not find the answer in a dashboard. I found it by listening to what our users were actually telling us in their emails and support requests.\n\nNumbers tell you that something is wrong, but users tell you exactly where they are getting stuck. Always prioritize the feedback loop that comes directly from the people using your product.\n\nHow do you make sure you are really listening to your users instead of just watching the analytics?\n\n#UX #UserFeedback #Founder #Ecommerce",
       "reasoning": "Uses a grounding example of checkout issues to discuss the importance of listening to customers."
     },
