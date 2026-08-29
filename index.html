@@ -1409,7 +1409,7 @@
             }
         }
 
-        function saveSettings() {
+        async function saveSettings() {
             const cloudMode = document.getElementById('cfgCloudMode').checked;
             const token = document.getElementById('cfgToken').value.trim();
             const repo = document.getElementById('cfgRepo').value.trim();
@@ -1424,6 +1424,9 @@
                 return;
             }
             
+            const prevCloudMode = localStorage.getItem('gh_cloud_mode') === 'true';
+            const cloudModeChanged = (prevCloudMode !== cloudMode);
+
             storageProvider.saveConfig(cloudMode, token, repo);
             
             if (!queueData.settings) {
@@ -1434,15 +1437,23 @@
             queueData.settings.post_interval_days = postInterval;
             
             toggleSettingsModal();
-            showToast("Settings updated successfully! Reloading data...", "success");
             
             if (prevInterval !== postInterval) {
                 updateCountsDisplay();
                 renderPosts();
-                queueSaveDebounced("chore: update post interval setting [skip ci]");
+                try {
+                    await storageProvider.saveQueue(queueData, "chore: update post interval setting [skip ci]");
+                    showToast("Settings updated & post interval saved!", "success");
+                } catch (err) {
+                    showToast("Failed to save post interval: " + err.message, "error");
+                }
+            } else {
+                showToast("Settings updated successfully!", "success");
             }
             
-            fetchQueue();
+            if (cloudModeChanged) {
+                await fetchQueue();
+            }
             fetchStatus();
             fetchLogs();
         }
@@ -1453,6 +1464,9 @@
             showLoader("Loading queues...");
             try {
                 queueData = await storageProvider.fetchQueue();
+                if (!queueData.settings) {
+                    queueData.settings = { post_interval_days: 1 };
+                }
                 updateCountsDisplay();
                 renderPosts();
             } catch (err) {
