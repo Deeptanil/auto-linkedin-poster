@@ -43,5 +43,8 @@
       "reasoning": "This post highlights a specific operational pain point (manual Odoo variant entry) and provides a practical solution (Excel imports), staying true to the student-founder persona without using buzzwords."
     }
   ],
-  "last_posted_at": "2026-08-28T20:17:18.068635+00:00"
+  "last_posted_at": "2026-08-28T20:17:18.068635+00:00",
+  "settings": {
+    "post_interval_days": 3
+  }
 }
