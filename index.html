@@ -911,22 +911,22 @@
             
             <!-- Left Side: Queue Boards -->
             <div class="card">
-                <div class="queue-header-bar" style="display: flex; justify-content: space-between; align-items: center; width: 100%; flex-wrap: wrap; gap: 0.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--color-border); margin-bottom: 1rem;">
+                <div class="queue-header-bar" style="display: flex; justify-content: space-between; align-items: center; width: 100%; flex-wrap: wrap; gap: 1rem; padding-bottom: 1.2rem; border-bottom: 1px solid var(--color-card-border); margin-bottom: 1.5rem;">
                     <div>
-                        <h2 style="font-size: 1.2rem; margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+                        <h2 style="font-family: var(--font-display); font-size: 1.3rem; font-weight: 700; color: var(--color-text-main); margin: 0; display: flex; align-items: center; gap: 0.6rem;">
                             📝 LinkedIn Post Queue
-                            <span id="countApproved" class="status-indicator-dot" style="background: var(--color-primary); color: var(--color-bg); padding: 0.1rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">0</span>
+                            <span id="countApproved" class="badge-count" style="background: rgba(102, 252, 241, 0.15); color: var(--color-primary); border: 1px solid rgba(102, 252, 241, 0.3); padding: 0.2rem 0.75rem; border-radius: 12px; font-size: 0.85rem; font-weight: 700; line-height: 1;">0</span>
                         </h2>
-                        <p style="font-size: 0.8rem; color: var(--color-text-muted); margin: 0.2rem 0 0 0;">Write or generate drafts below. Auto-scheduled every <span id="intervalDisplay">3</span> days.</p>
+                        <p style="font-size: 0.85rem; color: var(--color-text-muted); margin: 0.3rem 0 0 0;">Write or generate drafts below. Auto-scheduled every <span id="intervalDisplay" style="color: var(--color-primary); font-weight: 600;">3</span> days.</p>
                     </div>
-                    <div style="display: flex; gap: 0.5rem; align-items: center;">
-                        <button id="btnNewDraft" class="btn btn-primary btn-sm" onclick="addNewDraft()" style="padding: 0.5rem 0.9rem; font-size: 0.85rem; display: flex; align-items: center; gap: 0.4rem;">
+                    <div style="display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap;">
+                        <button id="btnNewDraft" class="btn btn-primary btn-sm" onclick="addNewDraft()" style="padding: 0.55rem 1rem; font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 0.45rem;">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                            + Add Post Draft
+                            Add Post Draft
                         </button>
-                        <button class="btn btn-secondary btn-sm" onclick="promptGeneratePost()" style="padding: 0.5rem 0.9rem; font-size: 0.85rem; display: flex; align-items: center; gap: 0.4rem;">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275Z"/><path d="m5 3 1 2.5L8.5 6 6 7 5 9.5 4 7 1.5 6 4 5.5Z"/></svg>
-                            ✨ Generate from Topic
+                        <button class="btn btn-secondary btn-sm" onclick="promptGeneratePost()" style="padding: 0.55rem 1rem; font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 0.45rem;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275Z"/><path d="m5 3 1 2.5L8.5 6 6 7 5 9.5 4 7 1.5 6 4 5.5Z"/></svg>
+                            Generate from Topic
                         </button>
                     </div>
                 </div>
