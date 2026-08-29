@@ -1163,9 +1163,18 @@
                     this.ghSha = result.sha;
                     return result.data;
                 } else {
-                    const res = await fetch('/api/queue');
-                    if (!res.ok) throw new Error("Local server request failed");
-                    return await safeJson(res);
+                    try {
+                        const res = await fetch('/api/queue');
+                        if (!res.ok) throw new Error("Local server request failed");
+                        return await safeJson(res);
+                    } catch (e) {
+                        console.warn("Local API fetch failed, trying static posts_queue.json fallback", e);
+                        try {
+                            const staticRes = await fetch('/memory/posts_queue.json');
+                            if (staticRes.ok) return await staticRes.json();
+                        } catch (err2) {}
+                        throw e;
+                    }
                 }
             },
 

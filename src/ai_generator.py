@@ -261,6 +261,201 @@ class AIGenerator:
             "  • Strong hook (declarative, under 15 words)\n"
             "  • Short paragraph blocks (1–3 sentences each)\n"
             "  • No markdown bold/italic\n"
+"The lesson comes from the story — it's never spelled out like a LinkedIn lesson post."
+    ),
+}
+
+
+class AIGenerator:
+    def __init__(self):
+        if not config.is_gemini_configured():
+            self.client = None
+        else:
+            try:
+                self.client = genai.Client(api_key=config.GEMINI_API_KEY)
+            except Exception as e:
+                self.client = None
+                print(f"[ai_generator] Error initialising Gemini: {e}", file=sys.stderr)
+
+    # ─── Main generation ──────────────────────────────────────────────────────
+
+    def generate_post_batch(
+        self,
+        topic: str,
+        tone: str = "Auto",
+        extra_instructions: str = "",
+        compact_profile: dict = None,
+        recent_context: str = "",
+        past_posts: list[str] = None,
+        batch_size: int = 5,
+        topic_is_source_of_truth: bool = False,
+    ) -> list[dict]:
+        """
+        Generate a batch of LinkedIn posts as structured JSON.
+        Applies anti-repetition memory and filters out invalid posts (e.g. posts containing URLs).
+        """
+        print(f"[ai_generator] Starting batch generation. Batch size: {batch_size}, Tone: {tone}")
+        if not self.client:
+            print("[ai_generator] ERROR: Gemini API key is missing. Ensure GEMINI_API_KEY is configured in your environment or .env file.")
+            raise ValueError("Gemini API client not configured. Set GEMINI_API_KEY.")
+
+        comparison_posts = [p.strip() for p in (past_posts or []) if isinstance(p, str) and p.strip()]
+
+        # Format anti-repetition negative constraints
+        history_blacklist = ""
+        if past_posts:
+            # Escape double quotes for JSON safety in prompt
+            escaped_posts = [p.replace('"', '\\"') for p in past_posts]
+            history_blacklist = "\n".join(f'- "{p}"' for p in escaped_posts)
+
+        print("[ai_generator] Building prompt payload...")
+        prompt = self._build_batch_prompt(
+            topic, tone, extra_instructions,
+            compact_profile, recent_context,
+            history_blacklist, batch_size,
+            topic_is_source_of_truth=topic_is_source_of_truth,
+        )
+
+        print(f"[ai_generator] Calling Google Gemini API (model: {config.GEMINI_MODEL}) requesting structured JSON response...")
+        try:
+            raw_response = self._call_gemini_json(prompt)
+            print(f"[ai_generator] Received API response from Gemini (size: {len(raw_response)} characters).")
+        except Exception as api_err:
+            print(f"[ai_generator] API Call Error: {api_err}")
+            raise api_err
+            
+        raw_text = raw_response.strip()
+
+        # Clean JSON if wrapped in markdown code blocks
+        if raw_text.startswith("```"):
+            first_newline = raw_text.find("\n")
+            if first_newline != -1:
+                raw_text = raw_text[first_newline:].strip()
+            if raw_text.endswith("```"):
+                raw_text = raw_text[:-3].strip()
+
+        try:
+            batch = json.loads(raw_text)
+            if not isinstance(batch, list):
+                raise ValueError("AI response is not a JSON list.")
+            print(f"[ai_generator] Successfully parsed JSON array containing {len(batch)} posts.")
+        except Exception as e:
+            print(f"[ai_generator] JSON Parsing Failure: {e}. Raw response:\n{raw_text}", file=sys.stderr)
+            return []
+
+        # Apply hard URL and safety filters
+        filtered_batch = []
+        url_patterns = [".co", ".in", ".com", "http", "link in bio", "check the site", "www.", ".org", ".net"]
+        
+        print("[ai_generator] Running posts through strict quality filters (URLs, minimum length, markdown markers)...")
+        for idx, item in enumerate(batch):
+            if not isinstance(item, dict) or "post_text" not in item:
+                print(f"  - Post index {idx}: Ignored (missing 'post_text' key).")
+                continue
+            
+            post_text = item["post_text"].strip()
+            
+            # URL constraint filter
+            contains_url = any(pat in post_text.lower() for pat in url_patterns)
+            if contains_url:
+                print(f"  - Post index {idx}: Filtered out (contains URL or link reference). Preview: {post_text[:60]}...")
+                continue
+
+            # Hard safety filter (simple checks to prevent brand damage)
+            if not post_text or len(post_text) < 50:
+                print(f"  - Post index {idx}: Filtered out (too short, length={len(post_text)}).")
+                continue
+
+            # Double check for markdown formatting
+            if "**" in post_text or "```" in post_text:
+                print(f"  - Post index {idx}: Filtered out (contains markdown bold '**' or code block '```' formatting).")
+                continue
+
+            if self._contains_emoji(post_text):
+                print(f"  - Post index {idx}: Filtered out (contains emoji despite prompt constraints).")
+                continue
+
+            overlap_score = self._max_similarity(post_text, comparison_posts + [entry["post_text"] for entry in filtered_batch])
+            if overlap_score >= 0.55:
+                print(f"  - Post index {idx}: Filtered out (too similar to existing content, similarity={overlap_score:.2f}).")
+                continue
+
+            print(f"  - Post index {idx}: Accepted! (length={len(post_text)})")
+            filtered_batch.append({
+                "post_text": post_text,
+                "reasoning": item.get("reasoning", "No reasoning provided")
+            })
+
+        print(f"[ai_generator] Filter process complete. {len(filtered_batch)} of {len(batch)} generated posts were approved.")
+        return filtered_batch
+
+    @staticmethod
+    def _contains_emoji(text: str) -> bool:
+        return bool(re.search(r"[\U0001F300-\U0001FAFF\u2600-\u27BF]", text))
+
+    @staticmethod
+    def _normalise_words(text: str) -> set[str]:
+        cleaned = re.sub(r"#[A-Za-z0-9_]+", " ", text.lower())
+        words = re.findall(r"[a-z0-9']+", cleaned)
+        return {word for word in words if len(word) > 2}
+
+    def _max_similarity(self, text: str, other_posts: list[str]) -> float:
+        if not other_posts:
+            return 0.0
+
+        current_words = self._normalise_words(text)
+        if not current_words:
+            return 0.0
+
+        max_score = 0.0
+        for other in other_posts:
+            other_words = self._normalise_words(other)
+            if not other_words:
+                continue
+            intersection = len(current_words & other_words)
+            union = len(current_words | other_words)
+            if union == 0:
+                continue
+            max_score = max(max_score, intersection / union)
+        return max_score
+
+    def generate_post(
+        self,
+        topic: str,
+        tone: str = "Auto",
+        extra_instructions: str = "",
+        voice_profile: str = "",
+        achievements: str = "",
+        recent_context: str = "",
+    ) -> str:
+        """Helper to generate a single post (used by local CLI). Loads compact profile internally."""
+        from src.memory_manager import MemoryManager
+        mem = MemoryManager()
+        compact = mem.load_compact_profile()
+        
+        batch = self.generate_post_batch(
+            topic=topic,
+            tone=tone,
+            extra_instructions=extra_instructions,
+            compact_profile=compact,
+            recent_context=recent_context,
+            batch_size=1
+        )
+        if batch:
+            return batch[0]["post_text"]
+        raise RuntimeError("Failed to generate post.")
+
+    def revise_post(self, original_post: str, revision_instructions: str) -> str:
+        """Revise an existing draft based on feedback."""
+        if not self.client:
+            raise ValueError("Gemini API client not configured.")
+
+        prompt = (
+            "You are refining a LinkedIn post draft.\n"
+            "Keep all existing formatting rules:\n"
+            "  • Strong hook (declarative, under 15 words)\n"
+            "  • Short paragraph blocks (1–3 sentences each)\n"
+            "  • No markdown bold/italic\n"
             "  • No links in the post body\n"
             "  • No emojis (STRICT CONSTRAINT — keep it 100% plain text, no emojis)\n"
             "  • 1–3 hashtags at the very end\n\n"
@@ -270,7 +465,6 @@ class AIGenerator:
             "No introductory text, no code blocks."
         )
 
-        # Call with plain text response mode
         return self._call_gemini_plain(prompt).strip()
 
     # ─── Prompt Builder ───────────────────────────────────────────────────────
@@ -298,11 +492,10 @@ class AIGenerator:
             "CRITICAL TONE & IDENTITY GUIDELINES:\n"
             "- Tone: Casual, honest, down-to-earth Indian college student & founder in Bangalore. Sounds like a normal guy who builds tech, rather than a corporate executive.\n"
             "- Language: Use plain English with natural contractions. You can use casual phrases like 'tbh' or 'actually' but keep it professional. NEVER use formal corporate PR phrases.\n"
-            "- STRICT FACTUAL CONSTRAINT: NEVER make up stories, events, financial numbers, or investment details from thin air (e.g., do NOT write about raising capital, turning down a $1.5M seed round, or spending $42k/thousands of dollars on AWS). None of this is true. \n"
-            "- You must build posts ONLY around the specific real facts present in the COMPACT AUTHOR BLUEPRINT (like custom MedusaJS loyalty features, Odoo manual variant frustrations vs. Excel imports, Razorpay webhook integration bugs, or web page UX load speed optimizations)."
+            "- STRICT FACTUAL CONSTRAINT: NEVER make up stories, events, financial numbers, or investment details from thin air. Build posts ONLY around real provided facts."
         )
 
-        # 2. Compact Profile Facts & Voice (Highly Token-Efficient)
+        # 2. Compact Profile Facts
         if compact_profile:
             essence = "\n".join(f"- {item}" for item in compact_profile.get("voice_essence", []))
             banned = ", ".join(compact_profile.get("banned_patterns", []))
@@ -312,62 +505,54 @@ class AIGenerator:
             profile_block = (
                 "=== COMPACT AUTHOR BLUEPRINT ===\n"
                 f"Writing Style Guidelines:\n{essence}\n\n"
-                f"Banned Words / Buzzwords to Avoid: {banned or 'None'}\n\n"
+                f"Banned Words / Buzzwords: {banned or 'None'}\n\n"
                 f"Startup & Tech Background:\n{summary}\n\n"
-                f"Backlog of Key Achievements & Experiences (Use for post inspiration):\n{facts}"
+                f"Backlog of Key Achievements & Experiences:\n{facts}"
             )
             parts.append(profile_block)
 
-        # 3. Recent context (if available)
+        # 3. Recent context & Anti-repetition
         if recent_context:
             parts.append(
                 f"=== RECENT CONTEXT (raw thoughts from the author) ===\n"
                 f"{recent_context}\n"
-                f"Extract real, specific details from this. "
-                f"This is the most important input — build the posts around it."
+                f"Extract real, specific details from this. Build the post around it."
             )
 
-        # 4. Anti-Repetition constraint
         if history_blacklist:
             parts.append(
-                f"=== RECENTLY POSTED CONTENT (DO NOT REPEAT OR REWRITE THESE TOPICS) ===\n"
+                f"=== RECENTLY POSTED CONTENT (DO NOT REPEAT) ===\n"
                 f"{history_blacklist}\n"
                 f"Write posts about entirely different angles, ideas, or problems."
             )
 
-        # 6. Formatting rules
+        # 4. High-Converting LinkedIn Hook & Formatting Rules
         parts.append(
-            "=== LINKEDIN FORMATTING RULES (non-negotiable) ===\n"
-            "1. HOOK: The very first line of the post MUST be a strong hook under 15 words. Follow this line with a blank line (\\n\\n). NEVER start with a question.\n"
-            "2. SPACING: Every paragraph is 1–3 sentences. You MUST leave exactly one blank line between each paragraph (using escape sequence \\n\\n in the JSON string). Do NOT combine everything into a single wall of text.\n"
-            "3. LINKS: NEVER put any URL, domain name, or link in the post body. Mention 'link in comments' if you need to reference something.\n"
-            "4. HASHTAGS: Include 1–3 relevant hashtags at the very end of the post, on a new line (\\n\\n#hashtag1 #hashtag2).\n"
-            "5. EMOJIS: STRICT CONSTRAINT: NEVER use any emojis in the post. Do not include a single emoji. Keep the text 100% plain text.\n"
-            "6. NO MARKDOWN: Do not use **bold**, *italic*, or ``` code blocks. LinkedIn does not render markdown. Keep everything as raw text.\n"
-            "7. LENGTH: 150–400 words per post. Enough to be substantial, not a wall of text.\n"
-            "8. CTA: End with one specific, open-ended question that invites real replies — not 'What do you think?' or 'Drop a comment below'.\n"
-            "9. DIVERSITY: Do not make every post a bug-fix story. Mix angles such as product decisions, operational pain, founder trade-offs, UX principles, launch moments, tooling choices, and lessons from a specific build.\n"
-            "10. GROUNDING: Every concrete claim must be directly supported by the provided facts or context. If a detail is not clearly supported, leave it out.\n"
+            "=== HIGH-CONVERTING LINKEDIN HOOK & FORMATTING RULES (non-negotiable) ===\n"
+            "The first 1–2 lines determine 90% of a LinkedIn post's reach. They MUST compel the reader to click '...see more'.\n"
+            "RULES FOR THE HOOK:\n"
+            "1. Must be under 15 words and followed immediately by a blank line (\\n\\n).\n"
+            "2. NEVER start with a question (e.g. 'Have you ever wondered...?').\n"
+            "3. NEVER use generic AI intros (e.g. 'I've been thinking about...', 'In today's landscape...').\n"
+            "4. USE ONE OF THESE PROVEN HOOK PATTERNS:\n"
+            "   • Bold Result / Metric: 'We cut checkout latency by 90% without paying a dollar for new servers.'\n"
+            "   • Counter-Intuitive Insight: 'The worst mistake with early e-commerce users isn't asking for feedback.'\n"
+            "   • Direct Incident/Struggle: 'I spent 3 days hunting a bug that only appeared on mobile web in India.'\n"
+            "   • Strong Contrarian Stance: 'Most advice about scaling MedusaJS stores is completely wrong.'\n"
+            "   • High-Stakes Action: 'We ripped out 4,000 lines of custom code right before our Friday deployment.'\n\n"
+            "FORMATTING & TONE CONSTRAINTS:\n"
+            "1. SPACING: Every paragraph is 1–3 sentences. You MUST leave exactly one blank line between each paragraph (using escape sequence \\n\\n in the JSON string). Do NOT combine everything into a single wall of text.\n"
+            "2. LINKS: NEVER put any URL, domain name, or link in the post body. Mention 'link in comments' if you need to reference something.\n"
+            "3. HASHTAGS: Include 1–3 relevant hashtags at the very end of the post, on a new line (\\n\\n#hashtag1 #hashtag2).\n"
+            "4. EMOJIS: STRICT CONSTRAINT: NEVER use any emojis in the post. Do not include a single emoji. Keep the text 100% plain text.\n"
+            "5. NO MARKDOWN: Do not use **bold**, *italic*, or ``` code blocks. LinkedIn does not render markdown. Keep everything as raw text.\n"
+            "6. LENGTH: 150–400 words per post. Enough to be substantial, not a wall of text.\n"
+            "7. CTA: End with one specific, open-ended question that invites real replies — not 'What do you think?' or 'Drop a comment below'.\n"
+            f"8. BANNED WORDS: NEVER use any of these: {banned_str}.\n"
+            "9. BURSTINESS: Mix short punchy sentences with longer descriptive ones. Include specific real details."
         )
 
-        # 7. Anti-AI rules
-        parts.append(
-            f"=== BANNED WORDS & PHRASES ===\n"
-            f"NEVER use any of these: {banned_str}.\n"
-            f"Also avoid:\n"
-            f"  • Predictable 3-bullet 'lesson' structures\n"
-            f"  • The phrase 'I've been thinking about...'\n"
-            f"  • Any version of 'In today's world...'\n"
-            f"  • Overly dramatic humble-brags ('From nothing to everything...')\n"
-            f"  • Starting a line with 'Remember:' or 'The truth is:'\n"
-            f"  • Reusing the exact same structure across posts: problem -> fix -> generic lesson -> CTA\n"
-            f"  • Inventing durations, revenue, costs, customer counts, launch outcomes, or emotional scenes unless they were explicitly given\n"
-            f"Inject BURSTINESS: mix short punchy sentences with longer descriptive ones. "
-            f"Include at least one specific detail (a date, a number, a name, a tool) "
-            f"that makes the post impossible for anyone else to have written."
-        )
-
-        # 8. Task & JSON wrapper instructions
+        # 5. Task & JSON wrapper instructions
         task_parts = [
             f"=== TASK ===\n"
             f"Topic: {topic}\n"
