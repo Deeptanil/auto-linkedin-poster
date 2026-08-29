@@ -1,6 +1,10 @@
 {
   "approved": [
     {
+      "post_text": "",
+      "reasoning": "Custom post added from dashboard."
+    },
+    {
       "post_text": "5 developer websites / repos I recently discovered that are WAY cooler than I expected.\n\nI've been spending a lot of time exploring UI, animations, and different ways to make websites feel more interactive lately.\n\nWhile going down that rabbit hole, I came across these:\n\n1. React Bits\nA collection of animated and interactive React components. Really useful if you want to go beyond the usual basic UI.\n\n2. Boneyard\nThis one caught me off guard. It can automatically generate skeleton loading states from your actual UI instead of making you manually build every placeholder.\n\n3. Scroll Craft\nA library for building scroll-driven animations without needing a massive animation framework. Definitely worth checking out if you're into interactive websites.\n\n4. Skills by Emil Kowalski\nA collection of UI interactions and animations that shows how some of those really polished interfaces are actually put together.\n\n5. Graphify\nA graph/node rendering engine for things like workflow builders, mind maps, and data visualizations. It handles a lot of the complicated canvas logic for you.\n\nI'm always surprised by how many incredibly specific tools and open-source projects are out there.\n\nHalf the time, the hardest part isn't building something.\n\nIt's finding out that someone has already built 80% of what you need. 😂\n\nWhich one would you check out first?\n\n#WebDevelopment #React #OpenSource #UIDesign #WebDesign #JavaScript #Developers",
       "reasoning": "Custom draft added directly from dashboard.",
       "image_paths": [
