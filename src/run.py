@@ -104,7 +104,7 @@ def main():
         mem = MemoryManager()
         queue = mem.load_posts_queue()
         settings = queue.get("settings", {})
-        post_interval_days = int(settings.get("post_interval_days", 1))
+        post_interval_days = int(settings.get("post_interval_days", 3))
 
         history = PostHistory()
         days_since = history.get_days_since_last_post()

@@ -824,9 +824,9 @@
 
             <div class="form-group">
                 <label for="cfgPostInterval">Post Interval (Days)</label>
-                <input type="number" id="cfgPostInterval" class="form-input" min="1" step="1" placeholder="1">
+                <input type="number" id="cfgPostInterval" class="form-input" min="1" step="1" placeholder="3">
                 <p style="font-size: 0.75rem; color: var(--color-text-muted); margin: 0;">
-                    Number of days between each post. E.g., 1 for daily, 2 for every other day.
+                    Number of days between each post. E.g., 1 for daily, 3 for every 3 days.
                 </p>
             </div>
 
@@ -1404,7 +1404,7 @@
                 document.getElementById('cfgToken').value = localStorage.getItem('gh_token') || '';
                 document.getElementById('cfgRepo').value = localStorage.getItem('gh_repo') || '';
                 
-                const currentInterval = (queueData.settings && queueData.settings.post_interval_days) || 1;
+                const currentInterval = (queueData.settings && queueData.settings.post_interval_days) || 3;
                 document.getElementById('cfgPostInterval').value = currentInterval;
             }
         }
@@ -1413,7 +1413,7 @@
             const cloudMode = document.getElementById('cfgCloudMode').checked;
             const token = document.getElementById('cfgToken').value.trim();
             const repo = document.getElementById('cfgRepo').value.trim();
-            const postInterval = parseInt(document.getElementById('cfgPostInterval').value) || 1;
+            const postInterval = parseInt(document.getElementById('cfgPostInterval').value) || 3;
             
             if (cloudMode && (!token || !repo)) {
                 showToast("GitHub Token and Repo Path are required for Cloud Mode.", "error");
@@ -1465,7 +1465,7 @@
             try {
                 queueData = await storageProvider.fetchQueue();
                 if (!queueData.settings) {
-                    queueData.settings = { post_interval_days: 1 };
+                    queueData.settings = { post_interval_days: 3 };
                 }
                 updateCountsDisplay();
                 renderPosts();
@@ -1566,7 +1566,7 @@
                     <label class="btn btn-secondary btn-sm file-upload-label" style="position: relative; ${isFull ? 'opacity: 0.5; pointer-events: none;' : ''}">
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
                         ${attachLabel}
-                        ${isFull ? '' : `<input type="file" accept="image/*" style="display: none;" onchange="handleImageUpload(event, ${index}, '${currentTab}')">`}
+                        ${isFull ? '' : `<input type="file" accept="image/*" multiple style="display: none;" onchange="handleImageUpload(event, ${index}, '${currentTab}')">`}
                     </label>
                 `;
 
@@ -1648,7 +1648,7 @@
                 return;
             }
 
-            const postInterval = (queueData.settings && queueData.settings.post_interval_days) || 1;
+            const postInterval = (queueData.settings && queueData.settings.post_interval_days) || 3;
             const now = new Date();
             const todayIST = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
 
@@ -1683,7 +1683,7 @@
         }
 
         function getScheduledDateForIndex(index) {
-            const postInterval = (queueData.settings && queueData.settings.post_interval_days) || 1;
+            const postInterval = (queueData.settings && queueData.settings.post_interval_days) || 3;
             const now = new Date();
             const todayIST = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
 
@@ -2137,32 +2137,35 @@
         }
 
         async function handleImageUpload(event, index, tab) {
-            const file = event.target.files[0];
-            if (!file) return;
+            const files = Array.from(event.target.files || []);
+            if (files.length === 0) return;
 
             const postItem = queueData[tab][index];
             if (!postItem.image_paths) {
                 postItem.image_paths = postItem.image_path ? [postItem.image_path] : [];
             }
             
-            if (postItem.image_paths.length >= 9) {
-                showToast("Maximum of 9 images allowed per LinkedIn post.", "warning");
+            if (postItem.image_paths.length + files.length > 9) {
+                showToast(`Cannot attach ${files.length} images. Maximum 9 images allowed per post (currently ${postItem.image_paths.length}).`, "warning");
                 return;
             }
 
-            showLoader("Uploading attachment...");
+            showLoader(`Uploading ${files.length} image attachment(s)...`);
             try {
-                const filename = `${Date.now()}_${file.name.replace(/\s+/g, '_')}`;
-                const result = await storageProvider.uploadImage(file, filename);
+                let successCount = 0;
+                for (const file of files) {
+                    const filename = `${Date.now()}_${file.name.replace(/\s+/g, '_')}`;
+                    const result = await storageProvider.uploadImage(file, filename);
+                    if (result.status === 'success' && result.image_path) {
+                        postItem.image_paths.push(result.image_path);
+                        successCount++;
+                    }
+                }
+                delete postItem.image_path; // clear legacy property
                 
-                if (result.status === 'success' && result.image_path) {
-                    // Add reference to list
-                    postItem.image_paths.push(result.image_path);
-                    delete postItem.image_path; // clear old legacy property
-                    
-                    await storageProvider.saveQueue(queueData, `chore: attach image to ${tab} draft [skip ci]`);
-                    
-                    showToast("Image attached successfully!", "success");
+                if (successCount > 0) {
+                    await storageProvider.saveQueue(queueData, `chore: attach ${successCount} image(s) to ${tab} draft [skip ci]`);
+                    showToast(`${successCount} image(s) attached successfully!`, "success");
                     renderPosts();
                 } else {
                     showToast("Upload failed.", "error");
@@ -2171,6 +2174,7 @@
                 showToast("Upload failed: " + err.message, "error");
             } finally {
                 hideLoader();
+                event.target.value = '';
             }
         }
 

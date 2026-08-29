@@ -117,7 +117,7 @@ class MemoryManager:
     def load_posts_queue(self) -> dict:
         """Load the cached posts queue. Returns dict with 'approved', 'pending' lists and 'settings'."""
         path = self.memory_dir / "posts_queue.json"
-        default = {"approved": [], "pending": [], "settings": {"post_interval_days": 1}}
+        default = {"approved": [], "pending": [], "settings": {"post_interval_days": 3}}
         if not path.exists():
             return default
         try:
@@ -129,7 +129,7 @@ class MemoryManager:
             if "pending" not in data:
                 data["pending"] = []
             if "settings" not in data:
-                data["settings"] = {"post_interval_days": 1}
+                data["settings"] = {"post_interval_days": 3}
             return data
         except Exception:
             return default

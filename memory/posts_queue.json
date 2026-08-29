@@ -44,6 +44,6 @@
     }
   ],
   "settings": {
-    "post_interval_days": 1
+    "post_interval_days": 3
   }
 }
