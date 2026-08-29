@@ -1,15 +1,6 @@
 {
   "approved": [
     {
-      "post_text": "My obsession with custom loyalty features almost broke our checkout flow.\n\nWe were trying to build a unique rewards layer on top of MedusaJS to keep our customers coming back. The logic seemed sound on paper, but integrating it into the core checkout meant overriding default behaviors that were never meant to be touched.\n\nI eventually had to strip back the custom logic and rebuild it as a modular plugin to keep the core codebase stable. Customizing an open-source framework is great until you realize you are fighting against the architecture instead of working with it.\n\nHow do you balance adding unique features against maintaining the integrity of your base framework?\n\n#MedusaJS #WebDevelopment #SoftwareEngineering",
-      "reasoning": "Discusses the technical trade-off of building custom features on MedusaJS, reflecting the student-developer experience.",
-      "image_paths": []
-    },
-    {
-      "post_text": "The Razorpay webhook integration is a minefield of edge cases.\n\nLast month, we had a series of payment notifications that simply refused to sync correctly. It turned out that the webhook events were firing in an order I had not anticipated, which left our backend state in total disarray.\n\nI ended up rewriting the entire listener to handle out-of-order events instead of expecting a clean sequence. Learning how to build defensively for third-party API behavior is a skill they do not really teach in tutorials.\n\nWhat was the last API integration that gave you a massive headache?\n\n#Razorpay #Backend #WebDevelopment #Coding",
-      "reasoning": "Shares a specific technical struggle with Razorpay webhooks, emphasizing the reality of debugging external integrations."
-    },
-    {
       "post_text": "Building a brand is not just about the visuals.\n\nWith Prettiva and Co, I quickly realized that the technical backbone has to support the creative vision. If your site looks good but the backend logic for variants or shipping is a mess, the customer experience falls apart the moment they try to buy something.\n\nI spent weeks ensuring the technical foundation could actually handle the growth we wanted to see. Design is the first thing people notice, but the architecture is the reason they come back for a second order.\n\nHow do you prioritize technical stability when you have pressure to keep the front end looking polished?\n\n#StartupLife #Founder #WebDev #Prettiva",
       "reasoning": "Reflects on the founder perspective of Prettiva and Co, bridging the gap between aesthetics and technical foundations."
     },
