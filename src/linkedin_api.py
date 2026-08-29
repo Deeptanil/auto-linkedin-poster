@@ -107,17 +107,104 @@ class LinkedInAPI:
         post_urn = r.headers.get("x-restli-id") or r.headers.get("X-RestLi-Id", "unknown")
         return post_urn
 
+    def upload_video(self, video_path_or_bytes: Path | bytes | str) -> str:
+        """
+        Initialize and upload a video to LinkedIn.
+        """
+        if isinstance(video_path_or_bytes, (str, Path)):
+            with open(video_path_or_bytes, "rb") as f:
+                video_bytes = f.read()
+        else:
+            video_bytes = video_path_or_bytes
+
+        author_urn = self.get_member_urn()
+        
+        # 1. Initialize video upload session
+        init_url = f"{config.LINKEDIN_API_BASE}/rest/videos?action=initializeUpload"
+        init_payload = {
+            "initializeUploadRequest": {
+                "owner": author_urn
+            }
+        }
+        
+        r = requests.post(
+            init_url,
+            headers=self._headers(),
+            json=init_payload,
+            timeout=30
+        )
+        self._raise_for_status(r)
+        
+        data = r.json()
+        value = data.get("value", {})
+        upload_instructions = value.get("uploadInstructions", [])
+        upload_url = upload_instructions[0].get("uploadUrl") if upload_instructions else value.get("uploadUrl")
+        video_urn = value.get("video")
+        
+        if not upload_url or not video_urn:
+            raise LinkedInAPIError(200, f"initializeUpload video returned invalid response: {data}")
+            
+        # 2. PUT binary payload to uploadUrl
+        put_headers = {
+            "Authorization": f"Bearer {self.access_token}"
+        }
+        
+        put_r = requests.put(
+            upload_url,
+            headers=put_headers,
+            data=video_bytes,
+            timeout=120
+        )
+        if not put_r.ok:
+            raise LinkedInAPIError(put_r.status_code, f"Failed video upload to uploadUrl: {put_r.text[:500]}")
+            
+        return video_urn
+
+    def create_video_post(
+        self,
+        text: str,
+        video_urn: str,
+        title: str = "Video Post",
+        visibility: str = "PUBLIC",
+    ) -> str:
+        """
+        Create a post containing a single video on LinkedIn.
+        """
+        author_urn = self.get_member_urn()
+
+        payload = {
+            "author": author_urn,
+            "commentary": text,
+            "visibility": visibility,
+            "distribution": {
+                "feedDistribution": "MAIN_FEED",
+                "targetEntities": [],
+                "thirdPartyDistributionChannels": []
+            },
+            "content": {
+                "singleVideo": {
+                    "video": video_urn,
+                    "title": title
+                }
+            },
+            "lifecycleState": "PUBLISHED",
+            "isReshareDisabledByAuthor": False,
+        }
+
+        r = requests.post(
+            POSTS_URL,
+            headers=self._headers(),
+            json=payload,
+            timeout=30,
+        )
+        self._raise_for_status(r)
+
+        post_urn = r.headers.get("x-restli-id") or r.headers.get("X-RestLi-Id", "unknown")
+        return post_urn
+
     def upload_image(self, image_path_or_bytes: Path | bytes | str) -> str:
         """
         Initialize and upload an image to LinkedIn.
-        
-        Parameters
-        ----------
-        image_path_or_bytes : Absolute path to the image, or raw bytes.
-        
-        Returns
-        -------
-        str : The LinkedIn image URN (e.g. urn:li:image:XXXX)
         """
         if isinstance(image_path_or_bytes, (str, Path)):
             with open(image_path_or_bytes, "rb") as f:

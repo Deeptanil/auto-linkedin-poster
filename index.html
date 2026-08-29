@@ -1582,16 +1582,16 @@
                     `;
                 }
 
-                // Retrieve image paths array, falling back to legacy single image_path
+                // Retrieve media paths array, falling back to legacy single image_path
                 const paths = item.image_paths || (item.image_path ? [item.image_path] : []);
                 const isFull = paths.length >= 9;
-                const attachLabel = `Attach Image (${paths.length}/9)`;
+                const attachLabel = `Attach Media (${paths.length}/9)`;
 
                 actionButtons += `
                     <label class="btn btn-secondary btn-sm file-upload-label" style="position: relative; ${isFull ? 'opacity: 0.5; pointer-events: none;' : ''}">
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
                         ${attachLabel}
-                        ${isFull ? '' : `<input type="file" accept="image/*" multiple style="display: none;" onchange="handleImageUpload(event, ${index}, '${currentTab}')">`}
+                        ${isFull ? '' : `<input type="file" accept="image/*,video/*" multiple style="display: none;" onchange="handleImageUpload(event, ${index}, '${currentTab}')">`}
                     </label>
                 `;
 
@@ -1599,12 +1599,22 @@
                 if (paths.length > 0) {
                     previewsHtml = `<div class="image-previews-grid">`;
                     paths.forEach((path, imgIdx) => {
-                        previewsHtml += `
-                            <div class="image-preview-item">
-                                <img id="image-preview-${currentTab}-${index}-${imgIdx}" class="post-image-preview-thumbnail" src="" />
-                                <button class="btn-remove-image-thumbnail" onclick="removeImage(${index}, ${imgIdx}, '${currentTab}')">&times;</button>
-                            </div>
-                        `;
+                        const isVideo = /\.(mp4|mov|avi|webm|mkv)$/i.test(path);
+                        if (isVideo) {
+                            previewsHtml += `
+                                <div class="image-preview-item">
+                                    <video id="image-preview-${currentTab}-${index}-${imgIdx}" class="post-image-preview-thumbnail" controls></video>
+                                    <button class="btn-remove-image-thumbnail" onclick="removeImage(${index}, ${imgIdx}, '${currentTab}')">&times;</button>
+                                </div>
+                            `;
+                        } else {
+                            previewsHtml += `
+                                <div class="image-preview-item">
+                                    <img id="image-preview-${currentTab}-${index}-${imgIdx}" class="post-image-preview-thumbnail" src="" />
+                                    <button class="btn-remove-image-thumbnail" onclick="removeImage(${index}, ${imgIdx}, '${currentTab}')">&times;</button>
+                                </div>
+                            `;
+                        }
                     });
                     previewsHtml += `</div>`;
                 }
@@ -2014,8 +2024,8 @@
         }
 
         async function loadImagePreview(imagePath, imgElementId) {
-            const img = document.getElementById(imgElementId);
-            if (!img) return;
+            const el = document.getElementById(imgElementId);
+            if (!el) return;
             
             if (storageProvider.isCloud) {
                 try {
@@ -2032,14 +2042,19 @@
                     
                     const cleanBase64 = json.content.replace(/\s/g, '');
                     const ext = imagePath.split('.').pop().toLowerCase();
-                    const mime = (ext === 'png') ? 'image/png' : 'image/jpeg';
-                    img.src = `data:${mime};base64,${cleanBase64}`;
+                    let mime = 'image/jpeg';
+                    if (ext === 'png') mime = 'image/png';
+                    else if (ext === 'mp4') mime = 'video/mp4';
+                    else if (ext === 'webm') mime = 'video/webm';
+                    else if (ext === 'mov') mime = 'video/quicktime';
+                    
+                    el.src = `data:${mime};base64,${cleanBase64}`;
                 } catch (err) {
                     console.error("Preview load error", err);
-                    img.src = "";
+                    el.src = "";
                 }
             } else {
-                img.src = `/${imagePath}`;
+                el.src = `/${imagePath}`;
             }
         }
 
@@ -2053,11 +2068,11 @@
             }
             
             if (postItem.image_paths.length + files.length > 9) {
-                showToast(`Cannot attach ${files.length} images. Maximum 9 images allowed per post (currently ${postItem.image_paths.length}).`, "warning");
+                showToast(`Cannot attach ${files.length} file(s). Maximum 9 media attachments allowed per post (currently ${postItem.image_paths.length}).`, "warning");
                 return;
             }
 
-            showLoader(`Uploading ${files.length} image attachment(s)...`);
+            showLoader(`Uploading ${files.length} media attachment(s)...`);
             try {
                 let successCount = 0;
                 for (const file of files) {
@@ -2071,8 +2086,8 @@
                 delete postItem.image_path; // clear legacy property
                 
                 if (successCount > 0) {
-                    await storageProvider.saveQueue(queueData, `chore: attach ${successCount} image(s) to ${tab} draft [skip ci]`);
-                    showToast(`${successCount} image(s) attached successfully!`, "success");
+                    await storageProvider.saveQueue(queueData, `chore: attach ${successCount} media file(s) to ${tab} draft [skip ci]`);
+                    showToast(`${successCount} media attachment(s) uploaded successfully!`, "success");
                     renderPosts();
                 } else {
                     showToast("Upload failed.", "error");

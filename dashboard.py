@@ -1,8 +1,8 @@
 """
 dashboard.py
 ─────────────
-Local web server for the human-in-the-loop LinkedIn review dashboard.
-Run this script locally to approve, edit, reject, and sync posts to GitHub.
+Local web server for the LinkedIn review & post scheduling dashboard.
+Run this script locally to create, approve, edit, reject, and sync posts to GitHub.
 
 Technology Stack: Flask, HTML, CSS, JavaScript.
 Launch via run_dashboard.bat.
@@ -20,7 +20,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import config
 from src.memory_manager import MemoryManager
 from src.ai_generator import AIGenerator
-from src.compactor import MemoryCompactor
 from src.post_history import PostHistory
 
 class DualLogger:
@@ -28,7 +27,6 @@ class DualLogger:
         self.terminal = sys.stdout
         self.log_path = Path(log_path)
         self.log_path.parent.mkdir(parents=True, exist_ok=True)
-        # Clear log file on server start
         with open(self.log_path, "w", encoding="utf-8") as f:
             f.write(f"--- Dashboard Local Server Log Started: {__import__('datetime').datetime.now()} ---\n")
 
@@ -57,7 +55,6 @@ sys.stderr = sys.stdout
 
 app = Flask(__name__, template_folder=".")
 mem = MemoryManager()
-compactor = MemoryCompactor()
 
 
 def collect_blacklist_posts(queue: dict, exclude_pending_index: int | None = None) -> list[str]:
@@ -83,12 +80,10 @@ def index():
 @app.route("/api/status", methods=["GET"])
 def get_status():
     summary = mem.build_full_context_summary()
-    compact = mem.load_compact_profile()
     history = mem.load_post_history()
     return jsonify({
         "summary": summary,
-        "compact": compact,
-        "history": history[-5:]  # last 5 logs
+        "history": history[-5:]
     })
 
 
@@ -101,64 +96,8 @@ def get_queue():
 def save_queue():
     data = request.json
     mem.save_posts_queue(data)
-    # Trigger auto-sync in background thread
     trigger_background_sync()
     return jsonify({"status": "success", "message": "Queue updated. Sync triggered in background."})
-
-
-def bg_replenish_task():
-    try:
-        print("\n[replenish] >>> Background replenishment worker thread started.")
-        queue = mem.load_posts_queue()
-        pending = queue.get("pending", [])
-        needed = 10 - len(pending)
-        print(f"[replenish] Current drafts in queue: {len(pending)}/10. Needed: {needed}")
-        
-        if needed <= 0:
-            print("[replenish] Queue is already full (10 drafts). No generation needed.")
-            return
-            
-        print("[replenish] Gathering profile and context to build generation prompt...")
-        summary = mem.build_full_context_summary()
-        topic = "See the recent context below — extract the most compelling story or insight." if summary["recent_context"] else "Share an insight from my professional background and achievements."
-        
-        print("[replenish] Building repetition blacklist from post history and current queue...")
-        blacklist_posts = collect_blacklist_posts(queue)
-        print(f"[replenish] Loaded {len(blacklist_posts)} blacklist entries.")
-        
-        print("[replenish] Loading compact profile (experiences, banned buzzwords, voice guidelines)...")
-        compact_data = mem.load_compact_profile()
-        
-        print("[replenish] Initializing Google Gemini AIGenerator client...")
-        ai = AIGenerator()
-        
-        print(f"[replenish] Requesting Gemini to generate {needed} brand-new drafts...")
-        batch = ai.generate_post_batch(
-            topic=topic,
-            compact_profile=compact_data,
-            recent_context=summary["recent_context"],
-            past_posts=blacklist_posts,
-            batch_size=needed
-        )
-        
-        if batch:
-            print(f"[replenish] Gemini generated {len(batch)} valid draft(s). Storing to posts_queue.json...")
-            queue = mem.load_posts_queue() # reload to prevent race condition overrides
-            queue["pending"].extend(batch)
-            mem.save_posts_queue(queue)
-            print(f"[replenish] Success! Appended {len(batch)} drafts. New drafts total: {len(queue['pending'])}")
-            
-            # Trigger background sync to state branch on GitHub if token is set
-            trigger_background_sync()
-        else:
-            print("[replenish] WARNING: Gemini replenishment returned 0 valid drafts after filters. Check Gemini API key validity or prompt constraints.")
-    except Exception as e:
-        print(f"[replenish] ERROR during draft replenishment: {e}")
-        import traceback
-        traceback.print_exc()
-
-def trigger_background_replenish():
-    threading.Thread(target=bg_replenish_task, daemon=True).start()
 
 
 def sync_to_github_api():
@@ -180,13 +119,11 @@ def sync_to_github_api():
             "Accept": "application/vnd.github+json"
         }
         
-        # 1. Fetch current file SHA from state branch
         r = requests.get(f"{url}?ref=state", headers=headers, timeout=10)
         sha = None
         if r.ok:
             sha = r.json().get("sha")
             
-        # 2. Upload file content to state branch
         with open(file_path, "r", encoding="utf-8") as f:
             content_str = f.read()
             
@@ -200,108 +137,47 @@ def sync_to_github_api():
         if sha:
             payload["sha"] = sha
             
-        put_r = requests.put(url, headers=headers, json=payload, timeout=15)
-        if put_r.ok:
-            print("[sync] Successfully auto-synced queue to GitHub state branch.")
+        r_put = requests.put(url, headers=headers, json=payload, timeout=15)
+        if r_put.ok:
+            print("[sync] Successfully auto-synced posts_queue.json to GitHub state branch.")
         else:
-            print(f"[sync] Failed to auto-sync queue: {put_r.text}")
+            print(f"[sync] Auto-sync failed with status {r_put.status_code}: {r_put.text[:200]}")
     except Exception as e:
-        print(f"[sync] Error during auto-sync: {e}")
+        print(f"[sync] Error during background auto-sync: {e}")
+
 
 def trigger_background_sync():
     threading.Thread(target=sync_to_github_api, daemon=True).start()
 
 
-@app.route("/api/post/approve", methods=["POST"])
-def approve_post():
-    """Move a post from pending list to approved list, applying optional text updates first."""
-    data = request.json or {}
-    idx = int(data.get("index", 0))
-    edited_text = data.get("post_text", "").strip()
-    
-    queue = mem.load_posts_queue()
-    if idx < 0 or idx >= len(queue["pending"]):
-        return jsonify({"status": "error", "message": "Invalid draft index."}), 400
-
-    approved_item = queue["pending"].pop(idx)
-    if edited_text:
-        approved_item["post_text"] = edited_text
-        
-    queue["approved"].append(approved_item)
-    mem.save_posts_queue(queue)
-    
-    # Trigger auto-sync and replenishment in background threads
-    trigger_background_sync()
-    trigger_background_replenish()
-    
-    return jsonify({"status": "success", "message": "Post approved. Sync and replenishment triggered in background."})
-
-
-@app.route("/api/post/reject", methods=["POST"])
-def reject_post():
-    """Discard a pending draft and trigger a replenishment in the background."""
-    idx = int(request.json.get("index", 0))
-    queue = mem.load_posts_queue()
-    
-    if idx < 0 or idx >= len(queue["pending"]):
-        return jsonify({"status": "error", "message": "Invalid draft index."}), 400
-
-    # Pop/Discard it
-    queue["pending"].pop(idx)
-    mem.save_posts_queue(queue)
-
-    # Trigger auto-sync and replenishment in background threads
-    trigger_background_sync()
-    trigger_background_replenish()
-
-    return jsonify({
-        "status": "success",
-        "message": "Draft rejected. Sync and replenishment triggered in background."
-    })
-
-
 @app.route("/api/post/generate_from_topic", methods=["POST"])
 def generate_from_topic():
     """
-    Given a topic or incident, add it to raw and compact memory,
-    then generate a single LinkedIn post draft and return it.
+    Given a topic or prompt, generate a single LinkedIn post draft and return it.
     """
     data = request.json or {}
     topic = data.get("topic", "").strip()
-    persist_to_memory = bool(data.get("persist_to_memory", False))
     target_index = data.get("index")
     
     if not topic:
-        return jsonify({"status": "error", "message": "No topic or incident text provided."}), 400
+        return jsonify({"status": "error", "message": "No topic or prompt text provided."}), 400
 
     try:
-        # Draft generation should be ephemeral by default. The explicit
-        # "Add Context / Wins" action is what persists memory.
-        if persist_to_memory:
-            mem.save_context(topic)
-            compactor.compact_all(new_raw_input=topic)
-
-        # Re-load context & compact profile to generate the post draft
-        summary = mem.build_full_context_summary()
-        compact = mem.load_compact_profile()
         queue = mem.load_posts_queue()
         exclude_pending_index = int(target_index) if target_index is not None else None
         blacklist_posts = collect_blacklist_posts(queue, exclude_pending_index=exclude_pending_index)
         
-        # Call AIGenerator to create a post from the supplied topic only.
         ai = AIGenerator()
         batch = ai.generate_post_batch(
             topic=topic,
             tone="Auto",
-            compact_profile=compact,
-            recent_context=summary["recent_context"],
             past_posts=blacklist_posts,
             batch_size=1,
             topic_is_source_of_truth=True,
         )
         
         if not batch:
-            return jsonify({"status": "error", "message": "Gemini generation returned 0 valid drafts. Check your API key or constraints."}), 500
+            return jsonify({"status": "error", "message": "Gemini generation returned 0 valid drafts."}), 500
             
         generated_post = batch[0]
         
@@ -316,52 +192,15 @@ def generate_from_topic():
         return jsonify({"status": "error", "message": f"Failed to generate post: {e}"}), 500
 
 
-@app.route("/api/post/replenish", methods=["POST"])
-def replenish_queue():
-    """Replenish the pending drafts list back up to a target size of 10 in the background."""
-    trigger_background_replenish()
-    return jsonify({"status": "success", "message": "Replenishment triggered in background."})
-
-
-@app.route("/api/memory/add", methods=["POST"])
-def add_memory():
-    """
-    Accepts raw voice note text or thoughts, saves it as context,
-    runs the compaction engine, and updates compact_profile.json.
-    """
-    data = request.json
-    text = data.get("text", "").strip()
-    
-    if not text:
-        return jsonify({"status": "error", "message": "No memory text provided."}), 400
-
-    try:
-        # 1. Save new text as context file YYYY-MM-DD
-        mem.save_context(text)
-        
-        # 2. Trigger Memory Compacter
-        compactor.compact_all(new_raw_input=text)
-        
-        return jsonify({"status": "success", "message": "Memory added and compacted successfully."})
-    except Exception as e:
-        return jsonify({"status": "error", "message": f"Memory compaction failed: {e}"}), 500
-
-
 @app.route("/api/github/sync", methods=["POST"])
 def sync_github():
-    """Runs git commands to commit queues & memory, and pushes to GitHub Actions."""
+    """Runs git commands to commit queues and push to remote repository."""
     try:
-        # Check if it's a git repo
         if not Path(".git").exists():
             return jsonify({"status": "error", "message": "Project is not initialized as a Git Repository."}), 400
 
-        # Stage files
         subprocess.run(["git", "add", "memory/"], check=True)
-        
-        # Commit (silently ignore if nothing to commit)
         result = subprocess.run(["git", "commit", "-m", "chore: sync approved queue from dashboard [skip ci]"], capture_output=True, text=True)
-        
-        # Push to remote branch
         push_res = subprocess.run(["git", "push"], capture_output=True, text=True)
         
         if push_res.returncode != 0:
@@ -369,7 +208,7 @@ def sync_github():
 
         return jsonify({
             "status": "success",
-            "message": "Approved updates committed and pushed to GitHub Actions successfully!"
+            "message": "Approved updates committed and pushed successfully!"
         })
     except Exception as e:
         return jsonify({"status": "error", "message": f"Sync process encountered an error: {e}"}), 500
@@ -382,10 +221,8 @@ def get_logs():
     if not log_path.exists():
         return jsonify({"logs": "No log file found."})
     try:
-        # Read last 1000 lines for efficiency
         with open(log_path, "r", encoding="utf-8", errors="replace") as f:
             lines = f.readlines()
-            # return only the last 200 lines to keep request lightweight
             last_lines = "".join(lines[-200:])
             return jsonify({"logs": last_lines})
     except Exception as e:
@@ -394,7 +231,7 @@ def get_logs():
 
 @app.route("/api/image/upload", methods=["POST"])
 def upload_image():
-    """Uploads an image file, saves it to memory/images/, and returns its local path."""
+    """Uploads an image or video file, saves it to memory/images/, and returns its local path."""
     if "file" not in request.files:
         return jsonify({"status": "error", "message": "No file part in request."}), 400
         
@@ -402,11 +239,9 @@ def upload_image():
     if file.filename == "":
         return jsonify({"status": "error", "message": "No selected file."}), 400
         
-    # Ensure folder exists
     img_dir = Path("memory/images")
     img_dir.mkdir(parents=True, exist_ok=True)
     
-    # Save file with a safe filename
     import time
     from werkzeug.utils import secure_filename
     
@@ -414,24 +249,20 @@ def upload_image():
     file_path = img_dir / filename
     file.save(file_path)
     
-    # Return relative path for posts_queue.json
     relative_path = f"memory/images/{filename}"
     return jsonify({
         "status": "success",
         "image_path": relative_path
     })
 
+
 @app.route("/memory/images/<path:filename>")
 def serve_image(filename):
-    """Serves uploaded images statically for card previews in local mode."""
+    """Serves uploaded images/videos statically for card previews in local mode."""
     return send_from_directory("memory/images", filename)
 
 
-# ─── Launcher Helper ──────────────────────────────────────────────────────────
-
 def launch_server():
-    # Attempt to start the server on localhost:5000
-    # Auto-open browser
     webbrowser.open("http://localhost:5000")
     app.run(host="127.0.0.1", port=5000, debug=False)
 

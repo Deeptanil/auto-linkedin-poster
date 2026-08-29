@@ -290,22 +290,34 @@ def main():
             else:
                 print(f"  [WARNING] Attachment path does not exist: {path_obj}")
 
+        video_extensions = {".mp4", ".mov", ".avi", ".webm", ".mkv"}
+        video_paths = [p for p in valid_paths if p.suffix.lower() in video_extensions]
+        image_paths_only = [p for p in valid_paths if p.suffix.lower() not in video_extensions]
+
         if not valid_paths:
             if image_paths:
-                print("  [WARNING] None of the specified image paths exist. Falling back to text-only post.")
+                print("  [WARNING] None of the specified attachment paths exist. Falling back to text-only post.")
             post_urn = li.create_text_post(post_text)
-        elif len(valid_paths) == 1:
-            print(f"  [image] Found 1 image attachment at: {valid_paths[0]}")
+        elif video_paths:
+            v_path = video_paths[0]
+            print(f"  [video] Found video attachment at: {v_path}")
+            print("  [video] Uploading video to LinkedIn...")
+            video_urn = li.upload_video(v_path)
+            print(f"  [video] Upload complete. Video URN: {video_urn}")
+            print("  [video] Creating LinkedIn post with video...")
+            post_urn = li.create_video_post(post_text, video_urn)
+        elif len(image_paths_only) == 1:
+            print(f"  [image] Found 1 image attachment at: {image_paths_only[0]}")
             print("  [image] Uploading to LinkedIn...")
-            image_urn = li.upload_image(valid_paths[0])
+            image_urn = li.upload_image(image_paths_only[0])
             print(f"  [image] Upload complete. Image URN: {image_urn}")
             print("  [image] Creating LinkedIn post with image...")
             post_urn = li.create_image_post(post_text, image_urn)
         else:
-            print(f"  [image] Found {len(valid_paths)} image attachments.")
+            print(f"  [image] Found {len(image_paths_only)} image attachments.")
             image_urns = []
-            for i, p_obj in enumerate(valid_paths, 1):
-                print(f"  [image] Uploading image {i}/{len(valid_paths)}: {p_obj}...")
+            for i, p_obj in enumerate(image_paths_only, 1):
+                print(f"  [image] Uploading image {i}/{len(image_paths_only)}: {p_obj}...")
                 urn = li.upload_image(p_obj)
                 print(f"  [image] Image {i} uploaded. URN: {urn}")
                 image_urns.append(urn)
