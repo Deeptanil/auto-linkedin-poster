@@ -1,11 +1,10 @@
 """
-ai_generator.py  (src/ version — upgraded for GitHub Actions)
-───────────────────────────────────────────────────────────────
-Upgraded Gemini-powered post generator with:
-  • Voice-profile awareness (your personal style)
-  • Achievement context injection
+ai_generator.py
+───────────────
+Gemini-powered post generator with:
   • Anti-AI-fingerprint pass (strips clichés, adds burstiness)
-  • Strict LinkedIn formatting rules (no links in body, 1-3 hashtags, etc.)
+  • High-converting LinkedIn hook rules
+  • Strict LinkedIn formatting rules (no links in body, no emojis, 1-3 hashtags, etc.)
   • Tone selection
 """
 
@@ -25,7 +24,6 @@ except ImportError:
     genai_errors = None
 
 
-# ─── Words/phrases that scream "AI wrote this" ────────────────────────────────
 AI_BANNED_WORDS = [
     "delve", "tapestry", "leverage", "leveraging", "seamless", "seamlessly",
     "game-changer", "game changer", "landscape", "unlock", "unlocking",
@@ -82,8 +80,6 @@ class AIGenerator:
                 self.client = None
                 print(f"[ai_generator] Error initialising Gemini: {e}", file=sys.stderr)
 
-    # ─── Main generation ──────────────────────────────────────────────────────
-
     def generate_post_batch(
         self,
         topic: str,
@@ -95,25 +91,18 @@ class AIGenerator:
         batch_size: int = 5,
         topic_is_source_of_truth: bool = False,
     ) -> list[dict]:
-        """
-        Generate a batch of LinkedIn posts as structured JSON.
-        Applies anti-repetition memory and filters out invalid posts (e.g. posts containing URLs).
-        """
         print(f"[ai_generator] Starting batch generation. Batch size: {batch_size}, Tone: {tone}")
         if not self.client:
-            print("[ai_generator] ERROR: Gemini API key is missing. Ensure GEMINI_API_KEY is configured in your environment or .env file.")
+            print("[ai_generator] ERROR: Gemini API key is missing.")
             raise ValueError("Gemini API client not configured. Set GEMINI_API_KEY.")
 
         comparison_posts = [p.strip() for p in (past_posts or []) if isinstance(p, str) and p.strip()]
 
-        # Format anti-repetition negative constraints
         history_blacklist = ""
         if past_posts:
-            # Escape double quotes for JSON safety in prompt
             escaped_posts = [p.replace('"', '\\"') for p in past_posts]
             history_blacklist = "\n".join(f'- "{p}"' for p in escaped_posts)
 
-        print("[ai_generator] Building prompt payload...")
         prompt = self._build_batch_prompt(
             topic, tone, extra_instructions,
             compact_profile, recent_context,
@@ -121,17 +110,14 @@ class AIGenerator:
             topic_is_source_of_truth=topic_is_source_of_truth,
         )
 
-        print(f"[ai_generator] Calling Google Gemini API (model: {config.GEMINI_MODEL}) requesting structured JSON response...")
         try:
             raw_response = self._call_gemini_json(prompt)
-            print(f"[ai_generator] Received API response from Gemini (size: {len(raw_response)} characters).")
         except Exception as api_err:
             print(f"[ai_generator] API Call Error: {api_err}")
             raise api_err
             
         raw_text = raw_response.strip()
 
-        # Clean JSON if wrapped in markdown code blocks
         if raw_text.startswith("```"):
             first_newline = raw_text.find("\n")
             if first_newline != -1:
@@ -143,55 +129,41 @@ class AIGenerator:
             batch = json.loads(raw_text)
             if not isinstance(batch, list):
                 raise ValueError("AI response is not a JSON list.")
-            print(f"[ai_generator] Successfully parsed JSON array containing {len(batch)} posts.")
         except Exception as e:
             print(f"[ai_generator] JSON Parsing Failure: {e}. Raw response:\n{raw_text}", file=sys.stderr)
             return []
 
-        # Apply hard URL and safety filters
         filtered_batch = []
         url_patterns = [".co", ".in", ".com", "http", "link in bio", "check the site", "www.", ".org", ".net"]
         
-        print("[ai_generator] Running posts through strict quality filters (URLs, minimum length, markdown markers)...")
         for idx, item in enumerate(batch):
             if not isinstance(item, dict) or "post_text" not in item:
-                print(f"  - Post index {idx}: Ignored (missing 'post_text' key).")
                 continue
             
             post_text = item["post_text"].strip()
             
-            # URL constraint filter
             contains_url = any(pat in post_text.lower() for pat in url_patterns)
             if contains_url:
-                print(f"  - Post index {idx}: Filtered out (contains URL or link reference). Preview: {post_text[:60]}...")
                 continue
 
-            # Hard safety filter (simple checks to prevent brand damage)
             if not post_text or len(post_text) < 50:
-                print(f"  - Post index {idx}: Filtered out (too short, length={len(post_text)}).")
                 continue
 
-            # Double check for markdown formatting
             if "**" in post_text or "```" in post_text:
-                print(f"  - Post index {idx}: Filtered out (contains markdown bold '**' or code block '```' formatting).")
                 continue
 
             if self._contains_emoji(post_text):
-                print(f"  - Post index {idx}: Filtered out (contains emoji despite prompt constraints).")
                 continue
 
             overlap_score = self._max_similarity(post_text, comparison_posts + [entry["post_text"] for entry in filtered_batch])
             if overlap_score >= 0.55:
-                print(f"  - Post index {idx}: Filtered out (too similar to existing content, similarity={overlap_score:.2f}).")
                 continue
 
-            print(f"  - Post index {idx}: Accepted! (length={len(post_text)})")
             filtered_batch.append({
                 "post_text": post_text,
                 "reasoning": item.get("reasoning", "No reasoning provided")
             })
 
-        print(f"[ai_generator] Filter process complete. {len(filtered_batch)} of {len(batch)} generated posts were approved.")
         return filtered_batch
 
     @staticmethod
@@ -233,7 +205,6 @@ class AIGenerator:
         achievements: str = "",
         recent_context: str = "",
     ) -> str:
-        """Helper to generate a single post (used by local CLI). Loads compact profile internally."""
         from src.memory_manager import MemoryManager
         mem = MemoryManager()
         compact = mem.load_compact_profile()
@@ -251,202 +222,6 @@ class AIGenerator:
         raise RuntimeError("Failed to generate post.")
 
     def revise_post(self, original_post: str, revision_instructions: str) -> str:
-        """Revise an existing draft based on feedback."""
-        if not self.client:
-            raise ValueError("Gemini API client not configured.")
-
-        prompt = (
-            "You are refining a LinkedIn post draft.\n"
-            "Keep all existing formatting rules:\n"
-            "  • Strong hook (declarative, under 15 words)\n"
-            "  • Short paragraph blocks (1–3 sentences each)\n"
-            "  • No markdown bold/italic\n"
-"The lesson comes from the story — it's never spelled out like a LinkedIn lesson post."
-    ),
-}
-
-
-class AIGenerator:
-    def __init__(self):
-        if not config.is_gemini_configured():
-            self.client = None
-        else:
-            try:
-                self.client = genai.Client(api_key=config.GEMINI_API_KEY)
-            except Exception as e:
-                self.client = None
-                print(f"[ai_generator] Error initialising Gemini: {e}", file=sys.stderr)
-
-    # ─── Main generation ──────────────────────────────────────────────────────
-
-    def generate_post_batch(
-        self,
-        topic: str,
-        tone: str = "Auto",
-        extra_instructions: str = "",
-        compact_profile: dict = None,
-        recent_context: str = "",
-        past_posts: list[str] = None,
-        batch_size: int = 5,
-        topic_is_source_of_truth: bool = False,
-    ) -> list[dict]:
-        """
-        Generate a batch of LinkedIn posts as structured JSON.
-        Applies anti-repetition memory and filters out invalid posts (e.g. posts containing URLs).
-        """
-        print(f"[ai_generator] Starting batch generation. Batch size: {batch_size}, Tone: {tone}")
-        if not self.client:
-            print("[ai_generator] ERROR: Gemini API key is missing. Ensure GEMINI_API_KEY is configured in your environment or .env file.")
-            raise ValueError("Gemini API client not configured. Set GEMINI_API_KEY.")
-
-        comparison_posts = [p.strip() for p in (past_posts or []) if isinstance(p, str) and p.strip()]
-
-        # Format anti-repetition negative constraints
-        history_blacklist = ""
-        if past_posts:
-            # Escape double quotes for JSON safety in prompt
-            escaped_posts = [p.replace('"', '\\"') for p in past_posts]
-            history_blacklist = "\n".join(f'- "{p}"' for p in escaped_posts)
-
-        print("[ai_generator] Building prompt payload...")
-        prompt = self._build_batch_prompt(
-            topic, tone, extra_instructions,
-            compact_profile, recent_context,
-            history_blacklist, batch_size,
-            topic_is_source_of_truth=topic_is_source_of_truth,
-        )
-
-        print(f"[ai_generator] Calling Google Gemini API (model: {config.GEMINI_MODEL}) requesting structured JSON response...")
-        try:
-            raw_response = self._call_gemini_json(prompt)
-            print(f"[ai_generator] Received API response from Gemini (size: {len(raw_response)} characters).")
-        except Exception as api_err:
-            print(f"[ai_generator] API Call Error: {api_err}")
-            raise api_err
-            
-        raw_text = raw_response.strip()
-
-        # Clean JSON if wrapped in markdown code blocks
-        if raw_text.startswith("```"):
-            first_newline = raw_text.find("\n")
-            if first_newline != -1:
-                raw_text = raw_text[first_newline:].strip()
-            if raw_text.endswith("```"):
-                raw_text = raw_text[:-3].strip()
-
-        try:
-            batch = json.loads(raw_text)
-            if not isinstance(batch, list):
-                raise ValueError("AI response is not a JSON list.")
-            print(f"[ai_generator] Successfully parsed JSON array containing {len(batch)} posts.")
-        except Exception as e:
-            print(f"[ai_generator] JSON Parsing Failure: {e}. Raw response:\n{raw_text}", file=sys.stderr)
-            return []
-
-        # Apply hard URL and safety filters
-        filtered_batch = []
-        url_patterns = [".co", ".in", ".com", "http", "link in bio", "check the site", "www.", ".org", ".net"]
-        
-        print("[ai_generator] Running posts through strict quality filters (URLs, minimum length, markdown markers)...")
-        for idx, item in enumerate(batch):
-            if not isinstance(item, dict) or "post_text" not in item:
-                print(f"  - Post index {idx}: Ignored (missing 'post_text' key).")
-                continue
-            
-            post_text = item["post_text"].strip()
-            
-            # URL constraint filter
-            contains_url = any(pat in post_text.lower() for pat in url_patterns)
-            if contains_url:
-                print(f"  - Post index {idx}: Filtered out (contains URL or link reference). Preview: {post_text[:60]}...")
-                continue
-
-            # Hard safety filter (simple checks to prevent brand damage)
-            if not post_text or len(post_text) < 50:
-                print(f"  - Post index {idx}: Filtered out (too short, length={len(post_text)}).")
-                continue
-
-            # Double check for markdown formatting
-            if "**" in post_text or "```" in post_text:
-                print(f"  - Post index {idx}: Filtered out (contains markdown bold '**' or code block '```' formatting).")
-                continue
-
-            if self._contains_emoji(post_text):
-                print(f"  - Post index {idx}: Filtered out (contains emoji despite prompt constraints).")
-                continue
-
-            overlap_score = self._max_similarity(post_text, comparison_posts + [entry["post_text"] for entry in filtered_batch])
-            if overlap_score >= 0.55:
-                print(f"  - Post index {idx}: Filtered out (too similar to existing content, similarity={overlap_score:.2f}).")
-                continue
-
-            print(f"  - Post index {idx}: Accepted! (length={len(post_text)})")
-            filtered_batch.append({
-                "post_text": post_text,
-                "reasoning": item.get("reasoning", "No reasoning provided")
-            })
-
-        print(f"[ai_generator] Filter process complete. {len(filtered_batch)} of {len(batch)} generated posts were approved.")
-        return filtered_batch
-
-    @staticmethod
-    def _contains_emoji(text: str) -> bool:
-        return bool(re.search(r"[\U0001F300-\U0001FAFF\u2600-\u27BF]", text))
-
-    @staticmethod
-    def _normalise_words(text: str) -> set[str]:
-        cleaned = re.sub(r"#[A-Za-z0-9_]+", " ", text.lower())
-        words = re.findall(r"[a-z0-9']+", cleaned)
-        return {word for word in words if len(word) > 2}
-
-    def _max_similarity(self, text: str, other_posts: list[str]) -> float:
-        if not other_posts:
-            return 0.0
-
-        current_words = self._normalise_words(text)
-        if not current_words:
-            return 0.0
-
-        max_score = 0.0
-        for other in other_posts:
-            other_words = self._normalise_words(other)
-            if not other_words:
-                continue
-            intersection = len(current_words & other_words)
-            union = len(current_words | other_words)
-            if union == 0:
-                continue
-            max_score = max(max_score, intersection / union)
-        return max_score
-
-    def generate_post(
-        self,
-        topic: str,
-        tone: str = "Auto",
-        extra_instructions: str = "",
-        voice_profile: str = "",
-        achievements: str = "",
-        recent_context: str = "",
-    ) -> str:
-        """Helper to generate a single post (used by local CLI). Loads compact profile internally."""
-        from src.memory_manager import MemoryManager
-        mem = MemoryManager()
-        compact = mem.load_compact_profile()
-        
-        batch = self.generate_post_batch(
-            topic=topic,
-            tone=tone,
-            extra_instructions=extra_instructions,
-            compact_profile=compact,
-            recent_context=recent_context,
-            batch_size=1
-        )
-        if batch:
-            return batch[0]["post_text"]
-        raise RuntimeError("Failed to generate post.")
-
-    def revise_post(self, original_post: str, revision_instructions: str) -> str:
-        """Revise an existing draft based on feedback."""
         if not self.client:
             raise ValueError("Gemini API client not configured.")
 
@@ -467,8 +242,6 @@ class AIGenerator:
 
         return self._call_gemini_plain(prompt).strip()
 
-    # ─── Prompt Builder ───────────────────────────────────────────────────────
-
     def _build_batch_prompt(
         self,
         topic: str,
@@ -485,7 +258,6 @@ class AIGenerator:
 
         parts = []
 
-        # 1. Role & Identity Constraints
         parts.append(
             "You are writing LinkedIn posts on behalf of Deeptanil Sinha, a 20-year-old student-founder "
             "and developer based in Bangalore, India. He co-founded Prettiva & Co. and STRAYED.\n"
@@ -495,7 +267,6 @@ class AIGenerator:
             "- STRICT FACTUAL CONSTRAINT: NEVER make up stories, events, financial numbers, or investment details from thin air. Build posts ONLY around real provided facts."
         )
 
-        # 2. Compact Profile Facts
         if compact_profile:
             essence = "\n".join(f"- {item}" for item in compact_profile.get("voice_essence", []))
             banned = ", ".join(compact_profile.get("banned_patterns", []))

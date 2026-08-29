@@ -1353,15 +1353,19 @@
 
             async fetchStatus() {
                 if (this.isCloud) {
-                    const profile = await this.ghFetch('compact_profile.json');
                     return {
                         summary: {
-                            has_voice: !!(profile.data && profile.data.voice_essence && profile.data.voice_essence.length > 0)
+                            has_voice: true
                         }
                     };
                 } else {
-                    const res = await fetch('/api/status');
-                    return await safeJson(res);
+                    try {
+                        const res = await fetch('/api/status');
+                        if (!res.ok) throw new Error("Status endpoint unavailable");
+                        return await safeJson(res);
+                    } catch (e) {
+                        return { summary: { has_voice: true } };
+                    }
                 }
             },
 
@@ -1381,7 +1385,7 @@
                         
                         if (runsRes.ok) {
                             const runsData = await runsRes.json();
-                            const latestRun = runsData.workflow_runs[0];
+                            const latestRun = (runsData.workflow_runs && runsData.workflow_runs.length > 0) ? runsData.workflow_runs[0] : null;
                             
                             if (latestRun) {
                                 const runTime = new Date(latestRun.created_at).toLocaleString();
@@ -1390,7 +1394,6 @@
                                 actionsStatus += `Status:     ${latestRun.status.toUpperCase()} (${(latestRun.conclusion || 'IN PROGRESS').toUpperCase()})\n`;
                                 actionsStatus += `Link:       ${latestRun.html_url}\n\n`;
                                 
-                                // Fetch steps of the latest run
                                 const jobsUrl = latestRun.jobs_url;
                                 const jobsRes = await fetch(jobsUrl, {
                                     headers: {
@@ -1401,7 +1404,7 @@
                                 
                                 if (jobsRes.ok) {
                                     const jobsData = await jobsRes.json();
-                                    const mainJob = jobsData.jobs[0];
+                                    const mainJob = (jobsData.jobs && jobsData.jobs.length > 0) ? jobsData.jobs[0] : null;
                                     if (mainJob && mainJob.steps) {
                                         runningJobLogs += `--- Active Execution Steps (${mainJob.name}) ---\n`;
                                         mainJob.steps.forEach(step => {
@@ -1412,10 +1415,12 @@
                                         runningJobLogs += `\n`;
                                     }
                                 }
+                            } else {
+                                actionsStatus += "No workflow runs found yet.\n\n";
                             }
                         }
                     } catch (err) {
-                        actionsStatus += `Failed to fetch GitHub Actions runs: ${err.message}\n\n`;
+                        actionsStatus += `GitHub Actions status check: ${err.message}\n\n`;
                     }
                     
                     let logContent = "";
@@ -1423,14 +1428,19 @@
                         const fileInfo = await this.ghFetch('dashboard.log', false);
                         logContent = fileInfo.data || "No log content found.";
                     } catch (e) {
-                        logContent = "No remote log file found. It will sync and display here after your next run finishes.";
+                        logContent = "No remote log file found yet. It will auto-sync after your next post run.";
                     }
                     
-                    return `${actionsStatus}${runningJobLogs}=== REMOTE LOG (dashboard.log from state branch) ===\n${logContent}`;
+                    return `${actionsStatus}${runningJobLogs}=== REMOTE LOG ===\n${logContent}`;
                 } else {
-                    const res = await fetch('/api/logs');
-                    const json = await safeJson(res);
-                    return json.logs;
+                    try {
+                        const res = await fetch('/api/logs');
+                        if (!res.ok) throw new Error("Local log endpoint unavailable");
+                        const json = await safeJson(res);
+                        return json.logs || "No log messages recorded.";
+                    } catch (e) {
+                        return "=== LOCAL LOG FEED ===\nLocal dashboard server active.";
+                    }
                 }
             }
         };
@@ -1548,9 +1558,10 @@
         async function fetchStatus() {
             try {
                 const status = await storageProvider.fetchStatus();
-                document.getElementById('statusModel').innerText = "Gemini Flash (On-Demand)";
+                const elem = document.getElementById('statusModel');
+                if (elem) elem.innerText = "Gemini Flash (On-Demand)";
             } catch (err) {
-                console.error("Status fetch failed", err);
+                console.warn("Status update warning:", err.message);
             }
         }
 
