@@ -230,7 +230,49 @@
             transform: none !important;
         }
 
-        /* ─── Tabs / Section Control ────────────────────────────────────────── */
+        /* ─── Attachment Preview Modal ─────────────────────────────────────── */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(10, 14, 23, 0.85);
+            backdrop-filter: blur(8px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            animation: fadeIn 0.2s ease;
+        }
+        .modal-content {
+            position: relative;
+            max-width: 90vw;
+            max-height: 85vh;
+            background: var(--color-bg-card, #131a27);
+            border: 1px solid var(--color-primary);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+        }
+        .modal-close {
+            position: absolute;
+            top: -12px; right: -12px;
+            background: var(--color-danger);
+            color: white; border: none;
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            font-size: 1.2rem; font-weight: bold; cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            display: flex; align-items: center; justify-content: center;
+            transition: transform 0.15s ease;
+        }
+        .modal-close:hover {
+            transform: scale(1.1);
+        }
+        .modal-media-full {
+            max-width: 80vw;
+            max-height: 75vh;
+            border-radius: 8px;
+            object-fit: contain;
+        }
         .tab-bar {
             display: flex;
             gap: 1rem;
@@ -806,8 +848,6 @@
                     <span style="font-size: 0.85rem; color: var(--color-text-muted);">Use GitHub API directly instead of local server</span>
                     <input type="checkbox" id="cfgCloudMode" style="width: 20px; height: 20px; cursor: pointer;">
                 </div>
-            </div>
-
             <div class="form-group">
                 <label for="cfgToken">GitHub Personal Access Token (PAT)</label>
                 <input type="password" id="cfgToken" class="form-input" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
@@ -830,8 +870,6 @@
                 </p>
             </div>
 
-
-
             <div style="display: flex; gap: 1rem; margin-top: 1rem;">
                 <button class="btn btn-secondary" style="flex: 1;" onclick="toggleSettingsModal()">Cancel</button>
                 <button class="btn btn-primary" style="flex: 1;" onclick="saveSettings()">Save Configs</button>
@@ -844,11 +882,11 @@
         <header>
             <div>
                 <h1>LinkedIn Post Creator & Scheduler</h1>
-                <p style="color: var(--color-text-muted); font-size: 0.9rem;">Create, personalize, attach images, and schedule your LinkedIn posts</p>
+                <p style="color: var(--color-text-muted); font-size: 0.9rem;">Create, personalize, attach media, and auto-schedule your LinkedIn posts</p>
             </div>
             <div class="header-actions">
                 <button class="btn btn-secondary" onclick="toggleSettingsModal()">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06-.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l.06-.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
                     Settings
                 </button>
                 <button class="btn btn-secondary" onclick="triggerPostNow()">
@@ -871,18 +909,21 @@
             
             <!-- Left Side: Queue Boards -->
             <div class="card">
-                <div class="tab-bar" style="display: flex; justify-content: space-between; align-items: center; width: 100%; flex-wrap: wrap; gap: 0.5rem;">
-                    <div style="display: flex; gap: 1rem;">
-                        <button id="tabPending" class="tab-btn active" onclick="switchTab('pending')">Pending Drafts (<span id="countPending">0</span>)</button>
-                        <button id="tabApproved" class="tab-btn" onclick="switchTab('approved')">Approved Queue (<span id="countApproved">0</span>)</button>
+                <div class="queue-header-bar" style="display: flex; justify-content: space-between; align-items: center; width: 100%; flex-wrap: wrap; gap: 0.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--color-border); margin-bottom: 1rem;">
+                    <div>
+                        <h2 style="font-size: 1.2rem; margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+                            📝 LinkedIn Post Queue
+                            <span id="countApproved" class="status-indicator-dot" style="background: var(--color-primary); color: var(--color-bg); padding: 0.1rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">0</span>
+                        </h2>
+                        <p style="font-size: 0.8rem; color: var(--color-text-muted); margin: 0.2rem 0 0 0;">Write or generate drafts below. Auto-scheduled every <span id="intervalDisplay">3</span> days.</p>
                     </div>
                     <div style="display: flex; gap: 0.5rem; align-items: center;">
-                        <button id="btnNewDraft" class="btn btn-primary btn-sm" onclick="addNewDraft()" style="padding: 0.45rem 0.85rem; font-size: 0.8rem; display: flex; align-items: center; gap: 0.3rem;">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                            + Add Blank Draft
+                        <button id="btnNewDraft" class="btn btn-primary btn-sm" onclick="addNewDraft()" style="padding: 0.5rem 0.9rem; font-size: 0.85rem; display: flex; align-items: center; gap: 0.4rem;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                            + Add Post Draft
                         </button>
-                        <button class="btn btn-secondary btn-sm" onclick="promptGeneratePost()" style="padding: 0.45rem 0.85rem; font-size: 0.8rem; display: flex; align-items: center; gap: 0.3rem;">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275Z"/><path d="m5 3 1 2.5L8.5 6 6 7 5 9.5 4 7 1.5 6 4 5.5Z"/></svg>
+                        <button class="btn btn-secondary btn-sm" onclick="promptGeneratePost()" style="padding: 0.5rem 0.9rem; font-size: 0.85rem; display: flex; align-items: center; gap: 0.4rem;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275Z"/><path d="m5 3 1 2.5L8.5 6 6 7 5 9.5 4 7 1.5 6 4 5.5Z"/></svg>
                             ✨ Generate from Topic
                         </button>
                     </div>
@@ -900,16 +941,12 @@
                     <h2>System Status</h2>
                     <div style="display: flex; flex-direction: column; gap: 0.8rem;">
                         <div class="status-pill">
-                            <span class="status-label">Engine Model:</span>
+                            <span class="status-label">AI Engine:</span>
                             <span class="status-value" id="statusModel">Gemini Flash (On-Demand)</span>
                         </div>
                         <div class="status-pill">
-                            <span class="status-label">Approved Queue:</span>
+                            <span class="status-label">Queued Posts:</span>
                             <span class="status-value" id="statusApprovedCount">0</span>
-                        </div>
-                        <div class="status-pill">
-                            <span class="status-label">Pending Drafts:</span>
-                            <span class="status-value" id="statusPendingCount">0</span>
                         </div>
                         <div class="status-pill">
                             <span class="status-label">Coverage Date:</span>
@@ -1464,23 +1501,29 @@
             const activeEl = document.activeElement;
             const isTypingInDraft = activeEl && activeEl.classList && activeEl.classList.contains('post-textarea');
             
-            showLoader("Loading queues...");
+            showLoader("Loading queue...");
             try {
                 const fresh = await storageProvider.fetchQueue();
                 
-                // Preserve unsaved active textarea text if user is typing right now
+                // Merge any legacy pending items into approved queue so no post is lost
+                if (fresh.pending && fresh.pending.length > 0) {
+                    if (!fresh.approved) fresh.approved = [];
+                    fresh.approved.unshift(...fresh.pending);
+                    fresh.pending = [];
+                }
+                
                 if (isTypingInDraft) {
                     const idParts = activeEl.id.split('-');
-                    if (idParts.length === 3) {
-                        const tab = idParts[1];
-                        const idx = parseInt(idParts[2]);
-                        if (fresh[tab] && fresh[tab][idx]) {
-                            fresh[tab][idx].post_text = activeEl.value;
+                    if (idParts.length === 2) {
+                        const idx = parseInt(idParts[1]);
+                        if (fresh.approved && fresh.approved[idx]) {
+                            fresh.approved[idx].post_text = activeEl.value;
                         }
                     }
                 }
                 
                 queueData = fresh;
+                if (!queueData.approved) queueData.approved = [];
                 if (!queueData.settings) {
                     queueData.settings = { post_interval_days: 3 };
                 }
@@ -1521,10 +1564,10 @@
 
         // ─── Real-time Auto-Save Input Handler ───────────────────────────────
         
-        function handleDraftTextInput(tab, index, val) {
-            if (queueData[tab] && queueData[tab][index]) {
-                queueData[tab][index].post_text = val;
-                queueSaveDebounced(`chore: auto-save ${tab} draft text [skip ci]`);
+        function handleDraftTextInput(index, val) {
+            if (queueData.approved && queueData.approved[index]) {
+                queueData.approved[index].post_text = val;
+                queueSaveDebounced(`chore: auto-save draft text #${index + 1} [skip ci]`);
             }
         }
 
@@ -1533,7 +1576,6 @@
         function renderPosts() {
             const listContainer = document.getElementById('postList');
             
-            // Preserve active element and selection positions
             const activeEl = document.activeElement;
             const activeId = (activeEl && activeEl.classList && activeEl.classList.contains('post-textarea')) ? activeEl.id : null;
             const selStart = activeEl ? activeEl.selectionStart : 0;
@@ -1541,13 +1583,13 @@
 
             listContainer.innerHTML = '';
             
-            const list = queueData[currentTab] || [];
+            const list = queueData.approved || [];
             
             if (list.length === 0) {
                 listContainer.innerHTML = `
-                    <div style="text-align: center; padding: 3rem; color: var(--color-text-muted);">
-                        <p style="font-size: 1.1rem; margin-bottom: 0.5rem;">No posts in this section.</p>
-                        <p style="font-size: 0.9rem;">${currentTab === 'pending' ? 'Click "+ Add Blank Draft" or "✨ Generate from Topic" above to create posts.' : 'Approve drafts from the Pending tab to fill your scheduled queue.'}</p>
+                    <div style="text-align: center; padding: 3.5rem; color: var(--color-text-muted);">
+                        <p style="font-size: 1.15rem; margin-bottom: 0.5rem; color: var(--color-text-main);">No posts in queue.</p>
+                        <p style="font-size: 0.9rem;">Click <strong>"+ Add Post Draft"</strong> to write a post manually, or <strong>"✨ Generate from Topic"</strong> to use AI.</p>
                     </div>
                 `;
                 return;
@@ -1555,44 +1597,26 @@
 
             list.forEach((item, index) => {
                 const card = document.createElement('div');
-                card.className = 'post-card ' + currentTab + '-card';
+                card.className = 'post-card approved-card';
                 
-                let actionButtons = '';
-                if (currentTab === 'pending') {
-                    actionButtons = `
-                        <button class="btn btn-danger btn-sm" onclick="rejectPost(${index})">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                            Decline
-                        </button>
-                        <button class="btn btn-primary btn-sm" onclick="generateAIDraft(${index})" title="Polish or rewrite this post using Gemini">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275Z"/><path d="m5 3 1 2.5L8.5 6 6 7 5 9.5 4 7 1.5 6 4 5.5Z"/></svg>
-                            Generate Post
-                        </button>
-                        <button class="btn btn-success btn-sm" onclick="approvePost(${index})">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                            Approve
-                        </button>
-                    `;
-                } else {
-                    actionButtons = `
-                        <button class="btn btn-danger btn-sm" onclick="removeApproved(${index})">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                            Delete
-                        </button>
-                    `;
-                }
-
-                // Retrieve media paths array, falling back to legacy single image_path
                 const paths = item.image_paths || (item.image_path ? [item.image_path] : []);
                 const isFull = paths.length >= 9;
                 const attachLabel = `Attach Media (${paths.length}/9)`;
 
-                actionButtons += `
+                let actionButtons = `
+                    <button class="btn btn-primary btn-sm" onclick="generateAIDraft(${index})" title="Polish or rewrite this post using Gemini AI">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275Z"/><path d="m5 3 1 2.5L8.5 6 6 7 5 9.5 4 7 1.5 6 4 5.5Z"/></svg>
+                        ✨ AI Polish
+                    </button>
                     <label class="btn btn-secondary btn-sm file-upload-label" style="position: relative; ${isFull ? 'opacity: 0.5; pointer-events: none;' : ''}">
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
                         ${attachLabel}
-                        ${isFull ? '' : `<input type="file" accept="image/*,video/*" multiple style="display: none;" onchange="handleImageUpload(event, ${index}, '${currentTab}')">`}
+                        ${isFull ? '' : `<input type="file" accept="image/*,video/*" multiple style="display: none;" onchange="handleImageUpload(event, ${index})">`}
                     </label>
+                    <button class="btn btn-danger btn-sm" onclick="removeApproved(${index})">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                        Delete
+                    </button>
                 `;
 
                 let previewsHtml = '';
@@ -1602,16 +1626,16 @@
                         const isVideo = /\.(mp4|mov|avi|webm|mkv)$/i.test(path);
                         if (isVideo) {
                             previewsHtml += `
-                                <div class="image-preview-item">
-                                    <video id="image-preview-${currentTab}-${index}-${imgIdx}" class="post-image-preview-thumbnail" controls></video>
-                                    <button class="btn-remove-image-thumbnail" onclick="removeImage(${index}, ${imgIdx}, '${currentTab}')">&times;</button>
+                                <div class="image-preview-item" title="Click to view full preview">
+                                    <video id="image-preview-${index}-${imgIdx}" class="post-image-preview-thumbnail" onclick="openMediaModal('${path}', true, event)" style="cursor: pointer;"></video>
+                                    <button class="btn-remove-image-thumbnail" onclick="removeImage(${index}, ${imgIdx}, event)" title="Remove">&times;</button>
                                 </div>
                             `;
                         } else {
                             previewsHtml += `
-                                <div class="image-preview-item">
-                                    <img id="image-preview-${currentTab}-${index}-${imgIdx}" class="post-image-preview-thumbnail" src="" />
-                                    <button class="btn-remove-image-thumbnail" onclick="removeImage(${index}, ${imgIdx}, '${currentTab}')">&times;</button>
+                                <div class="image-preview-item" title="Click to enlarge image">
+                                    <img id="image-preview-${index}-${imgIdx}" class="post-image-preview-thumbnail" src="" onclick="openMediaModal(this.src, false, event)" style="cursor: pointer;" />
+                                    <button class="btn-remove-image-thumbnail" onclick="removeImage(${index}, ${imgIdx}, event)" title="Remove">&times;</button>
                                 </div>
                             `;
                         }
@@ -1619,18 +1643,14 @@
                     previewsHtml += `</div>`;
                 }
 
-                let dateHeaderHtml = '';
-                let reorderHtml = '';
-                if (currentTab === 'approved') {
-                    const dateStr = getScheduledDateForIndex(index);
-                    dateHeaderHtml = `<span class="post-date-tag" style="background: rgba(102, 252, 241, 0.1); color: var(--color-primary); padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem; font-weight: 500;">📅 Scheduled: ${dateStr}</span>`;
-                    reorderHtml = `
-                        <div class="reorder-buttons" style="display: inline-flex; gap: 0.2rem; margin-left: 0.5rem;">
-                            <button class="btn btn-secondary btn-xs" onclick="moveUp(${index})" ${index === 0 ? 'disabled style="opacity: 0.3; cursor: not-allowed;"' : ''} title="Move Up">▲</button>
-                            <button class="btn btn-secondary btn-xs" onclick="moveDown(${index})" ${index === list.length - 1 ? 'disabled style="opacity: 0.3; cursor: not-allowed;"' : ''} title="Move Down">▼</button>
-                        </div>
-                    `;
-                }
+                const dateStr = getScheduledDateForIndex(index);
+                const dateHeaderHtml = `<span class="post-date-tag" style="background: rgba(102, 252, 241, 0.1); color: var(--color-primary); padding: 0.25rem 0.6rem; border-radius: 4px; font-size: 0.8rem; font-weight: 500;">📅 Scheduled: ${dateStr}</span>`;
+                const reorderHtml = `
+                    <div class="reorder-buttons" style="display: inline-flex; gap: 0.2rem; margin-left: 0.5rem;">
+                        <button class="btn btn-secondary btn-xs" onclick="moveUp(${index})" ${index === 0 ? 'disabled style="opacity: 0.3; cursor: not-allowed;"' : ''} title="Move Up">▲</button>
+                        <button class="btn btn-secondary btn-xs" onclick="moveDown(${index})" ${index === list.length - 1 ? 'disabled style="opacity: 0.3; cursor: not-allowed;"' : ''} title="Move Down">▼</button>
+                    </div>
+                `;
 
                 card.innerHTML = `
                     <div class="post-header" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
@@ -1640,7 +1660,7 @@
                         </div>
                         ${dateHeaderHtml}
                     </div>
-                    <textarea id="text-${currentTab}-${index}" class="post-textarea" oninput="handleDraftTextInput('${currentTab}', ${index}, this.value)" placeholder="Type your LinkedIn post content here...">${item.post_text || ''}</textarea>
+                    <textarea id="text-${index}" class="post-textarea" oninput="handleDraftTextInput(${index}, this.value)" placeholder="Type your LinkedIn post content here...">${item.post_text || ''}</textarea>
                     
                     ${previewsHtml}
 
@@ -1650,13 +1670,11 @@
                 `;
                 listContainer.appendChild(card);
 
-                // Load preview thumbnails asynchronously
                 paths.forEach((path, imgIdx) => {
-                    loadImagePreview(path, `image-preview-${currentTab}-${index}-${imgIdx}`);
+                    loadImagePreview(path, `image-preview-${index}-${imgIdx}`);
                 });
             });
 
-            // Restore active element focus and selection position
             if (activeId) {
                 const restoredEl = document.getElementById(activeId);
                 if (restoredEl) {
@@ -1667,20 +1685,14 @@
         }
 
         // ─── Event Handlers ──────────────────────────────────────────────────
-        
-        function switchTab(tab) {
-            currentTab = tab;
-            document.getElementById('tabPending').className = tab === 'pending' ? 'tab-btn active' : 'tab-btn';
-            document.getElementById('tabApproved').className = tab === 'approved' ? 'tab-btn active' : 'tab-btn';
-            renderPosts();
-        }
 
         function updateCountsDisplay() {
-            document.getElementById('countPending').innerText = queueData.pending.length;
-            document.getElementById('countApproved').innerText = queueData.approved.length;
-            document.getElementById('statusPendingCount').innerText = queueData.pending.length;
-            document.getElementById('statusApprovedCount').innerText = queueData.approved.length;
-            updateCoverageDate(queueData.approved.length, queueData.last_posted_at);
+            const count = (queueData.approved || []).length;
+            const elemCount = document.getElementById('countApproved');
+            if (elemCount) elemCount.innerText = count;
+            const elemStatus = document.getElementById('statusApprovedCount');
+            if (elemStatus) elemStatus.innerText = count;
+            updateCoverageDate(count, queueData.last_posted_at);
         }
 
         function updateCoverageDate(approvedCount, lastPostedAt) {
@@ -1688,7 +1700,7 @@
             if (!elem) return;
 
             if (approvedCount === 0) {
-                elem.innerHTML = `<span style="color: #ff4757; font-weight: bold;">Empty</span>`;
+                elem.innerHTML = `<span style="color: #ff4757; font-weight: bold;">No Posts</span>`;
                 return;
             }
 
@@ -1779,57 +1791,50 @@
         }
 
         async function addNewDraft() {
-            if (currentTab !== 'pending') {
-                switchTab('pending');
-            }
-            
             const newDraft = {
                 post_text: '',
-                reasoning: 'Custom draft added from dashboard.'
+                reasoning: 'Custom post added from dashboard.'
             };
             
-            // Prepend new draft at the top (index 0) so the user sees it immediately
-            queueData.pending.unshift(newDraft);
+            if (!queueData.approved) queueData.approved = [];
+            queueData.approved.unshift(newDraft);
             
             updateCountsDisplay();
             renderPosts();
             
-            // SAVE IMMEDIATELY to disk/cloud so the new draft is persisted right away!
             try {
-                await storageProvider.saveQueue(queueData, "chore: add new blank draft [skip ci]");
+                await storageProvider.saveQueue(queueData, "chore: add new post draft [skip ci]");
             } catch (err) {
-                console.error("Save new draft failed", err);
+                console.error("Save new post failed", err);
             }
             
-            // Focus on the newly created textarea
             setTimeout(() => {
-                const textarea = document.getElementById('text-pending-0');
+                const textarea = document.getElementById('text-0');
                 if (textarea) {
                     textarea.focus();
                     textarea.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }
             }, 100);
             
-            showToast("New draft added! Type your post text — it auto-saves in real time.", "success");
+            showToast("New post draft added! Type your content — auto-saves in real-time.", "success");
         }
 
         async function promptGeneratePost() {
-            const topic = prompt("Enter a topic, incident, or prompt for Gemini to write a LinkedIn post about:");
+            const topic = prompt("Enter a topic, incident, or text (what happened) for Gemini to write a LinkedIn post about:");
             if (!topic || !topic.trim()) return;
-
-            if (currentTab !== 'pending') switchTab('pending');
 
             const newDraft = {
                 post_text: topic.trim(),
                 reasoning: 'Generating draft with Gemini...'
             };
 
-            queueData.pending.unshift(newDraft);
+            if (!queueData.approved) queueData.approved = [];
+            queueData.approved.unshift(newDraft);
             updateCountsDisplay();
             renderPosts();
 
             try {
-                await storageProvider.saveQueue(queueData, "chore: create topic draft [skip ci]");
+                await storageProvider.saveQueue(queueData, "chore: add topic draft [skip ci]");
             } catch (err) {}
 
             await generateAIDraft(0);
@@ -1842,7 +1847,6 @@
                 clearTimeout(_saveQueueTimeout);
             }
             
-            // Set sync indicator state
             const syncBtn = document.getElementById('btnSync');
             if (syncBtn && storageProvider.isCloud) {
                 syncBtn.innerHTML = `
@@ -1860,21 +1864,21 @@
                     showToast("Sync failed: " + err.message, "error");
                     storageProvider.init();
                 }
-            }, 1000); // 1.0s debounce
+            }, 1000);
         }
 
         async function generateAIDraft(index) {
-            const textarea = document.getElementById(`text-pending-${index}`);
-            const topicText = textarea.value.trim();
+            const textarea = document.getElementById(`text-${index}`);
+            const topicText = textarea ? textarea.value.trim() : "";
             if (!topicText) {
-                showToast("Please type a topic or prompt first.", "warning");
+                showToast("Please type a topic or text first.", "warning");
                 return;
             }
 
-            const card = textarea.closest('.post-card');
-            const genBtn = card.querySelector(`button[onclick^="generateAIDraft"]`);
+            const card = textarea ? textarea.closest('.post-card') : null;
+            const genBtn = card ? card.querySelector(`button[onclick^="generateAIDraft"]`) : null;
             
-            const originalBtnHtml = genBtn ? genBtn.innerHTML : "Generate Post";
+            const originalBtnHtml = genBtn ? genBtn.innerHTML : "✨ AI Polish";
             if (genBtn) {
                 genBtn.disabled = true;
                 genBtn.innerHTML = `
@@ -1882,19 +1886,21 @@
                     Generating...
                 `;
             }
-            textarea.disabled = true;
-            textarea.placeholder = "🤖 Gemini is generating your post based on your prompt...";
+            if (textarea) {
+                textarea.disabled = true;
+                textarea.placeholder = "🤖 Gemini is generating your post based on your input...";
+            }
             
             showToast("Generating post with Gemini...", "info");
 
             try {
                 const result = await storageProvider.generatePostFromTopic(topicText, index);
                 if (result.status === 'success') {
-                    queueData.pending[index].post_text = result.post_text;
-                    queueData.pending[index].reasoning = result.reasoning || "Generated from prompt";
+                    queueData.approved[index].post_text = result.post_text;
+                    queueData.approved[index].reasoning = result.reasoning || "Generated from prompt";
 
                     renderPosts();
-                    showToast("Post successfully generated!", "success");
+                    showToast("Post draft successfully generated with AI!", "success");
                     queueSaveDebounced(`chore: save generated post [skip ci]`);
                 } else {
                     throw new Error(result.message || "Generation error");
@@ -1906,59 +1912,65 @@
                     genBtn.disabled = false;
                     genBtn.innerHTML = originalBtnHtml;
                 }
-                textarea.disabled = false;
-                textarea.placeholder = "Type your LinkedIn post content here...";
+                if (textarea) {
+                    textarea.disabled = false;
+                    textarea.placeholder = "Type your LinkedIn post content here...";
+                }
             }
         }
 
-        async function approvePost(index) {
-            const textarea = document.getElementById(`text-pending-${index}`);
-            const postText = textarea ? textarea.value.trim() : queueData.pending[index].post_text;
-            
-            // Optimistic UI — remove from pending, move to approved instantly
-            const item = queueData.pending.splice(index, 1)[0];
-            item.post_text = postText;
-            queueData.approved.push(item);
-            
-            updateCountsDisplay();
-            renderPosts();
-            showToast("Post approved and scheduled!", "success");
-            
-            queueSaveDebounced("chore: approve draft from dashboard [skip ci]");
-        }
-
-        async function rejectPost(index) {
-            // Optimistic UI
-            queueData.pending.splice(index, 1);
-            
-            updateCountsDisplay();
-            renderPosts();
-            showToast("Draft declined!", "info");
-            
-            queueSaveDebounced("chore: decline draft from dashboard [skip ci]");
-        }
-
         async function removeApproved(index) {
-            if (!confirm("Remove this post from approved queue?")) return;
+            if (!confirm("Remove this post from scheduled queue?")) return;
             
-            // Optimistic UI updates
             queueData.approved.splice(index, 1);
             
             updateCountsDisplay();
             renderPosts();
-            showToast("Removed from approved queue!", "info");
+            showToast("Post removed from queue!", "info");
             
-            queueSaveDebounced("chore: remove item from approved queue [skip ci]");
+            queueSaveDebounced("chore: remove item from queue [skip ci]");
         }
 
-        // ─── Post Now (trigger full posting workflow) ─────────────────────────
+        // ─── Media Preview Modal Functions ────────────────────────────────────
+
+        function openMediaModal(src, isVideo, event) {
+            if (event) event.stopPropagation();
+            const modal = document.getElementById('mediaModal');
+            const modalBody = document.getElementById('modalBody');
+            if (!modal || !modalBody) return;
+            
+            const cleanSrc = (src.startsWith('data:') || src.startsWith('http') || src.startsWith('/')) ? src : `/${src}`;
+            
+            if (isVideo) {
+                modalBody.innerHTML = `<video src="${cleanSrc}" controls autoplay style="max-width: 85vw; max-height: 80vh; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.8);"></video>`;
+            } else {
+                modalBody.innerHTML = `<img src="${cleanSrc}" style="max-width: 85vw; max-height: 80vh; border-radius: 8px; object-fit: contain; box-shadow: 0 10px 30px rgba(0,0,0,0.8);" />`;
+            }
+            modal.style.display = 'flex';
+        }
+
+        function closeMediaModal(event) {
+            if (event) event.stopPropagation();
+            const modal = document.getElementById('mediaModal');
+            if (modal) {
+                modal.style.display = 'none';
+                const modalBody = document.getElementById('modalBody');
+                if (modalBody) modalBody.innerHTML = '';
+            }
+        }
+        
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeMediaModal();
+        });
+
+        // ─── Post Now ─────────────────────────────────────────────────────────
 
         async function triggerPostNow() {
             if (!storageProvider.isCloud) {
                 showToast("Post Now only works in Cloud Mode (GitHub Actions). Enable Cloud Mode in Settings.", "warning");
                 return;
             }
-            if (!confirm("This will trigger the posting workflow on GitHub Actions to publish the next approved post to LinkedIn. Continue?")) return;
+            if (!confirm("This will trigger the posting workflow on GitHub Actions to publish the next post to LinkedIn. Continue?")) return;
 
             showLoader("Triggering post workflow on GitHub Actions...");
             try {
@@ -2058,17 +2070,17 @@
             }
         }
 
-        async function handleImageUpload(event, index, tab) {
+        async function handleImageUpload(event, index) {
             const files = Array.from(event.target.files || []);
             if (files.length === 0) return;
 
-            const postItem = queueData[tab][index];
+            const postItem = queueData.approved[index];
             if (!postItem.image_paths) {
                 postItem.image_paths = postItem.image_path ? [postItem.image_path] : [];
             }
             
             if (postItem.image_paths.length + files.length > 9) {
-                showToast(`Cannot attach ${files.length} file(s). Maximum 9 media attachments allowed per post (currently ${postItem.image_paths.length}).`, "warning");
+                showToast(`Cannot attach ${files.length} file(s). Maximum 9 media attachments allowed per post.`, "warning");
                 return;
             }
 
@@ -2083,10 +2095,10 @@
                         successCount++;
                     }
                 }
-                delete postItem.image_path; // clear legacy property
+                delete postItem.image_path;
                 
                 if (successCount > 0) {
-                    await storageProvider.saveQueue(queueData, `chore: attach ${successCount} media file(s) to ${tab} draft [skip ci]`);
+                    await storageProvider.saveQueue(queueData, `chore: attach ${successCount} media file(s) [skip ci]`);
                     showToast(`${successCount} media attachment(s) uploaded successfully!`, "success");
                     renderPosts();
                 } else {
@@ -2100,21 +2112,22 @@
             }
         }
 
-        async function removeImage(index, imgIndex, tab) {
-            if (!confirm("Remove this image attachment?")) return;
+        async function removeImage(index, imgIndex, event) {
+            if (event) event.stopPropagation();
+            if (!confirm("Remove this media attachment?")) return;
             
-            const postItem = queueData[tab][index];
+            const postItem = queueData.approved[index];
             if (!postItem.image_paths) {
                 postItem.image_paths = postItem.image_path ? [postItem.image_path] : [];
             }
             
             postItem.image_paths.splice(imgIndex, 1);
-            delete postItem.image_path; // clear legacy property
+            delete postItem.image_path;
             
-            showLoader("Removing image...");
+            showLoader("Removing media...");
             try {
-                await storageProvider.saveQueue(queueData, `chore: remove image from ${tab} draft [skip ci]`);
-                showToast("Image attachment removed.", "success");
+                await storageProvider.saveQueue(queueData, "chore: remove media attachment [skip ci]");
+                showToast("Media attachment removed.", "success");
                 renderPosts();
             } catch (err) {
                 showToast("Failed to update queue: " + err.message, "error");
@@ -2150,8 +2163,14 @@
         
         // Poll console logs / runs every 10 seconds
         setInterval(fetchLogs, 10000);
-        
-
     </script>
+
+    <!-- Attachment Full Screen Modal -->
+    <div id="mediaModal" class="modal-overlay" onclick="closeMediaModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeMediaModal()">&times;</button>
+            <div id="modalBody" style="display: flex; justify-content: center; align-items: center;"></div>
+        </div>
+    </div>
 </body>
 </html>
