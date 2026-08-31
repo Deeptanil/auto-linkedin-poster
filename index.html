@@ -1500,23 +1500,27 @@
             },
 
             async fetchQueue() {
-                if (this.isCloud) {
-                    const result = await this.ghFetch('posts_queue.json');
-                    this.ghSha = result.sha;
-                    return result.data;
-                } else {
+                if (this.isCloud && this.ghToken && this.ghRepo) {
                     try {
-                        const res = await fetch('/api/queue');
-                        if (!res.ok) throw new Error("Local server request failed");
-                        return await safeJson(res);
+                        const result = await this.ghFetch('posts_queue.json');
+                        this.ghSha = result.sha;
+                        return result.data;
                     } catch (e) {
-                        try {
-                            const staticRes = await fetch('/memory/posts_queue.json');
-                            if (staticRes.ok) return await staticRes.json();
-                        } catch (err2) {}
-                        throw e;
+                        console.warn("GitHub API load failed, trying static posts_queue.json fallback", e);
                     }
                 }
+                
+                try {
+                    const staticRes = await fetch('/memory/posts_queue.json');
+                    if (staticRes.ok) return await staticRes.json();
+                } catch (err2) {}
+
+                try {
+                    const res = await fetch('/api/queue');
+                    if (res.ok) return await safeJson(res);
+                } catch (e) {}
+
+                return { approved: [], pending: [], settings: { post_interval_days: 3 } };
             },
 
             async saveQueue(data, commitMsg = "chore: sync queue from dashboard [skip ci]") {
