@@ -1325,9 +1325,6 @@
         let currentTab = 'pending';
         let queueData = { approved: [], pending: [] };
 
-        // ─── Storage Abstraction (Dual Local / Cloud Mode) ────────────────────
-        
-        // Helper to check if local API returned HTML instead of JSON (Vercel static routing fallback)
         async function safeJson(res) {
             const contentType = res.headers.get("content-type");
             if (contentType && contentType.includes("text/html")) {
@@ -1340,38 +1337,42 @@
             isCloud: false,
             ghToken: '',
             ghRepo: '',
-            ghSha: null, // SHA for posts_queue.json content commits
+            ghSha: null,
             isSaving: false,
 
             init() {
                 this.ghToken = localStorage.getItem('gh_token') || '';
                 this.ghRepo = localStorage.getItem('gh_repo') || '';
-                this.isCloud = (localStorage.getItem('gh_cloud_mode') === 'true') && this.ghToken && this.ghRepo;
+                const isVercel = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+                this.isCloud = isVercel || (localStorage.getItem('gh_cloud_mode') === 'true');
                 
-                // Update status display
                 const statusModelLabel = document.getElementById('statusModel');
                 const syncBtn = document.getElementById('btnSync');
                 
                 if (this.isCloud) {
-                    statusModelLabel.innerText = "GitHub API (Cloud Mode)";
-                    syncBtn.className = "btn btn-cloud-status";
-                    syncBtn.innerHTML = `
-                        <span class="status-indicator-dot"></span>
-                        Auto-Synced
-                    `;
-                    syncBtn.disabled = true;
-                    syncBtn.style.opacity = '1';
-                    syncBtn.style.cursor = 'default';
+                    if (statusModelLabel) statusModelLabel.innerText = "GitHub API (Cloud Mode)";
+                    if (syncBtn) {
+                        syncBtn.className = "btn btn-cloud-status";
+                        syncBtn.innerHTML = `
+                            <span class="status-indicator-dot"></span>
+                            Auto-Synced
+                        `;
+                        syncBtn.disabled = true;
+                        syncBtn.style.opacity = '1';
+                        syncBtn.style.cursor = 'default';
+                    }
                 } else {
-                    statusModelLabel.innerText = "Flask Local Server";
-                    syncBtn.className = "btn btn-primary";
-                    syncBtn.innerHTML = `
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v16M12 2l-4 4M12 2l4 4M22 18H2v2h20v-2z"/></svg>
-                        Sync to GitHub
-                    `;
-                    syncBtn.disabled = false;
-                    syncBtn.style.opacity = '1';
-                    syncBtn.style.cursor = 'pointer';
+                    if (statusModelLabel) statusModelLabel.innerText = "Flask Local Server";
+                    if (syncBtn) {
+                        syncBtn.className = "btn btn-primary";
+                        syncBtn.innerHTML = `
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v16M12 2l-4 4M12 2l4 4M22 18H2v2h20v-2z"/></svg>
+                            Sync to GitHub
+                        `;
+                        syncBtn.disabled = false;
+                        syncBtn.style.opacity = '1';
+                        syncBtn.style.cursor = 'pointer';
+                    }
                 }
             },
 
@@ -1391,24 +1392,36 @@
                     }
                 });
                 if (!res.ok) throw new Error(`GitHub load error: ${res.statusText}`);
-                const json = await res.json();
+                const data = await res.json();
+                if (!isJson) return { sha: data.sha, data: atob(data.content.replace(/\s/g, '')) };
                 
-                // Decode base64 content
-                const binary = atob(json.content.replace(/\s/g, ''));
-                const bytes = new Uint8Array([...binary].map(c => c.charCodeAt(0)));
-                const decoded = new TextDecoder('utf-8').decode(bytes);
-                return {
-                    sha: json.sha,
-                    data: isJson ? JSON.parse(decoded) : decoded
-                };
+                const cleanBase64 = data.content.replace(/\s/g, '');
+                const binaryStr = atob(cleanBase64);
+                const bytes = new Uint8Array(binaryStr.length);
+                for (let i = 0; i < binaryStr.length; i++) {
+                    bytes[i] = binaryStr.charCodeAt(i);
+                }
+                const jsonText = new TextDecoder('utf-8').decode(bytes);
+                return { sha: data.sha, data: JSON.parse(jsonText) };
             },
 
-            async ghWrite(path, contentObj, sha, commitMsg) {
+            async ghWrite(path, contentObj, sha = null, commitMsg = "chore: sync queue from dashboard [skip ci]") {
                 const url = `https://api.github.com/repos/${this.ghRepo}/contents/${path}`;
-                const encoder = new TextEncoder();
-                const bytes = encoder.encode(JSON.stringify(contentObj, null, 2));
-                const base64 = btoa(String.fromCharCode(...bytes));
-                
+                const jsonStr = JSON.stringify(contentObj, null, 2);
+                const bytes = new TextEncoder().encode(jsonStr);
+                let binaryStr = '';
+                for (let i = 0; i < bytes.byteLength; i++) {
+                    binaryStr += String.fromCharCode(bytes[i]);
+                }
+                const base64 = btoa(binaryStr);
+
+                const bodyData = {
+                    message: commitMsg,
+                    content: base64,
+                    branch: "state"
+                };
+                if (sha) bodyData.sha = sha;
+
                 const res = await fetch(url, {
                     method: 'PUT',
                     headers: {
@@ -1416,12 +1429,7 @@
                         'Accept': 'application/vnd.github+json',
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({
-                        message: commitMsg,
-                        content: base64,
-                        sha: sha,
-                        branch: "state"
-                    })
+                    body: JSON.stringify(bodyData)
                 });
                 if (!res.ok) {
                     const err = await res.json();
@@ -1432,18 +1440,18 @@
 
             async ghUploadFile(path, file) {
                 const url = `https://api.github.com/repos/${this.ghRepo}/contents/${path}`;
-                const reader = new FileReader();
                 return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
                     reader.onload = async () => {
-                        const arrayBuffer = reader.result;
-                        const bytes = new Uint8Array(arrayBuffer);
-                        let binary = "";
-                        for (let i = 0; i < bytes.byteLength; i++) {
-                            binary += String.fromCharCode(bytes[i]);
-                        }
-                        const base64 = btoa(binary);
-                        
                         try {
+                            const arrayBuffer = reader.result;
+                            const bytes = new Uint8Array(arrayBuffer);
+                            let binaryStr = '';
+                            for (let i = 0; i < bytes.byteLength; i++) {
+                                binaryStr += String.fromCharCode(bytes[i]);
+                            }
+                            const base64 = btoa(binaryStr);
+
                             const res = await fetch(url, {
                                 method: 'PUT',
                                 headers: {
@@ -1501,7 +1509,6 @@
                         if (!res.ok) throw new Error("Local server request failed");
                         return await safeJson(res);
                     } catch (e) {
-                        console.warn("Local API fetch failed, trying static posts_queue.json fallback", e);
                         try {
                             const staticRes = await fetch('/memory/posts_queue.json');
                             if (staticRes.ok) return await staticRes.json();
@@ -1518,14 +1525,11 @@
                         try {
                             const fileInfo = await this.ghFetch('posts_queue.json');
                             this.ghSha = fileInfo.sha;
-                        } catch (e) {
-                            console.warn("Failed to fetch fresh SHA, using cache", e);
-                        }
+                        } catch (e) { console.warn("Failed to fetch fresh SHA", e); }
                         const res = await this.ghWrite('posts_queue.json', data, this.ghSha, commitMsg);
                         this.ghSha = res.content.sha;
                         return { status: 'success', message: "Drafts updated directly on GitHub." };
                     } finally {
-                        // Allow GitHub API cache 2.5 seconds to settle before clearing the save flag
                         setTimeout(() => { this.isSaving = false; }, 2500);
                     }
                 } else {
@@ -1543,16 +1547,11 @@
             },
 
             async approvePost(index, postText) {
-                // Obsolete in Optimistic UI (handled via saveQueue directly), but kept for compatibility
                 if (this.isCloud) {
                     const queue = await this.fetchQueue();
-                    if (index < 0 || index >= queue.pending.length) {
-                        throw new Error("Invalid draft index.");
-                    }
+                    if (index < 0 || index >= queue.pending.length) throw new Error("Invalid draft index.");
                     const item = queue.pending.splice(index, 1)[0];
-                    if (postText) {
-                        item.post_text = postText;
-                    }
+                    if (postText) item.post_text = postText;
                     queue.approved.push(item);
                     return await this.saveQueue(queue, "chore: approve draft from dashboard [skip ci]");
                 } else {
@@ -1566,12 +1565,9 @@
             },
 
             async rejectPost(index) {
-                // Obsolete in Optimistic UI (handled via saveQueue directly), but kept for compatibility
                 if (this.isCloud) {
                     const queue = await this.fetchQueue();
-                    if (index < 0 || index >= queue.pending.length) {
-                        throw new Error("Invalid draft index.");
-                    }
+                    if (index < 0 || index >= queue.pending.length) throw new Error("Invalid draft index.");
                     queue.pending.splice(index, 1);
                     return await this.saveQueue(queue, "chore: decline draft from dashboard [skip ci]");
                 } else {
@@ -1594,24 +1590,11 @@
                             'Accept': 'application/vnd.github+json',
                             'Content-Type': 'application/json'
                         },
-                        body: JSON.stringify({
-                            ref: 'main',
-                            inputs: {
-                                topic: topicText,
-                                index: String(index)
-                            }
-                        })
+                        body: JSON.stringify({ ref: 'main', inputs: { topic: topicText, index: String(index) } })
                     });
-                    if (!res.ok) {
-                        const err = await res.json();
-                        throw new Error(err.message || res.statusText);
-                    }
-                    return {
-                        status: 'success',
-                        message: "Draft generation workflow triggered successfully."
-                    };
+                    if (!res.ok) throw new Error((await res.json()).message || res.statusText);
+                    return { status: 'success', message: "Draft generation workflow triggered." };
                 }
-
                 const res = await fetch('/api/post/generate_from_topic', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -1630,15 +1613,10 @@
                             'Accept': 'application/vnd.github+json',
                             'Content-Type': 'application/json'
                         },
-                        body: JSON.stringify({
-                            ref: 'main'
-                        })
+                        body: JSON.stringify({ ref: 'main' })
                     });
-                    if (!res.ok) {
-                        const err = await res.json();
-                        throw new Error(err.message || res.statusText);
-                    }
-                    return { status: 'success', message: "Draft replenishment workflow triggered successfully on GitHub!" };
+                    if (!res.ok) throw new Error((await res.json()).message || res.statusText);
+                    return { status: 'success', message: "Replenishment workflow triggered." };
                 } else {
                     const res = await fetch('/api/post/replenish', { method: 'POST' });
                     return await safeJson(res);
@@ -1655,16 +1633,10 @@
                             'Accept': 'application/vnd.github+json',
                             'Content-Type': 'application/json'
                         },
-                        body: JSON.stringify({
-                            ref: 'main',
-                            inputs: { raw_text: rawText }
-                        })
+                        body: JSON.stringify({ ref: 'main', inputs: { raw_text: rawText } })
                     });
-                    if (!res.ok) {
-                        const err = await res.json();
-                        throw new Error(err.message || res.statusText);
-                    }
-                    return { status: 'success', message: "Memory compaction workflow triggered on GitHub!" };
+                    if (!res.ok) throw new Error((await res.json()).message || res.statusText);
+                    return { status: 'success', message: "Memory compaction workflow triggered." };
                 } else {
                     const res = await fetch('/api/memory/add', {
                         method: 'POST',
@@ -1676,84 +1648,53 @@
             },
 
             async syncGitHub() {
-                if (this.isCloud) {
-                    return { status: 'success', message: "Drafts are auto-saved directly to cloud repository." };
-                } else {
-                    const res = await fetch('/api/github/sync', { method: 'POST' });
-                    return await safeJson(res);
-                }
+                if (this.isCloud) return { status: 'success', message: "Already in cloud mode." };
+                const res = await fetch('/api/github/sync', { method: 'POST' });
+                return await safeJson(res);
             },
 
             async fetchStatus() {
-                if (this.isCloud) {
-                    return {
-                        summary: {
-                            has_voice: true
-                        }
-                    };
-                } else {
-                    try {
-                        const res = await fetch('/api/status');
-                        if (!res.ok) throw new Error("Status endpoint unavailable");
-                        return await safeJson(res);
-                    } catch (e) {
-                        return { summary: { has_voice: true } };
-                    }
-                }
+                if (this.isCloud) return { summary: { has_voice: true } };
+                try {
+                    const res = await fetch('/api/status');
+                    if (!res.ok) throw new Error("Status unavailable");
+                    return await safeJson(res);
+                } catch (e) { return { summary: { has_voice: true } }; }
             },
 
             async fetchLogs() {
                 if (this.isCloud) {
-                    let actionsStatus = "=== CLOUD MODE: GitHub Actions Run Status ===\n";
+                    if (!this.ghToken || !this.ghRepo) {
+                        return "=== CLOUD MODE: System Console Logs ===\nPlease click 'Settings' and configure your GitHub PAT & Repo Path to view live GitHub Actions execution logs.";
+                    }
+                    let actionsStatus = "=== CLOUD MODE: GitHub Actions Execution Logs ===\n";
                     let runningJobLogs = "";
-                    
                     try {
-                        const runsUrl = `https://api.github.com/repos/${this.ghRepo}/actions/runs?per_page=1`;
+                        const runsUrl = `https://api.github.com/repos/${this.ghRepo}/actions/runs?per_page=3`;
                         const runsRes = await fetch(runsUrl, {
-                            headers: {
-                                'Authorization': `Bearer ${this.ghToken}`,
-                                'Accept': 'application/vnd.github+json'
-                            }
+                            headers: { 'Authorization': `Bearer ${this.ghToken}`, 'Accept': 'application/vnd.github+json' }
                         });
-                        
                         if (runsRes.ok) {
                             const runsData = await runsRes.json();
                             const latestRun = (runsData.workflow_runs && runsData.workflow_runs.length > 0) ? runsData.workflow_runs[0] : null;
-                            
                             if (latestRun) {
-                                const runTime = new Date(latestRun.created_at).toLocaleString();
-                                actionsStatus += `Latest Run: #${latestRun.run_number} (${latestRun.name})\n`;
-                                actionsStatus += `Triggered:  ${runTime}\n`;
-                                actionsStatus += `Status:     ${latestRun.status.toUpperCase()} (${(latestRun.conclusion || 'IN PROGRESS').toUpperCase()})\n`;
-                                actionsStatus += `Link:       ${latestRun.html_url}\n\n`;
-                                
-                                const jobsUrl = latestRun.jobs_url;
-                                const jobsRes = await fetch(jobsUrl, {
-                                    headers: {
-                                        'Authorization': `Bearer ${this.ghToken}`,
-                                        'Accept': 'application/vnd.github+json'
-                                    }
+                                actionsStatus += `Latest: #${latestRun.run_number} (${latestRun.name}) | ${latestRun.status.toUpperCase()}\n\n`;
+                                const jobsRes = await fetch(latestRun.jobs_url, {
+                                    headers: { 'Authorization': `Bearer ${this.ghToken}`, 'Accept': 'application/vnd.github+json' }
                                 });
-                                
                                 if (jobsRes.ok) {
                                     const jobsData = await jobsRes.json();
                                     const mainJob = (jobsData.jobs && jobsData.jobs.length > 0) ? jobsData.jobs[0] : null;
                                     if (mainJob && mainJob.steps) {
                                         runningJobLogs += `--- Active Execution Steps (${mainJob.name}) ---\n`;
                                         mainJob.steps.forEach(step => {
-                                            const stepStatus = step.status.toUpperCase();
                                             const stepConclusion = step.conclusion ? `(${step.conclusion.toUpperCase()})` : '';
-                                            runningJobLogs += `[${stepStatus}] ${step.name} ${stepConclusion}\n`;
+                                            runningJobLogs += `[${step.status.toUpperCase()}] ${step.name} ${stepConclusion}\n`;
                                         });
                                         runningJobLogs += `\n`;
                                     }
                                 }
                             } else {
-                                actionsStatus += "No workflow runs found yet.\n\n";
-                            }
-                        }
-                    } catch (err) {
-                        actionsStatus += `GitHub Actions status check: ${err.message}\n\n`;
                     }
                     
                     let logContent = "";
@@ -2586,7 +2527,16 @@
                 });
 
                 if (res.status === 204) {
-                    showToast('GitHub Action triggered! Check your GitHub Actions tab in 1-2 minutes.', 'success');
+                    showToast('GitHub Action triggered! Streaming live logs in System Console Logs...', 'success');
+                    
+                    // Start fast log polling for 45 seconds to stream live execution steps
+                    let pollCount = 0;
+                    const fastPoll = setInterval(async () => {
+                        await fetchLogs();
+                        pollCount++;
+                        if (pollCount >= 18) clearInterval(fastPoll);
+                    }, 2500);
+                    await fetchLogs();
                 } else {
                     let errorMsg = `HTTP ${res.status}`;
                     try {
