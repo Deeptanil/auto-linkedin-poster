@@ -1696,6 +1696,11 @@
                                     }
                                 }
                             } else {
+                                actionsStatus += "No workflow runs found.\n\n";
+                            }
+                        }
+                    } catch (e) {
+                        actionsStatus += `Actions log fetch: ${e.message}\n\n`;
                     }
                     
                     let logContent = "";
@@ -1703,7 +1708,7 @@
                         const fileInfo = await this.ghFetch('dashboard.log', false);
                         logContent = fileInfo.data || "No log content found.";
                     } catch (e) {
-                        logContent = "No remote log file found yet. It will auto-sync after your next post run.";
+                        logContent = "No remote log file found yet.";
                     }
                     
                     return `${actionsStatus}${runningJobLogs}=== REMOTE LOG ===\n${logContent}`;
