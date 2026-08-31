@@ -2472,6 +2472,24 @@
         let tokenPollTimer = null;
         let latestTokenResult = null;
 
+        async function safeApiCall(url, options = {}) {
+            const res = await fetch(url, options);
+            const text = await res.text();
+            let data = {};
+            try {
+                data = text ? JSON.parse(text) : {};
+            } catch (e) {
+                if (!res.ok) {
+                    throw new Error(`Server returned status ${res.status}. Make sure the dashboard server is running locally via run_dashboard.bat.`);
+                }
+                throw new Error("Received invalid non-JSON response from server.");
+            }
+            if (!res.ok) {
+                throw new Error(data.message || `Server returned status ${res.status}.`);
+            }
+            return data;
+        }
+
         async function openTokenModal() {
             document.getElementById('tokenModal').style.display = 'flex';
             document.getElementById('tokenSecretsBox').style.display = 'none';
@@ -2494,9 +2512,7 @@
 
         async function fetchTokenInfo() {
             try {
-                const res = await fetch('/api/token/info');
-                if (!res.ok) return;
-                const data = await res.json();
+                const data = await safeApiCall('/api/token/info');
                 
                 const badge = document.getElementById('tokenBadge');
                 const details = document.getElementById('tokenDetailsText');
@@ -2578,31 +2594,21 @@
             notice.style.background = 'rgba(102, 252, 241, 0.1)';
             notice.style.border = '1px solid rgba(102, 252, 241, 0.3)';
             notice.style.color = 'var(--color-primary)';
-            notice.innerHTML = '⏳ Starting callback server on port 8765 and opening browser...';
+            notice.innerHTML = 'Starting callback server on port 8765 and opening browser...';
 
             try {
-                const res = await fetch('/api/token/start', {
+                const data = await safeApiCall('/api/token/start', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ client_id: clientId, client_secret: clientSecret })
                 });
-                const data = await res.json();
-
-                if (!res.ok) {
-                    btn.disabled = false;
-                    notice.style.background = 'rgba(255, 71, 87, 0.1)';
-                    notice.style.border = '1px solid rgba(255, 71, 87, 0.3)';
-                    notice.style.color = 'var(--color-danger)';
-                    notice.innerHTML = `❌ Error: ${data.message}`;
-                    return;
-                }
 
                 if (data.auth_url) {
                     window.open(data.auth_url, '_blank');
                 }
 
                 notice.innerHTML = `
-                    <div style="font-weight: bold;">🌐 Browser Opened for LinkedIn Authorization</div>
+                    <div style="font-weight: bold;">Browser Opened for LinkedIn Authorization</div>
                     <div style="font-size: 0.8rem; margin-top: 0.4rem; color: var(--color-text-main);">
                         Log in and click <strong>Allow</strong> in the LinkedIn popup tab. 
                         <br>If it didn't open automatically, <a href="${data.auth_url}" target="_blank" style="color: var(--color-primary); text-decoration: underline;">click here to open manually</a>.
@@ -2620,20 +2626,18 @@
                 notice.style.background = 'rgba(255, 71, 87, 0.1)';
                 notice.style.border = '1px solid rgba(255, 71, 87, 0.3)';
                 notice.style.color = 'var(--color-danger)';
-                notice.innerHTML = `❌ Network Error: ${err.message}`;
+                notice.innerHTML = `Error: ${err.message}`;
             }
         }
 
         async function pollTokenAuth() {
             try {
-                const res = await fetch('/api/token/poll');
-                if (!res.ok) return;
-                const data = await res.json();
+                const data = await safeApiCall('/api/token/poll');
                 const notice = document.getElementById('tokenAuthStatusNotice');
                 const btn = document.getElementById('btnStartAuth');
 
                 if (data.status === 'exchanging') {
-                    notice.innerHTML = '⏳ Authorization code received! Exchanging for 60-day access token...';
+                    notice.innerHTML = 'Authorization code received! Exchanging for 60-day access token...';
                 } else if (data.status === 'success' && data.result) {
                     if (tokenPollTimer) {
                         clearInterval(tokenPollTimer);
@@ -2665,7 +2669,7 @@
                     notice.style.background = 'rgba(255, 71, 87, 0.1)';
                     notice.style.border = '1px solid rgba(255, 71, 87, 0.3)';
                     notice.style.color = 'var(--color-danger)';
-                    notice.innerHTML = `❌ Authorization Failed: ${data.error}`;
+                    notice.innerHTML = `Authorization Failed: ${data.error}`;
                 }
             } catch (e) {
                 console.warn('Error polling token auth:', e);

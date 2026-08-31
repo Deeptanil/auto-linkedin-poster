@@ -462,123 +462,137 @@ def run_oauth_flow_background(client_id: str, client_secret: str):
 @app.route("/api/token/info", methods=["GET"])
 def get_token_info():
     """Retrieve current LinkedIn token status from environment/.env."""
-    client_id = os.getenv("LINKEDIN_CLIENT_ID", "")
-    client_secret = os.getenv("LINKEDIN_CLIENT_SECRET", "")
-    access_token = os.getenv("LINKEDIN_ACCESS_TOKEN", "")
-    expiry_str = os.getenv("LINKEDIN_TOKEN_EXPIRY", "")
-    member_urn = os.getenv("LINKEDIN_MEMBER_URN", "")
-    
-    is_expired = False
-    days_left = 0
-    if expiry_str:
-        try:
-            expiry_dt = datetime.fromisoformat(expiry_str.replace("Z", "+00:00"))
-            now_dt = datetime.now(timezone.utc)
-            delta = expiry_dt - now_dt
-            days_left = delta.days
-            if delta.total_seconds() <= 0:
-                is_expired = True
-        except Exception:
-            pass
-            
-    masked_token = f"{access_token[:8]}...{access_token[-6:]}" if len(access_token) > 15 else ""
+    try:
+        client_id = os.getenv("LINKEDIN_CLIENT_ID", "")
+        client_secret = os.getenv("LINKEDIN_CLIENT_SECRET", "")
+        access_token = os.getenv("LINKEDIN_ACCESS_TOKEN", "")
+        expiry_str = os.getenv("LINKEDIN_TOKEN_EXPIRY", "")
+        member_urn = os.getenv("LINKEDIN_MEMBER_URN", "")
+        
+        is_expired = False
+        days_left = 0
+        if expiry_str:
+            try:
+                expiry_dt = datetime.fromisoformat(expiry_str.replace("Z", "+00:00"))
+                now_dt = datetime.now(timezone.utc)
+                delta = expiry_dt - now_dt
+                days_left = delta.days
+                if delta.total_seconds() <= 0:
+                    is_expired = True
+            except Exception:
+                pass
+                
+        masked_token = f"{access_token[:8]}...{access_token[-6:]}" if len(access_token) > 15 else ""
 
-    return jsonify({
-        "client_id": client_id,
-        "has_client_secret": bool(client_secret),
-        "has_access_token": bool(access_token),
-        "masked_access_token": masked_token,
-        "token_expiry": expiry_str,
-        "member_urn": member_urn,
-        "is_expired": is_expired,
-        "days_left": days_left,
-        "redirect_uri": REDIRECT_URI
-    })
+        return jsonify({
+            "client_id": client_id,
+            "has_client_secret": bool(client_secret),
+            "has_access_token": bool(access_token),
+            "masked_access_token": masked_token,
+            "token_expiry": expiry_str,
+            "member_urn": member_urn,
+            "is_expired": is_expired,
+            "days_left": days_left,
+            "redirect_uri": REDIRECT_URI
+        })
+    except Exception as e:
+        return jsonify({"status": "error", "message": f"Failed to fetch token info: {e}"}), 500
 
 
 @app.route("/api/token/start", methods=["POST"])
 def start_token_auth():
     """Initiates the OAuth token flow."""
     global oauth_state
-    data = request.json or {}
-    client_id = data.get("client_id", "").strip() or os.getenv("LINKEDIN_CLIENT_ID", "").strip()
-    client_secret = data.get("client_secret", "").strip() or os.getenv("LINKEDIN_CLIENT_SECRET", "").strip()
-
-    if not client_id or not client_secret:
-        return jsonify({
-            "status": "error",
-            "message": "LinkedIn Client ID and Client Secret are required."
-        }), 400
-
-    update_env_file({
-        "LINKEDIN_CLIENT_ID": client_id,
-        "LINKEDIN_CLIENT_SECRET": client_secret
-    })
-
-    with oauth_lock:
-        oauth_state = {
-            "status": "waiting",
-            "auth_code": None,
-            "error": None,
-            "result": None,
-            "client_id": client_id,
-            "client_secret": client_secret
-        }
-
-    t = threading.Thread(target=run_oauth_flow_background, args=(client_id, client_secret), daemon=True)
-    t.start()
-
-    scope_str = " ".join(REQUIRED_SCOPES)
-    auth_params = {
-        "response_type": "code",
-        "client_id": client_id,
-        "redirect_uri": REDIRECT_URI,
-        "scope": scope_str,
-        "state": "linkedin_poster_dashboard",
-    }
-    auth_url = AUTH_URL_BASE + "?" + urllib.parse.urlencode(auth_params)
-
     try:
-        webbrowser.open(auth_url)
-    except Exception:
-        pass
+        data = request.json or {}
+        client_id = data.get("client_id", "").strip() or os.getenv("LINKEDIN_CLIENT_ID", "").strip()
+        client_secret = data.get("client_secret", "").strip() or os.getenv("LINKEDIN_CLIENT_SECRET", "").strip()
 
-    return jsonify({
-        "status": "started",
-        "auth_url": auth_url,
-        "message": "OAuth server started on port 8765. Browser opened for LinkedIn authorization."
-    })
+        if not client_id or not client_secret:
+            return jsonify({
+                "status": "error",
+                "message": "LinkedIn Client ID and Client Secret are required. Please enter both."
+            }), 400
+
+        update_env_file({
+            "LINKEDIN_CLIENT_ID": client_id,
+            "LINKEDIN_CLIENT_SECRET": client_secret
+        })
+
+        with oauth_lock:
+            oauth_state = {
+                "status": "waiting",
+                "auth_code": None,
+                "error": None,
+                "result": None,
+                "client_id": client_id,
+                "client_secret": client_secret
+            }
+
+        t = threading.Thread(target=run_oauth_flow_background, args=(client_id, client_secret), daemon=True)
+        t.start()
+
+        scope_str = " ".join(REQUIRED_SCOPES)
+        auth_params = {
+            "response_type": "code",
+            "client_id": client_id,
+            "redirect_uri": REDIRECT_URI,
+            "scope": scope_str,
+            "state": "linkedin_poster_dashboard",
+        }
+        auth_url = AUTH_URL_BASE + "?" + urllib.parse.urlencode(auth_params)
+
+        try:
+            webbrowser.open(auth_url)
+        except Exception:
+            pass
+
+        return jsonify({
+            "status": "started",
+            "auth_url": auth_url,
+            "message": "OAuth server started on port 8765. Browser opened for LinkedIn authorization."
+        })
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({"status": "error", "message": f"Failed to start token auth: {e}"}), 500
 
 
 @app.route("/api/token/poll", methods=["GET"])
 def poll_token_auth():
     """Polls the background OAuth flow status."""
-    with oauth_lock:
-        st = oauth_state.copy()
+    try:
+        with oauth_lock:
+            st = oauth_state.copy()
 
-    return jsonify({
-        "status": st.get("status", "idle"),
-        "error": st.get("error"),
-        "result": st.get("result")
-    })
+        return jsonify({
+            "status": st.get("status", "idle"),
+            "error": st.get("error"),
+            "result": st.get("result")
+        })
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
 
 
 @app.route("/api/token/save_manual", methods=["POST"])
 def save_token_manual():
     """Manually saves token values to .env."""
-    data = request.json or {}
-    env_updates = {}
-    
-    for key in ["LINKEDIN_CLIENT_ID", "LINKEDIN_CLIENT_SECRET", "LINKEDIN_ACCESS_TOKEN", "LINKEDIN_REFRESH_TOKEN", "LINKEDIN_MEMBER_URN", "LINKEDIN_TOKEN_EXPIRY"]:
-        val = data.get(key, "").strip()
-        if val:
-            env_updates[key] = val
+    try:
+        data = request.json or {}
+        env_updates = {}
+        
+        for key in ["LINKEDIN_CLIENT_ID", "LINKEDIN_CLIENT_SECRET", "LINKEDIN_ACCESS_TOKEN", "LINKEDIN_REFRESH_TOKEN", "LINKEDIN_MEMBER_URN", "LINKEDIN_TOKEN_EXPIRY"]:
+            val = data.get(key, "").strip()
+            if val:
+                env_updates[key] = val
 
-    if not env_updates:
-        return jsonify({"status": "error", "message": "No valid token fields provided."}), 400
+        if not env_updates:
+            return jsonify({"status": "error", "message": "No valid token fields provided."}), 400
 
-    update_env_file(env_updates)
-    return jsonify({"status": "success", "message": "Token configuration updated and saved to .env!"})
+        update_env_file(env_updates)
+        return jsonify({"status": "success", "message": "Token configuration updated and saved to .env!"})
+    except Exception as e:
+        return jsonify({"status": "error", "message": f"Failed to save configuration: {e}"}), 500
 
 
 def launch_server():
