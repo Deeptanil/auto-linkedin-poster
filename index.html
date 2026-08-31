@@ -253,19 +253,24 @@
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
         }
         .modal-close {
-            position: absolute;
-            top: -12px; right: -12px;
-            background: var(--color-danger);
-            color: white; border: none;
-            width: 32px; height: 32px;
-            border-radius: 50%;
-            font-size: 1.2rem; font-weight: bold; cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-            display: flex; align-items: center; justify-content: center;
-            transition: transform 0.15s ease;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--color-card-border);
+            color: var(--color-text-muted);
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition-smooth);
+            line-height: 1;
         }
         .modal-close:hover {
-            transform: scale(1.1);
+            background: rgba(255, 71, 87, 0.15);
+            color: var(--color-danger);
+            border-color: var(--color-danger);
         }
         .modal-media-full {
             max-width: 80vw;
@@ -561,22 +566,36 @@
             backdrop-filter: blur(8px);
             padding: 1rem;
             box-sizing: border-box;
+            overflow-x: hidden !important;
         }
 
         .modal-content {
             background-color: var(--bg-card);
             border: 1px solid var(--color-card-border);
             border-radius: 12px;
-            padding: 1.75rem;
+            padding: 1.5rem;
             width: 100%;
-            max-width: 550px;
+            max-width: 540px;
             max-height: 90vh;
             overflow-y: auto;
+            overflow-x: hidden !important;
+            box-sizing: border-box;
             display: flex;
             flex-direction: column;
             gap: 1.25rem;
             box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
             -webkit-overflow-scrolling: touch;
+        }
+
+        .modal-content::-webkit-scrollbar {
+            width: 5px;
+        }
+        .modal-content::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .modal-content::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 3px;
         }
 
         .modal-header {
@@ -867,7 +886,7 @@
     <div id="toast" class="toast">Action Success!</div>
 
     <!-- Settings Modal -->
-    <div id="settingsModal" class="modal" style="display: none;">
+    <div id="settingsModal" class="modal" style="display: none;" onclick="handleModalOverlayClick(event)">
         <div class="modal-content">
             <div class="modal-header">
                 <h3>Dashboard Settings</h3>
@@ -912,12 +931,12 @@
     </div>
 
     <!-- LinkedIn Token Manager Modal -->
-    <div id="tokenModal" class="modal" style="display: none;">
-        <div class="modal-content" style="max-width: 550px;">
+    <div id="tokenModal" class="modal" style="display: none;" onclick="handleModalOverlayClick(event)">
+        <div class="modal-content" style="max-width: 540px;">
             <div class="modal-header">
-                <h3 style="font-size: 1.15rem;">🔑 LinkedIn OAuth Token Generator</h3>
+                <h3 style="font-size: 1.15rem;">LinkedIn OAuth Token Generator</h3>
                 <div style="display: flex; gap: 0.4rem; align-items: center;">
-                    <button class="btn btn-secondary btn-xs" onclick="toggleTokenModal(); openHelpModal();">❓ Help Guide</button>
+                    <button class="btn btn-secondary btn-xs" onclick="toggleTokenModal(); openHelpModal();">Help Guide</button>
                     <button class="modal-close" onclick="toggleTokenModal()">&times;</button>
                 </div>
             </div>
@@ -955,7 +974,7 @@
                 <div style="display: flex; gap: 0.75rem;">
                     <button id="btnStartAuth" class="btn btn-primary" style="flex: 1; min-height: 44px;" onclick="startTokenAuth()">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-                        🚀 Launch OAuth & Generate Token
+                        Launch OAuth & Generate Token
                     </button>
                 </div>
             </div>
@@ -963,10 +982,10 @@
             <!-- Token Secrets Display Box (Shown on Success) -->
             <div id="tokenSecretsBox" style="display: none; background: var(--bg-console); border: 1px solid var(--color-success); border-radius: 8px; padding: 1rem;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                    <span style="color: var(--color-success); font-weight: 600; font-size: 0.88rem;">✅ OAuth Token Ready & Saved to .env!</span>
-                    <button class="btn btn-secondary btn-xs" onclick="copyTokenSecrets()">📋 Copy GitHub Secrets</button>
+                    <span style="color: var(--color-success); font-weight: 600; font-size: 0.88rem;">OAuth Token Ready & Saved to .env!</span>
+                    <button class="btn btn-secondary btn-xs" onclick="copyTokenSecrets()">Copy GitHub Secrets</button>
                 </div>
-                <pre id="tokenSecretsPre" style="font-family: var(--font-mono); font-size: 0.78rem; color: #d1d8e0; max-height: 150px; overflow-y: auto; margin: 0;"></pre>
+                <pre id="tokenSecretsPre" style="font-family: var(--font-mono); font-size: 0.78rem; color: #d1d8e0; max-height: 150px; overflow-y: auto; overflow-x: hidden; margin: 0; white-space: pre-wrap; word-break: break-all;"></pre>
             </div>
 
             <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 0.5rem;">
@@ -976,8 +995,8 @@
     </div>
 
     <!-- Help & Token Regeneration Guide Modal -->
-    <div id="helpModal" class="modal" style="display: none;">
-        <div class="modal-content" style="max-width: 650px;">
+    <div id="helpModal" class="modal" style="display: none;" onclick="handleModalOverlayClick(event)">
+        <div class="modal-content" style="max-width: 600px;">
             <div class="modal-header">
                 <h3 style="display: flex; align-items: center; gap: 0.5rem; font-size: 1.15rem;">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
@@ -988,28 +1007,28 @@
 
             <!-- Tab Navigation inside Help Modal -->
             <div style="display: flex; gap: 0.5rem; border-bottom: 1px solid var(--color-card-border); padding-bottom: 0.5rem; flex-wrap: wrap;">
-                <button id="helpTab1" class="btn btn-primary btn-sm" onclick="switchHelpTab(1)">🔄 Regenerate Token</button>
-                <button id="helpTab2" class="btn btn-secondary btn-sm" onclick="switchHelpTab(2)">🆕 App Setup</button>
-                <button id="helpTab3" class="btn btn-secondary btn-sm" onclick="switchHelpTab(3)">⚙️ GitHub Secrets</button>
+                <button id="helpTab1" class="btn btn-primary btn-sm" onclick="switchHelpTab(1)">Regenerate Token</button>
+                <button id="helpTab2" class="btn btn-secondary btn-sm" onclick="switchHelpTab(2)">App Setup</button>
+                <button id="helpTab3" class="btn btn-secondary btn-sm" onclick="switchHelpTab(3)">GitHub Secrets</button>
             </div>
 
             <!-- Tab 1: How to Regenerate Token -->
             <div id="helpContent1" style="display: flex; flex-direction: column; gap: 0.8rem;">
                 <div style="background: rgba(102, 252, 241, 0.06); border: 1px solid rgba(102, 252, 241, 0.2); padding: 0.85rem; border-radius: 8px; font-size: 0.85rem; line-height: 1.4;">
-                    <strong>💡 Why Regenerate?</strong> LinkedIn OAuth tokens expire every <strong>60 days</strong>. The app warns you on Discord 14 and 7 days before expiry. Renewal takes under 1 minute!
+                    <strong>Why Regenerate?</strong> LinkedIn OAuth tokens expire every <strong>60 days</strong>. The app warns you on Discord 14 and 7 days before expiry. Renewal takes under 1 minute!
                 </div>
 
                 <div class="help-step-box" style="background: #0f121d; border: 1px solid var(--color-card-border); padding: 0.9rem; border-radius: 8px;">
                     <h4 style="color: var(--color-primary); font-size: 0.9rem; margin-bottom: 0.4rem;">Step 1: Open Token Manager</h4>
                     <p style="font-size: 0.82rem; color: var(--color-text-muted); margin: 0;">
-                        Click <strong>🔑 LinkedIn Token</strong> in the header bar (or click "Checking..." under System Status).
+                        Click <strong>LinkedIn Token</strong> in the header bar (or click status under System Status).
                     </p>
                 </div>
 
                 <div class="help-step-box" style="background: #0f121d; border: 1px solid var(--color-card-border); padding: 0.9rem; border-radius: 8px;">
                     <h4 style="color: var(--color-primary); font-size: 0.9rem; margin-bottom: 0.4rem;">Step 2: Launch OAuth Flow</h4>
                     <p style="font-size: 0.82rem; color: var(--color-text-muted); margin: 0;">
-                        Confirm your <strong>Client ID</strong> and <strong>Client Secret</strong>, then click <strong>🚀 Launch OAuth & Generate Token</strong>.
+                        Confirm your <strong>Client ID</strong> and <strong>Client Secret</strong>, then click <strong>Launch OAuth & Generate Token</strong>.
                     </p>
                 </div>
 
@@ -1023,7 +1042,7 @@
                 <div class="help-step-box" style="background: #0f121d; border: 1px solid var(--color-card-border); padding: 0.9rem; border-radius: 8px;">
                     <h4 style="color: var(--color-primary); font-size: 0.9rem; margin-bottom: 0.4rem;">Step 4: Update GitHub Secrets</h4>
                     <p style="font-size: 0.82rem; color: var(--color-text-muted); margin: 0;">
-                        Click <strong>📋 Copy GitHub Secrets</strong> and paste into your GitHub repo settings under <em>Settings → Secrets → Actions</em>.
+                        Click <strong>Copy GitHub Secrets</strong> and paste into your GitHub repo settings under <em>Settings → Secrets → Actions</em>.
                     </p>
                 </div>
             </div>
@@ -1086,7 +1105,7 @@
             </div>
 
             <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.75rem; border-top: 1px solid var(--color-card-border); padding-top: 0.75rem;">
-                <button class="btn btn-primary btn-sm" onclick="toggleHelpModal(); openTokenModal();">🔑 Open Token Manager</button>
+                <button class="btn btn-primary btn-sm" onclick="toggleHelpModal(); openTokenModal();">Open Token Manager</button>
                 <button class="btn btn-secondary btn-sm" onclick="toggleHelpModal()">Close</button>
             </div>
         </div>
@@ -2688,6 +2707,34 @@
                 }
             }
         }
+
+        // ─── Modal Management & Keyboard / Click-Outside Listener ──────────
+        function closeAllModals() {
+            const modals = ['settingsModal', 'tokenModal', 'helpModal'];
+            modals.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.style.display = 'none';
+            });
+            const mediaModal = document.getElementById('mediaModal');
+            if (mediaModal) mediaModal.style.display = 'none';
+
+            if (tokenPollTimer) {
+                clearInterval(tokenPollTimer);
+                tokenPollTimer = null;
+            }
+        }
+
+        function handleModalOverlayClick(event) {
+            if (event.target.classList.contains('modal') || event.target.classList.contains('modal-overlay')) {
+                closeAllModals();
+            }
+        }
+
+        window.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeAllModals();
+            }
+        });
     </script>
 
     <!-- Attachment Full Screen Modal -->
