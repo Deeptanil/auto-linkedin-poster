@@ -956,13 +956,23 @@
             </div>
 
             <!-- Token Health Card -->
-            <div id="tokenStatusCard" style="background: #0f121d; border: 1px solid var(--color-card-border); border-radius: 8px; padding: 1rem; display: flex; flex-direction: column; gap: 0.5rem;">
+            <div id="tokenStatusCard" style="background: #0f121d; border: 1px solid var(--color-card-border); border-radius: 8px; padding: 1rem; display: flex; flex-direction: column; gap: 0.6rem;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <span style="font-weight: 600; font-size: 0.9rem;">Token Status:</span>
                     <span id="tokenBadge" style="padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.8rem; font-weight: 600;">Loading...</span>
                 </div>
                 <div id="tokenDetailsText" style="font-size: 0.82rem; color: var(--color-text-muted);">
                     Fetching token information...
+                </div>
+                <div style="display: flex; gap: 0.5rem; align-items: center; justify-content: space-between; margin-top: 0.2rem; padding-top: 0.5rem; border-top: 1px solid rgba(255,255,255,0.06); flex-wrap: wrap;">
+                    <div style="display: flex; gap: 0.4rem; align-items: center;">
+                        <span style="font-size: 0.78rem; color: var(--color-text-muted); white-space: nowrap;">Track Expiry:</span>
+                        <input type="date" id="tokExpiryInput" class="form-input" style="padding: 0.2rem 0.4rem; font-size: 0.78rem; width: 130px; height: 28px;" onchange="updateStoredTokenExpiry(this.value)">
+                    </div>
+                    <div style="display: flex; gap: 0.3rem;">
+                        <button class="btn btn-secondary btn-xs" onclick="setExpiryDays(60)">+60 Days</button>
+                        <button class="btn btn-secondary btn-xs" onclick="setExpiryDays(30)">+30 Days</button>
+                    </div>
                 </div>
             </div>
 
@@ -2667,24 +2677,95 @@
             }
         }
 
+        function getDaysRemaining(expiryStr) {
+            if (!expiryStr) return null;
+            try {
+                const expiryDate = new Date(expiryStr);
+                const now = new Date();
+                const diffTime = expiryDate - now;
+                return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function updateStoredTokenExpiry(dateVal) {
+            if (!dateVal) return;
+            const iso = new Date(dateVal).toISOString();
+            localStorage.setItem('gh_token_expiry', iso);
+            showToast(`Token expiry tracked to ${new Date(dateVal).toLocaleDateString()}`, 'success');
+            fetchTokenInfo();
+        }
+
+        function setExpiryDays(days = 60) {
+            const date = new Date();
+            date.setDate(date.getDate() + days);
+            const yyyy = date.getFullYear();
+            const mm = String(date.getMonth() + 1).padStart(2, '0');
+            const dd = String(date.getDate()).padStart(2, '0');
+            const dateStr = `${yyyy}-${mm}-${dd}`;
+            
+            const dateInput = document.getElementById('tokExpiryInput');
+            if (dateInput) dateInput.value = dateStr;
+            updateStoredTokenExpiry(dateStr);
+        }
+
         async function fetchTokenInfo() {
             const badge = document.getElementById('tokenBadge');
             const details = document.getElementById('tokenDetailsText');
             const statusLabel = document.getElementById('statusTokenLabel');
+            const dateInput = document.getElementById('tokExpiryInput');
             const isVercel = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
 
+            let storedExpiry = localStorage.getItem('gh_token_expiry') || '';
+            let daysLeft = getDaysRemaining(storedExpiry);
+
+            if (storedExpiry && dateInput && !dateInput.value) {
+                try {
+                    const d = new Date(storedExpiry);
+                    const yyyy = d.getFullYear();
+                    const mm = String(d.getMonth() + 1).padStart(2, '0');
+                    const dd = String(d.getDate()).padStart(2, '0');
+                    dateInput.value = `${yyyy}-${mm}-${dd}`;
+                } catch(e) {}
+            }
+
             if (isVercel || storageProvider.isCloud) {
-                if (badge) {
-                    badge.style.background = 'rgba(102, 252, 241, 0.15)';
-                    badge.style.color = 'var(--color-primary)';
-                    badge.innerText = 'Managed in Cloud';
-                }
-                if (statusLabel) {
-                    statusLabel.innerText = 'Managed in Cloud';
-                    statusLabel.style.color = 'var(--color-primary)';
-                }
-                if (details) {
-                    details.innerHTML = `<div><strong>Cloud Mode:</strong> Token execution & scheduled posts run via GitHub Actions. Use <strong>Vercel / CLI</strong> tab to trigger token refresh!</div>`;
+                if (daysLeft !== null) {
+                    const isExpired = daysLeft <= 0;
+                    const isWarning = daysLeft <= 14;
+                    const bg = isExpired ? 'rgba(255, 71, 87, 0.2)' : (isWarning ? 'rgba(255, 165, 2, 0.2)' : 'rgba(46, 213, 115, 0.2)');
+                    const color = isExpired ? 'var(--color-danger)' : (isWarning ? 'var(--color-warning)' : 'var(--color-success)');
+
+                    if (badge) {
+                        badge.style.background = bg;
+                        badge.style.color = color;
+                        badge.innerText = isExpired ? 'Expired!' : `Active (${daysLeft}d left)`;
+                    }
+                    if (statusLabel) {
+                        statusLabel.innerText = isExpired ? 'Expired!' : `Active (${daysLeft}d left)`;
+                        statusLabel.style.color = color;
+                    }
+                    if (details) {
+                        details.innerHTML = `
+                            <div><strong>Token Expiry:</strong> ${new Date(storedExpiry).toLocaleDateString()}</div>
+                            <div><strong>Days Remaining:</strong> <span style="color: ${color}; font-weight: bold;">${daysLeft} days left</span></div>
+                            <div style="margin-top: 0.3rem; font-size: 0.78rem; color: var(--color-text-muted);">Managed via GitHub Actions & Secrets</div>
+                        `;
+                    }
+                } else {
+                    if (badge) {
+                        badge.style.background = 'rgba(102, 252, 241, 0.15)';
+                        badge.style.color = 'var(--color-primary)';
+                        badge.innerText = 'Managed in Cloud';
+                    }
+                    if (statusLabel) {
+                        statusLabel.innerText = 'Track Expiry (+60d)';
+                        statusLabel.style.color = 'var(--color-primary)';
+                    }
+                    if (details) {
+                        details.innerHTML = `<div><strong>Cloud Mode:</strong> Set your token expiry date below or click <strong>+60 Days</strong> to track days remaining!</div>`;
+                    }
                 }
                 return;
             }
@@ -2695,6 +2776,12 @@
                 
                 if (data.client_id && clientIdInput) {
                     clientIdInput.value = data.client_id;
+                }
+
+                if (data.token_expiry) {
+                    localStorage.setItem('gh_token_expiry', data.token_expiry);
+                    storedExpiry = data.token_expiry;
+                    daysLeft = data.days_left;
                 }
 
                 if (data.has_access_token && !data.is_expired) {
@@ -2712,7 +2799,7 @@
                     if (details) {
                         details.innerHTML = `
                             <div><strong>Token:</strong> <code>${data.masked_access_token}</code></div>
-                            <div><strong>Expires:</strong> ${new Date(data.token_expiry).toLocaleDateString()}</div>
+                            <div><strong>Expires:</strong> ${new Date(data.token_expiry).toLocaleDateString()} (${data.days_left} days left)</div>
                             <div><strong>Member URN:</strong> <code>${data.member_urn || 'Not set'}</code></div>
                         `;
                     }
@@ -2722,12 +2809,10 @@
                         badge.style.color = 'var(--color-danger)';
                         badge.innerText = 'Expired';
                     }
-                    
                     if (statusLabel) {
                         statusLabel.innerText = 'Expired!';
                         statusLabel.style.color = 'var(--color-danger)';
                     }
-                    
                     if (details) {
                         details.innerHTML = `<span style="color: var(--color-danger);">Your LinkedIn token has expired. Launch remote OAuth below to renew.</span>`;
                     }
@@ -2737,28 +2822,33 @@
                         badge.style.color = 'var(--color-warning)';
                         badge.innerText = 'Not Configured';
                     }
-                    
                     if (statusLabel) {
                         statusLabel.innerText = 'Not Configured';
                         statusLabel.style.color = 'var(--color-warning)';
                     }
-                    
                     if (details) {
                         details.innerText = 'No active access token found in local .env configuration.';
                     }
                 }
             } catch (e) {
-                if (badge) {
-                    badge.style.background = 'rgba(102, 252, 241, 0.15)';
-                    badge.style.color = 'var(--color-primary)';
-                    badge.innerText = 'Managed in Cloud';
-                }
-                if (statusLabel) {
-                    statusLabel.innerText = 'Managed in Cloud';
-                    statusLabel.style.color = 'var(--color-primary)';
-                }
-                if (details) {
-                    details.innerHTML = `<div><strong>Cloud Mode:</strong> Token execution & scheduled posts run via GitHub Actions. Use <strong>Vercel / CLI</strong> tab to trigger token refresh!</div>`;
+                if (daysLeft !== null) {
+                    const isExpired = daysLeft <= 0;
+                    const isWarning = daysLeft <= 14;
+                    const bg = isExpired ? 'rgba(255, 71, 87, 0.2)' : (isWarning ? 'rgba(255, 165, 2, 0.2)' : 'rgba(46, 213, 115, 0.2)');
+                    const color = isExpired ? 'var(--color-danger)' : (isWarning ? 'var(--color-warning)' : 'var(--color-success)');
+
+                    if (badge) {
+                        badge.style.background = bg;
+                        badge.style.color = color;
+                        badge.innerText = isExpired ? 'Expired!' : `Active (${daysLeft}d left)`;
+                    }
+                    if (statusLabel) {
+                        statusLabel.innerText = isExpired ? 'Expired!' : `Active (${daysLeft}d left)`;
+                        statusLabel.style.color = color;
+                    }
+                    if (details) {
+                        details.innerHTML = `<div><strong>Days Remaining:</strong> <span style="color: ${color}; font-weight: bold;">${daysLeft} days left</span></div>`;
+                    }
                 }
             }
         }
