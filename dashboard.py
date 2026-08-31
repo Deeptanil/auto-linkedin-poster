@@ -13,6 +13,9 @@ import os
 import subprocess
 import webbrowser
 import threading
+import urllib.parse
+import http.server
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from flask import Flask, jsonify, request, render_template, send_from_directory
 
@@ -262,6 +265,322 @@ def serve_image(filename):
     return send_from_directory("memory/images", filename)
 
 
+# ─── OAuth Token Generation Endpoints & Callback Server ──────────────────────
+CALLBACK_PORT = 8765
+REDIRECT_URI = f"http://localhost:{CALLBACK_PORT}/callback"
+AUTH_URL_BASE = "https://www.linkedin.com/oauth/v2/authorization"
+TOKEN_URL = "https://www.linkedin.com/oauth/v2/accessToken"
+USERINFO_URL = "https://api.linkedin.com/v2/userinfo"
+REQUIRED_SCOPES = ["w_member_social", "openid", "profile", "email"]
+
+oauth_lock = threading.Lock()
+oauth_state = {
+    "status": "idle",
+    "auth_code": None,
+    "error": None,
+    "result": None,
+    "client_id": "",
+    "client_secret": ""
+}
+
+
+class OAuthCallbackHandler(http.server.BaseHTTPRequestHandler):
+    def do_GET(self):
+        global oauth_state
+        parsed = urllib.parse.urlparse(self.path)
+        params = urllib.parse.parse_qs(parsed.query)
+
+        with oauth_lock:
+            if "code" in params:
+                oauth_state["auth_code"] = params["code"][0]
+                oauth_state["status"] = "exchanging"
+                body = b"<!DOCTYPE html><html><head><title>LinkedIn Auth</title></head><body style='font-family:sans-serif;text-align:center;padding:50px;background:#0b0c10;color:#66fcf1;'><h2>Success! LinkedIn Authorization Received.</h2><p style='color:#f5f7fa;'>You can close this tab and return to the Dashboard.</p></body></html>"
+            elif "error" in params:
+                err_desc = params.get("error_description", ["Authorization denied"])[0]
+                oauth_state["error"] = err_desc
+                oauth_state["status"] = "error"
+                body = f"<!DOCTYPE html><html><body style='font-family:sans-serif;text-align:center;padding:50px;background:#0b0c10;color:#ff4757;'><h2>Authorization Error</h2><p style='color:#f5f7fa;'>{err_desc}</p></body></html>".encode("utf-8")
+            else:
+                body = b"<!DOCTYPE html><html><body><h2>Unexpected Callback</h2></body></html>"
+
+        self.send_response(200)
+        self.send_header("Content-Type", "text/html")
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+
+    def log_message(self, *args):
+        pass
+
+
+def update_env_file(env_keys: dict):
+    env_path = Path(__file__).resolve().parent / ".env"
+    lines = []
+    if env_path.exists():
+        lines = env_path.read_text(encoding="utf-8").splitlines()
+
+    updated_keys = set()
+    new_lines = []
+    for line in lines:
+        if "=" in line and not line.strip().startswith("#"):
+            key_part = line.split("=")[0].strip()
+            if key_part in env_keys:
+                val = env_keys[key_part]
+                new_lines.append(f'{key_part}="{val}"')
+                updated_keys.add(key_part)
+            else:
+                new_lines.append(line)
+        else:
+            new_lines.append(line)
+
+    for key, val in env_keys.items():
+        if key not in updated_keys:
+            new_lines.append(f'{key}="{val}"')
+
+    env_path.write_text("\n".join(new_lines) + "\n", encoding="utf-8")
+
+    for k, v in env_keys.items():
+        os.environ[k] = str(v)
+        if hasattr(config, k):
+            setattr(config, k, str(v))
+
+
+def run_oauth_flow_background(client_id: str, client_secret: str):
+    global oauth_state
+    
+    server = None
+    try:
+        server = http.server.HTTPServer(("localhost", CALLBACK_PORT), OAuthCallbackHandler)
+        server.timeout = 1.0
+        start_time = datetime.now()
+        
+        while True:
+            with oauth_lock:
+                if oauth_state["status"] in ("exchanging", "error"):
+                    break
+            if (datetime.now() - start_time).total_seconds() > 300:
+                with oauth_lock:
+                    oauth_state["status"] = "error"
+                    oauth_state["error"] = "Authorization timed out (5 minutes)."
+                break
+            server.handle_request()
+            
+    except Exception as e:
+        with oauth_lock:
+            oauth_state["status"] = "error"
+            oauth_state["error"] = f"Failed to start callback server on port {CALLBACK_PORT}: {e}"
+        if server:
+            try:
+                server.server_close()
+            except Exception:
+                pass
+        return
+
+    with oauth_lock:
+        code = oauth_state.get("auth_code")
+        status = oauth_state.get("status")
+
+    if status == "exchanging" and code:
+        try:
+            import requests
+            token_res = requests.post(
+                TOKEN_URL,
+                data={
+                    "grant_type": "authorization_code",
+                    "code": code,
+                    "redirect_uri": REDIRECT_URI,
+                    "client_id": client_id,
+                    "client_secret": client_secret,
+                },
+                headers={"Content-Type": "application/x-www-form-urlencoded"},
+                timeout=30,
+            )
+
+            if not token_res.ok:
+                with oauth_lock:
+                    oauth_state["status"] = "error"
+                    oauth_state["error"] = f"Token exchange failed ({token_res.status_code}): {token_res.text[:200]}"
+                return
+
+            t_data = token_res.json()
+            access_token = t_data.get("access_token")
+            refresh_token = t_data.get("refresh_token", "")
+            expires_in = int(t_data.get("expires_in", 5183944))
+            refresh_expires_in = int(t_data.get("refresh_token_expires_in", 31536000))
+
+            now = datetime.now(timezone.utc)
+            access_expiry = (now + timedelta(seconds=expires_in)).isoformat()
+            refresh_expiry = (now + timedelta(seconds=refresh_expires_in)).isoformat()
+
+            member_urn = ""
+            userinfo_res = requests.get(
+                USERINFO_URL,
+                headers={
+                    "Authorization": f"Bearer {access_token}",
+                    "LinkedIn-Version": "202606",
+                    "X-Restli-Protocol-Version": "2.0.0",
+                },
+                timeout=15,
+            )
+            if userinfo_res.ok:
+                sub = userinfo_res.json().get("sub", "")
+                if sub:
+                    member_urn = f"urn:li:person:{sub}"
+
+            env_keys = {
+                "LINKEDIN_CLIENT_ID": client_id,
+                "LINKEDIN_CLIENT_SECRET": client_secret,
+                "LINKEDIN_ACCESS_TOKEN": access_token,
+                "LINKEDIN_REFRESH_TOKEN": refresh_token,
+                "LINKEDIN_TOKEN_EXPIRY": access_expiry,
+                "LINKEDIN_REFRESH_TOKEN_EXPIRY": refresh_expiry,
+                "LINKEDIN_MEMBER_URN": member_urn,
+            }
+            update_env_file(env_keys)
+
+            with oauth_lock:
+                oauth_state["status"] = "success"
+                oauth_state["result"] = {
+                    "access_token": access_token,
+                    "refresh_token": refresh_token,
+                    "token_expiry": access_expiry,
+                    "member_urn": member_urn,
+                    "secrets_summary": env_keys
+                }
+        except Exception as e:
+            with oauth_lock:
+                oauth_state["status"] = "error"
+                oauth_state["error"] = f"Token exchange process error: {e}"
+
+    if server:
+        try:
+            server.server_close()
+        except Exception:
+            pass
+
+
+@app.route("/api/token/info", methods=["GET"])
+def get_token_info():
+    """Retrieve current LinkedIn token status from environment/.env."""
+    client_id = os.getenv("LINKEDIN_CLIENT_ID", "")
+    client_secret = os.getenv("LINKEDIN_CLIENT_SECRET", "")
+    access_token = os.getenv("LINKEDIN_ACCESS_TOKEN", "")
+    expiry_str = os.getenv("LINKEDIN_TOKEN_EXPIRY", "")
+    member_urn = os.getenv("LINKEDIN_MEMBER_URN", "")
+    
+    is_expired = False
+    days_left = 0
+    if expiry_str:
+        try:
+            expiry_dt = datetime.fromisoformat(expiry_str.replace("Z", "+00:00"))
+            now_dt = datetime.now(timezone.utc)
+            delta = expiry_dt - now_dt
+            days_left = delta.days
+            if delta.total_seconds() <= 0:
+                is_expired = True
+        except Exception:
+            pass
+            
+    masked_token = f"{access_token[:8]}...{access_token[-6:]}" if len(access_token) > 15 else ""
+
+    return jsonify({
+        "client_id": client_id,
+        "has_client_secret": bool(client_secret),
+        "has_access_token": bool(access_token),
+        "masked_access_token": masked_token,
+        "token_expiry": expiry_str,
+        "member_urn": member_urn,
+        "is_expired": is_expired,
+        "days_left": days_left,
+        "redirect_uri": REDIRECT_URI
+    })
+
+
+@app.route("/api/token/start", methods=["POST"])
+def start_token_auth():
+    """Initiates the OAuth token flow."""
+    global oauth_state
+    data = request.json or {}
+    client_id = data.get("client_id", "").strip() or os.getenv("LINKEDIN_CLIENT_ID", "").strip()
+    client_secret = data.get("client_secret", "").strip() or os.getenv("LINKEDIN_CLIENT_SECRET", "").strip()
+
+    if not client_id or not client_secret:
+        return jsonify({
+            "status": "error",
+            "message": "LinkedIn Client ID and Client Secret are required."
+        }), 400
+
+    update_env_file({
+        "LINKEDIN_CLIENT_ID": client_id,
+        "LINKEDIN_CLIENT_SECRET": client_secret
+    })
+
+    with oauth_lock:
+        oauth_state = {
+            "status": "waiting",
+            "auth_code": None,
+            "error": None,
+            "result": None,
+            "client_id": client_id,
+            "client_secret": client_secret
+        }
+
+    t = threading.Thread(target=run_oauth_flow_background, args=(client_id, client_secret), daemon=True)
+    t.start()
+
+    scope_str = " ".join(REQUIRED_SCOPES)
+    auth_params = {
+        "response_type": "code",
+        "client_id": client_id,
+        "redirect_uri": REDIRECT_URI,
+        "scope": scope_str,
+        "state": "linkedin_poster_dashboard",
+    }
+    auth_url = AUTH_URL_BASE + "?" + urllib.parse.urlencode(auth_params)
+
+    try:
+        webbrowser.open(auth_url)
+    except Exception:
+        pass
+
+    return jsonify({
+        "status": "started",
+        "auth_url": auth_url,
+        "message": "OAuth server started on port 8765. Browser opened for LinkedIn authorization."
+    })
+
+
+@app.route("/api/token/poll", methods=["GET"])
+def poll_token_auth():
+    """Polls the background OAuth flow status."""
+    with oauth_lock:
+        st = oauth_state.copy()
+
+    return jsonify({
+        "status": st.get("status", "idle"),
+        "error": st.get("error"),
+        "result": st.get("result")
+    })
+
+
+@app.route("/api/token/save_manual", methods=["POST"])
+def save_token_manual():
+    """Manually saves token values to .env."""
+    data = request.json or {}
+    env_updates = {}
+    
+    for key in ["LINKEDIN_CLIENT_ID", "LINKEDIN_CLIENT_SECRET", "LINKEDIN_ACCESS_TOKEN", "LINKEDIN_REFRESH_TOKEN", "LINKEDIN_MEMBER_URN", "LINKEDIN_TOKEN_EXPIRY"]:
+        val = data.get(key, "").strip()
+        if val:
+            env_updates[key] = val
+
+    if not env_updates:
+        return jsonify({"status": "error", "message": "No valid token fields provided."}), 400
+
+    update_env_file(env_updates)
+    return jsonify({"status": "success", "message": "Token configuration updated and saved to .env!"})
+
+
 def launch_server():
     webbrowser.open("http://localhost:5000")
     app.run(host="127.0.0.1", port=5000, debug=False)
@@ -269,3 +588,4 @@ def launch_server():
 
 if __name__ == "__main__":
     launch_server()
+

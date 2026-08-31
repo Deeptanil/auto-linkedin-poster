@@ -906,6 +906,67 @@
         </div>
     </div>
 
+    <!-- LinkedIn Token Manager Modal -->
+    <div id="tokenModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 550px;">
+            <div class="modal-header">
+                <h3>🔑 LinkedIn OAuth Token Generator</h3>
+                <button class="modal-close" onclick="toggleTokenModal()">&times;</button>
+            </div>
+
+            <!-- Token Health Card -->
+            <div id="tokenStatusCard" style="background: #0f121d; border: 1px solid var(--color-card-border); border-radius: 8px; padding: 1rem; display: flex; flex-direction: column; gap: 0.5rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-weight: 600; font-size: 0.9rem;">Token Status:</span>
+                    <span id="tokenBadge" style="padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.8rem; font-weight: 600;">Loading...</span>
+                </div>
+                <div id="tokenDetailsText" style="font-size: 0.82rem; color: var(--color-text-muted);">
+                    Fetching token information from local environment...
+                </div>
+            </div>
+
+            <!-- OAuth Generator Form / Status -->
+            <div id="tokenAuthSection">
+                <h4 style="font-size: 0.95rem; margin-bottom: 0.5rem; color: var(--color-primary);">Remote OAuth Token Generation</h4>
+                <p style="font-size: 0.8rem; color: var(--color-text-muted); margin-bottom: 1rem; line-height: 1.4;">
+                    Generate a fresh 60-day access token directly from your browser. Make sure your LinkedIn App has <strong>http://localhost:8765/callback</strong> added under <em>Auth → OAuth 2.0 settings</em>.
+                </p>
+
+                <div class="form-group" style="margin-bottom: 0.75rem;">
+                    <label for="tokClientId">LinkedIn Client ID</label>
+                    <input type="text" id="tokClientId" class="form-input" placeholder="e.g. 86xxxxxxxxxxxx">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label for="tokClientSecret">LinkedIn Client Secret</label>
+                    <input type="password" id="tokClientSecret" class="form-input" placeholder="e.g. W8xxxxxxxxxxxxxx">
+                </div>
+
+                <div id="tokenAuthStatusNotice" style="display: none; padding: 0.8rem; border-radius: 6px; margin-bottom: 1rem; font-size: 0.85rem; line-height: 1.4;"></div>
+
+                <div style="display: flex; gap: 0.75rem;">
+                    <button id="btnStartAuth" class="btn btn-primary" style="flex: 1;" onclick="startTokenAuth()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                        🚀 Launch OAuth & Generate Token
+                    </button>
+                </div>
+            </div>
+
+            <!-- Token Secrets Display Box (Shown on Success) -->
+            <div id="tokenSecretsBox" style="display: none; background: var(--bg-console); border: 1px solid var(--color-success); border-radius: 8px; padding: 1rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                    <span style="color: var(--color-success); font-weight: 600; font-size: 0.88rem;">✅ OAuth Token Ready & Saved to .env!</span>
+                    <button class="btn btn-secondary btn-xs" onclick="copyTokenSecrets()">📋 Copy GitHub Secrets</button>
+                </div>
+                <pre id="tokenSecretsPre" style="font-family: var(--font-mono); font-size: 0.78rem; color: #d1d8e0; max-height: 150px; overflow-y: auto; margin: 0;"></pre>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 0.5rem;">
+                <button class="btn btn-secondary btn-sm" onclick="toggleTokenModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
     <div class="container">
         <!-- Header -->
         <header>
@@ -914,6 +975,10 @@
                 <p style="color: var(--color-text-muted); font-size: 0.9rem;">Create, personalize, attach media, and auto-schedule your LinkedIn posts</p>
             </div>
             <div class="header-actions">
+                <button class="btn btn-secondary" onclick="openTokenModal()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.778-7.778zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+                    LinkedIn Token
+                </button>
                 <button class="btn btn-secondary" onclick="toggleSettingsModal()">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06-.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l.06-.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
                     Settings
@@ -957,6 +1022,34 @@
                 </div>
 
                 <div id="postList" class="post-list">
+                    <!-- Posts dynamically inserted here -->
+                </div>
+            </div>
+
+            <!-- Right Side: System Status & Tips -->
+            <div class="sidebar-section">
+                <!-- Status & Engine Card -->
+                <div class="card" style="padding: 1.5rem;">
+                    <h2>System Status</h2>
+                    <div style="display: flex; flex-direction: column; gap: 0.8rem;">
+                        <div class="status-pill">
+                            <span class="status-label">AI Engine:</span>
+                            <span class="status-value" id="statusModel">Gemini Flash (On-Demand)</span>
+                        </div>
+                        <div class="status-pill">
+                            <span class="status-label">LinkedIn Token:</span>
+                            <span class="status-value" id="statusTokenLabel" onclick="openTokenModal()" style="cursor: pointer; text-decoration: underline; font-size: 0.85rem;">Checking...</span>
+                        </div>
+                        <div class="status-pill">
+                            <span class="status-label">Queued Posts:</span>
+                            <span class="status-value" id="statusApprovedCount">0</span>
+                        </div>
+                        <div class="status-pill">
+                            <span class="status-label">Coverage Date:</span>
+                            <span class="status-value" id="statusCoverageDate" style="color: var(--color-primary); font-weight: 500;">Calculating...</span>
+                        </div>
+                    </div>
+                </div>      <div id="postList" class="post-list">
                     <!-- Posts dynamically inserted here -->
                 </div>
             </div>
@@ -2210,9 +2303,231 @@
         fetchQueue();
         fetchStatus();
         fetchLogs();
+        fetchTokenInfo();
         
         // Poll console logs / runs every 10 seconds
         setInterval(fetchLogs, 10000);
+
+        // ─── LinkedIn Token Management Logic ───────────────────────────────
+        let tokenPollTimer = null;
+        let latestTokenResult = null;
+
+        async function openTokenModal() {
+            document.getElementById('tokenModal').style.display = 'flex';
+            document.getElementById('tokenSecretsBox').style.display = 'none';
+            document.getElementById('tokenAuthStatusNotice').style.display = 'none';
+            await fetchTokenInfo();
+        }
+
+        function toggleTokenModal() {
+            const modal = document.getElementById('tokenModal');
+            if (modal.style.display === 'none' || !modal.style.display) {
+                openTokenModal();
+            } else {
+                modal.style.display = 'none';
+                if (tokenPollTimer) {
+                    clearInterval(tokenPollTimer);
+                    tokenPollTimer = null;
+                }
+            }
+        }
+
+        async function fetchTokenInfo() {
+            try {
+                const res = await fetch('/api/token/info');
+                if (!res.ok) return;
+                const data = await res.json();
+                
+                const badge = document.getElementById('tokenBadge');
+                const details = document.getElementById('tokenDetailsText');
+                const statusLabel = document.getElementById('statusTokenLabel');
+                const clientIdInput = document.getElementById('tokClientId');
+                
+                if (data.client_id && clientIdInput) {
+                    clientIdInput.value = data.client_id;
+                }
+
+                if (data.has_access_token && !data.is_expired) {
+                    if (badge) {
+                        badge.style.background = 'rgba(46, 213, 115, 0.2)';
+                        badge.style.color = 'var(--color-success)';
+                        badge.innerText = `Active (${data.days_left}d left)`;
+                    }
+                    
+                    if (statusLabel) {
+                        statusLabel.innerText = `Active (${data.days_left}d left)`;
+                        statusLabel.style.color = 'var(--color-success)';
+                    }
+                    
+                    if (details) {
+                        details.innerHTML = `
+                            <div><strong>Token:</strong> <code>${data.masked_access_token}</code></div>
+                            <div><strong>Expires:</strong> ${new Date(data.token_expiry).toLocaleDateString()}</div>
+                            <div><strong>Member URN:</strong> <code>${data.member_urn || 'Not set'}</code></div>
+                        `;
+                    }
+                } else if (data.has_access_token && data.is_expired) {
+                    if (badge) {
+                        badge.style.background = 'rgba(255, 71, 87, 0.2)';
+                        badge.style.color = 'var(--color-danger)';
+                        badge.innerText = 'Expired';
+                    }
+                    
+                    if (statusLabel) {
+                        statusLabel.innerText = 'Expired!';
+                        statusLabel.style.color = 'var(--color-danger)';
+                    }
+                    
+                    if (details) {
+                        details.innerHTML = `<span style="color: var(--color-danger);">Your LinkedIn token has expired. Launch remote OAuth below to renew.</span>`;
+                    }
+                } else {
+                    if (badge) {
+                        badge.style.background = 'rgba(255, 165, 2, 0.2)';
+                        badge.style.color = 'var(--color-warning)';
+                        badge.innerText = 'Not Configured';
+                    }
+                    
+                    if (statusLabel) {
+                        statusLabel.innerText = 'Not Configured';
+                        statusLabel.style.color = 'var(--color-warning)';
+                    }
+                    
+                    if (details) {
+                        details.innerText = 'No active access token found in local .env configuration.';
+                    }
+                }
+            } catch (e) {
+                console.warn('Failed to fetch token info:', e);
+            }
+        }
+
+        async function startTokenAuth() {
+            const clientId = document.getElementById('tokClientId').value.trim();
+            const clientSecret = document.getElementById('tokClientSecret').value.trim();
+            const notice = document.getElementById('tokenAuthStatusNotice');
+            const btn = document.getElementById('btnStartAuth');
+
+            if (!clientId) {
+                showToast('Please enter your LinkedIn Client ID', 'error');
+                return;
+            }
+
+            btn.disabled = true;
+            notice.style.display = 'block';
+            notice.style.background = 'rgba(102, 252, 241, 0.1)';
+            notice.style.border = '1px solid rgba(102, 252, 241, 0.3)';
+            notice.style.color = 'var(--color-primary)';
+            notice.innerHTML = '⏳ Starting callback server on port 8765 and opening browser...';
+
+            try {
+                const res = await fetch('/api/token/start', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ client_id: clientId, client_secret: clientSecret })
+                });
+                const data = await res.json();
+
+                if (!res.ok) {
+                    btn.disabled = false;
+                    notice.style.background = 'rgba(255, 71, 87, 0.1)';
+                    notice.style.border = '1px solid rgba(255, 71, 87, 0.3)';
+                    notice.style.color = 'var(--color-danger)';
+                    notice.innerHTML = `❌ Error: ${data.message}`;
+                    return;
+                }
+
+                if (data.auth_url) {
+                    window.open(data.auth_url, '_blank');
+                }
+
+                notice.innerHTML = `
+                    <div style="font-weight: bold;">🌐 Browser Opened for LinkedIn Authorization</div>
+                    <div style="font-size: 0.8rem; margin-top: 0.4rem; color: var(--color-text-main);">
+                        Log in and click <strong>Allow</strong> in the LinkedIn popup tab. 
+                        <br>If it didn't open automatically, <a href="${data.auth_url}" target="_blank" style="color: var(--color-primary); text-decoration: underline;">click here to open manually</a>.
+                    </div>
+                    <div style="margin-top: 0.6rem; font-weight: 500; font-size: 0.8rem;">
+                        Status: Listening on http://localhost:8765/callback...
+                    </div>
+                `;
+
+                if (tokenPollTimer) clearInterval(tokenPollTimer);
+                tokenPollTimer = setInterval(pollTokenAuth, 1500);
+
+            } catch (err) {
+                btn.disabled = false;
+                notice.style.background = 'rgba(255, 71, 87, 0.1)';
+                notice.style.border = '1px solid rgba(255, 71, 87, 0.3)';
+                notice.style.color = 'var(--color-danger)';
+                notice.innerHTML = `❌ Network Error: ${err.message}`;
+            }
+        }
+
+        async function pollTokenAuth() {
+            try {
+                const res = await fetch('/api/token/poll');
+                if (!res.ok) return;
+                const data = await res.json();
+                const notice = document.getElementById('tokenAuthStatusNotice');
+                const btn = document.getElementById('btnStartAuth');
+
+                if (data.status === 'exchanging') {
+                    notice.innerHTML = '⏳ Authorization code received! Exchanging for 60-day access token...';
+                } else if (data.status === 'success' && data.result) {
+                    if (tokenPollTimer) {
+                        clearInterval(tokenPollTimer);
+                        tokenPollTimer = null;
+                    }
+                    btn.disabled = false;
+                    notice.style.display = 'none';
+                    latestTokenResult = data.result;
+
+                    showToast('LinkedIn OAuth Token generated successfully!', 'success');
+                    await fetchTokenInfo();
+
+                    const secretsBox = document.getElementById('tokenSecretsBox');
+                    const secretsPre = document.getElementById('tokenSecretsPre');
+                    secretsBox.style.display = 'block';
+
+                    const s = data.result.secrets_summary || {};
+                    let text = '';
+                    for (const [k, v] of Object.entries(s)) {
+                        text += `${k}=${v}\n`;
+                    }
+                    secretsPre.innerText = text.trim();
+                } else if (data.status === 'error') {
+                    if (tokenPollTimer) {
+                        clearInterval(tokenPollTimer);
+                        tokenPollTimer = null;
+                    }
+                    btn.disabled = false;
+                    notice.style.background = 'rgba(255, 71, 87, 0.1)';
+                    notice.style.border = '1px solid rgba(255, 71, 87, 0.3)';
+                    notice.style.color = 'var(--color-danger)';
+                    notice.innerHTML = `❌ Authorization Failed: ${data.error}`;
+                }
+            } catch (e) {
+                console.warn('Error polling token auth:', e);
+            }
+        }
+
+        function copyTokenSecrets() {
+            if (!latestTokenResult || !latestTokenResult.secrets_summary) {
+                showToast('No secrets available to copy.', 'error');
+                return;
+            }
+            const s = latestTokenResult.secrets_summary;
+            let text = '';
+            for (const [k, v] of Object.entries(s)) {
+                text += `${k}=${v}\n`;
+            }
+            navigator.clipboard.writeText(text.trim()).then(() => {
+                showToast('GitHub Secrets formatted text copied to clipboard!', 'success');
+            }).catch(err => {
+                showToast('Failed to copy: ' + err, 'error');
+            });
+        }
     </script>
 
     <!-- Attachment Full Screen Modal -->

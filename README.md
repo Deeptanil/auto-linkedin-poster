@@ -89,21 +89,24 @@ To post automatically, LinkedIn requires developer API keys. Setting it up takes
 ---
 
 ### Step 4: Generate Your LinkedIn Tokens
-Run the built-in helper script to authenticate with LinkedIn:
+You can generate your tokens in 2 easy ways:
 
+#### Option A: Via Visual Dashboard (Recommended)
+1. Open the dashboard by running `run_dashboard.bat` (or `python dashboard.py`).
+2. Click the **🔑 LinkedIn Token** button in the header bar (or click "Checking..." under System Status).
+3. Enter your **Client ID** and **Client Secret**.
+4. Click **🚀 Launch OAuth & Generate Token**. Your browser opens automatically for LinkedIn approval.
+5. Once approved, the dashboard automatically saves the token to `.env` and provides a 1-click **📋 Copy GitHub Secrets** button!
+
+#### Option B: Via Terminal Script
+Run the built-in helper script:
 ```bash
 python scripts/setup_token.py
 ```
-
 1. Paste your **Client ID** and **Client Secret** when prompted.
 2. Your browser will automatically open to LinkedIn's login/consent page.
 3. Click **Allow**.
-4. The terminal will capture the response and display your generated tokens:
-   - `LINKEDIN_ACCESS_TOKEN`
-   - `LINKEDIN_REFRESH_TOKEN`
-   - `LINKEDIN_MEMBER_URN`
-   - `LINKEDIN_TOKEN_EXPIRY`
-5. Press `y` when asked to save these automatically to your local `.env` file.
+4. The terminal will capture the response, display your generated tokens, and offer to save them to `.env`.
 
 ---
 
