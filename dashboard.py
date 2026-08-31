@@ -459,9 +459,11 @@ def run_oauth_flow_background(client_id: str, client_secret: str):
             pass
 
 
-@app.route("/api/token/info", methods=["GET"])
+@app.route("/api/token/info", methods=["GET", "POST", "OPTIONS"])
 def get_token_info():
     """Retrieve current LinkedIn token status from environment/.env."""
+    if request.method == "OPTIONS":
+        return jsonify({"status": "ok"}), 200
     try:
         client_id = os.getenv("LINKEDIN_CLIENT_ID", "")
         client_secret = os.getenv("LINKEDIN_CLIENT_SECRET", "")
@@ -499,14 +501,23 @@ def get_token_info():
         return jsonify({"status": "error", "message": f"Failed to fetch token info: {e}"}), 500
 
 
-@app.route("/api/token/start", methods=["POST"])
+@app.route("/api/token/start", methods=["GET", "POST", "OPTIONS"])
 def start_token_auth():
     """Initiates the OAuth token flow."""
+    if request.method == "OPTIONS":
+        return jsonify({"status": "ok"}), 200
     global oauth_state
     try:
-        data = request.json or {}
-        client_id = data.get("client_id", "").strip() or os.getenv("LINKEDIN_CLIENT_ID", "").strip()
-        client_secret = data.get("client_secret", "").strip() or os.getenv("LINKEDIN_CLIENT_SECRET", "").strip()
+        data = {}
+        if request.is_json:
+            data = request.json or {}
+        elif request.form:
+            data = request.form.to_dict()
+        elif request.args:
+            data = request.args.to_dict()
+
+        client_id = (data.get("client_id") or "").strip() or os.getenv("LINKEDIN_CLIENT_ID", "").strip()
+        client_secret = (data.get("client_secret") or "").strip() or os.getenv("LINKEDIN_CLIENT_SECRET", "").strip()
 
         if not client_id or not client_secret:
             return jsonify({
@@ -558,9 +569,11 @@ def start_token_auth():
         return jsonify({"status": "error", "message": f"Failed to start token auth: {e}"}), 500
 
 
-@app.route("/api/token/poll", methods=["GET"])
+@app.route("/api/token/poll", methods=["GET", "POST", "OPTIONS"])
 def poll_token_auth():
     """Polls the background OAuth flow status."""
+    if request.method == "OPTIONS":
+        return jsonify({"status": "ok"}), 200
     try:
         with oauth_lock:
             st = oauth_state.copy()
@@ -574,9 +587,11 @@ def poll_token_auth():
         return jsonify({"status": "error", "message": str(e)}), 500
 
 
-@app.route("/api/token/save_manual", methods=["POST"])
+@app.route("/api/token/save_manual", methods=["GET", "POST", "OPTIONS"])
 def save_token_manual():
     """Manually saves token values to .env."""
+    if request.method == "OPTIONS":
+        return jsonify({"status": "ok"}), 200
     try:
         data = request.json or {}
         env_updates = {}
