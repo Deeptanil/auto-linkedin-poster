@@ -932,7 +932,7 @@
 
     <!-- LinkedIn Token Manager Modal -->
     <div id="tokenModal" class="modal" style="display: none;" onclick="handleModalOverlayClick(event)">
-        <div class="modal-content" style="max-width: 540px;">
+        <div class="modal-content" style="max-width: 560px;">
             <div class="modal-header">
                 <h3 style="font-size: 1.15rem;">LinkedIn OAuth Token Generator</h3>
                 <div style="display: flex; gap: 0.6rem; align-items: center;">
@@ -951,13 +951,23 @@
                     <span id="tokenBadge" style="padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.8rem; font-weight: 600;">Loading...</span>
                 </div>
                 <div id="tokenDetailsText" style="font-size: 0.82rem; color: var(--color-text-muted);">
-                    Fetching token information from local environment...
+                    Fetching token information...
                 </div>
             </div>
 
-            <!-- OAuth Generator Form / Status -->
-            <div id="tokenAuthSection">
-                <h4 style="font-size: 0.95rem; margin-bottom: 0.5rem; color: var(--color-primary);">Remote OAuth Token Generation</h4>
+            <!-- Mode Selector Tabs -->
+            <div style="display: flex; gap: 0.5rem; border-bottom: 1px solid var(--color-card-border); padding-bottom: 0.6rem; flex-wrap: wrap;">
+                <button id="tokTabBtn1" class="btn btn-primary btn-sm" onclick="switchTokenTab(1)">Auto OAuth (Local)</button>
+                <button id="tokTabBtn2" class="btn btn-secondary btn-sm" onclick="switchTokenTab(2)">Vercel / CLI</button>
+                <button id="tokTabBtn3" class="btn btn-secondary btn-sm" onclick="switchTokenTab(3)">Manual Paste</button>
+            </div>
+
+            <!-- Tab 1: Auto OAuth Generator (Local Server) -->
+            <div id="tokTabContent1">
+                <div id="vercelNoticeAuto" style="display: none; background: rgba(255, 165, 2, 0.1); border: 1px solid rgba(255, 165, 2, 0.3); color: var(--color-warning); padding: 0.75rem; border-radius: 6px; font-size: 0.8rem; margin-bottom: 1rem; line-height: 1.4;">
+                    <strong>Vercel Deployment Detected:</strong> Vercel hosts static files. For automatic 1-click token generation, run the dashboard locally on your PC (<code>run_dashboard.bat</code>) or use the <strong>Vercel / CLI</strong> tab.
+                </div>
+
                 <p style="font-size: 0.8rem; color: var(--color-text-muted); margin-bottom: 1rem; line-height: 1.4;">
                     Generate a fresh 60-day access token directly from your browser. Make sure your LinkedIn App has <strong>http://localhost:8765/callback</strong> added under <em>Auth → OAuth 2.0 settings</em>.
                 </p>
@@ -982,10 +992,47 @@
                 </div>
             </div>
 
+            <!-- Tab 2: Vercel / CLI Command Setup -->
+            <div id="tokTabContent2" style="display: none; flex-direction: column; gap: 0.8rem;">
+                <div style="font-size: 0.83rem; color: var(--color-text-muted); line-height: 1.4;">
+                    When deployed on <strong>Vercel</strong>, generate your token by running this 1-line script in terminal on your computer:
+                </div>
+                <div style="background: var(--bg-console); border: 1px solid var(--color-card-border); padding: 0.8rem; border-radius: 6px; display: flex; justify-content: space-between; align-items: center;">
+                    <code style="font-family: var(--font-mono); color: var(--color-primary); font-size: 0.85rem;">python scripts/setup_token.py</code>
+                    <button class="btn btn-secondary btn-xs" onclick="navigator.clipboard.writeText('python scripts/setup_token.py'); showToast('CLI command copied!', 'success');">Copy Command</button>
+                </div>
+                <ol style="font-size: 0.8rem; color: var(--color-text-muted); padding-left: 1.2rem; margin: 0; display: flex; flex-direction: column; gap: 0.4rem; line-height: 1.4;">
+                    <li>Open terminal in your project folder.</li>
+                    <li>Run <code>python scripts/setup_token.py</code>.</li>
+                    <li>It opens browser, logs into LinkedIn, and outputs your 4 secrets.</li>
+                    <li>Copy and paste the secrets into GitHub Repository Settings (<em>Settings → Secrets → Actions</em>).</li>
+                </ol>
+            </div>
+
+            <!-- Tab 3: Manual Paste Token -->
+            <div id="tokTabContent3" style="display: none; flex-direction: column; gap: 0.75rem;">
+                <div style="font-size: 0.82rem; color: var(--color-text-muted); line-height: 1.4;">
+                    Paste token credentials directly to save locally or format for GitHub Secrets:
+                </div>
+                <div class="form-group" style="margin-bottom: 0.4rem;">
+                    <label for="manAccessToken" style="font-size: 0.78rem;">LINKEDIN_ACCESS_TOKEN</label>
+                    <input type="password" id="manAccessToken" class="form-input" placeholder="AQVxxxxxxxxxxxxxxxx">
+                </div>
+                <div class="form-group" style="margin-bottom: 0.4rem;">
+                    <label for="manMemberUrn" style="font-size: 0.78rem;">LINKEDIN_MEMBER_URN</label>
+                    <input type="text" id="manMemberUrn" class="form-input" placeholder="urn:li:person:xxxxxxxx">
+                </div>
+                <div class="form-group" style="margin-bottom: 0.6rem;">
+                    <label for="manExpiry" style="font-size: 0.78rem;">LINKEDIN_TOKEN_EXPIRY (ISO String)</label>
+                    <input type="text" id="manExpiry" class="form-input" placeholder="e.g. 2026-10-31T00:00:00Z">
+                </div>
+                <button class="btn btn-primary btn-sm" onclick="saveManualTokenValues()">Save Configuration & Format Secrets</button>
+            </div>
+
             <!-- Token Secrets Display Box (Shown on Success) -->
             <div id="tokenSecretsBox" style="display: none; background: var(--bg-console); border: 1px solid var(--color-success); border-radius: 8px; padding: 1rem;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                    <span style="color: var(--color-success); font-weight: 600; font-size: 0.88rem;">OAuth Token Ready & Saved to .env!</span>
+                    <span style="color: var(--color-success); font-weight: 600; font-size: 0.88rem;">OAuth Token Ready!</span>
                     <button class="btn btn-secondary btn-xs" onclick="copyTokenSecrets()">Copy GitHub Secrets</button>
                 </div>
                 <pre id="tokenSecretsPre" style="font-family: var(--font-mono); font-size: 0.78rem; color: #d1d8e0; max-height: 150px; overflow-y: auto; overflow-x: hidden; margin: 0; white-space: pre-wrap; word-break: break-all;"></pre>
@@ -2490,10 +2537,81 @@
             return data;
         }
 
+        function switchTokenTab(tabNum) {
+            for (let i = 1; i <= 3; i++) {
+                const btn = document.getElementById(`tokTabBtn${i}`);
+                const content = document.getElementById(`tokTabContent${i}`);
+                if (btn && content) {
+                    if (i === tabNum) {
+                        btn.className = 'btn btn-primary btn-sm';
+                        content.style.display = (i === 1) ? 'block' : 'flex';
+                    } else {
+                        btn.className = 'btn btn-secondary btn-sm';
+                        content.style.display = 'none';
+                    }
+                }
+            }
+        }
+
+        async function saveManualTokenValues() {
+            const token = document.getElementById('manAccessToken').value.trim();
+            const urn = document.getElementById('manMemberUrn').value.trim();
+            const expiry = document.getElementById('manExpiry').value.trim() || new Date(Date.now() + 60 * 24 * 3600 * 1000).toISOString();
+
+            if (!token) {
+                showToast('Please enter an access token', 'error');
+                return;
+            }
+
+            const secretsBox = document.getElementById('tokenSecretsBox');
+            const secretsPre = document.getElementById('tokenSecretsPre');
+
+            latestTokenResult = {
+                secrets_summary: {
+                    LINKEDIN_ACCESS_TOKEN: token,
+                    LINKEDIN_MEMBER_URN: urn || 'urn:li:person:YOUR_URN_HERE',
+                    LINKEDIN_TOKEN_EXPIRY: expiry
+                }
+            };
+
+            let text = `LINKEDIN_ACCESS_TOKEN=${token}\nLINKEDIN_MEMBER_URN=${urn || 'urn:li:person:YOUR_URN_HERE'}\nLINKEDIN_TOKEN_EXPIRY=${expiry}`;
+            secretsPre.innerText = text;
+            secretsBox.style.display = 'block';
+
+            try {
+                await safeApiCall('/api/token/save_manual', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        LINKEDIN_ACCESS_TOKEN: token,
+                        LINKEDIN_MEMBER_URN: urn,
+                        LINKEDIN_TOKEN_EXPIRY: expiry
+                    })
+                });
+                showToast('Token configuration saved!', 'success');
+                await fetchTokenInfo();
+            } catch (e) {
+                showToast('Formatted GitHub Secrets ready to copy below!', 'success');
+            }
+        }
+
         async function openTokenModal() {
             document.getElementById('tokenModal').style.display = 'flex';
             document.getElementById('tokenSecretsBox').style.display = 'none';
             document.getElementById('tokenAuthStatusNotice').style.display = 'none';
+            
+            const isVercel = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+            const vercelNotice = document.getElementById('vercelNoticeAuto');
+            if (vercelNotice) {
+                vercelNotice.style.display = isVercel ? 'block' : 'none';
+            }
+            
+            if (isVercel) {
+                switchTokenTab(2); // Auto-select Vercel / CLI tab on Vercel host
+            } else {
+                switchTokenTab(1);
+            }
+
             await fetchTokenInfo();
         }
 
