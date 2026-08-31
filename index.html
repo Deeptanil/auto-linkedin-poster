@@ -1686,7 +1686,7 @@
                                     const jobsData = await jobsRes.json();
                                     const mainJob = (jobsData.jobs && jobsData.jobs.length > 0) ? jobsData.jobs[0] : null;
                                     if (mainJob && mainJob.steps) {
-                                        runningJobLogs += `--- Active Execution Steps (${mainJob.name}) ---\n`;
+                                        runningJobLogs += `--- Execution Steps (${mainJob.name}) ---\n`;
                                         mainJob.steps.forEach(step => {
                                             const stepConclusion = step.conclusion ? `(${step.conclusion.toUpperCase()})` : '';
                                             runningJobLogs += `[${step.status.toUpperCase()}] ${step.name} ${stepConclusion}\n`;
@@ -1695,8 +1695,15 @@
                                     }
                                 }
                             } else {
+                                actionsStatus += "No workflow runs found yet.\n";
+                            }
+                        } else {
+                            actionsStatus += `GitHub API Error (${runsRes.status}): Check your PAT permissions.\n`;
+                        }
+                    } catch (e) {
+                        actionsStatus += `Failed to query GitHub Actions API: ${e.message}\n`;
                     }
-                    
+
                     let logContent = "";
                     try {
                         const fileInfo = await this.ghFetch('dashboard.log', false);
