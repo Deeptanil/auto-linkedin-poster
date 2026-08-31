@@ -978,20 +978,21 @@
 
             <!-- Mode Selector Tabs -->
             <div style="display: flex; gap: 0.5rem; border-bottom: 1px solid var(--color-card-border); padding-bottom: 0.6rem; flex-wrap: wrap;">
-                <button id="tokTabBtn1" class="btn btn-primary btn-sm" onclick="switchTokenTab(1)">Auto OAuth (Local)</button>
-                <button id="tokTabBtn2" class="btn btn-secondary btn-sm" onclick="switchTokenTab(2)">Vercel / CLI</button>
+                <button id="tokTabBtn1" class="btn btn-primary btn-sm" onclick="switchTokenTab(1)">1-Click Web OAuth</button>
+                <button id="tokTabBtn2" class="btn btn-secondary btn-sm" onclick="switchTokenTab(2)">GitHub Action Trigger</button>
                 <button id="tokTabBtn3" class="btn btn-secondary btn-sm" onclick="switchTokenTab(3)">Manual Paste</button>
             </div>
 
-            <!-- Tab 1: Auto OAuth Generator (Local Server) -->
+            <!-- Tab 1: 1-Click Web OAuth Generator -->
             <div id="tokTabContent1">
-                <div id="vercelNoticeAuto" style="display: none; background: rgba(255, 165, 2, 0.1); border: 1px solid rgba(255, 165, 2, 0.3); color: var(--color-warning); padding: 0.75rem; border-radius: 6px; font-size: 0.8rem; margin-bottom: 1rem; line-height: 1.4;">
-                    <strong>Vercel Deployment Detected:</strong> Vercel hosts static files. For automatic 1-click token generation, run the dashboard locally on your PC (<code>run_dashboard.bat</code>) or use the <strong>Vercel / CLI</strong> tab.
+                <div style="background: rgba(102, 252, 241, 0.05); border: 1px solid rgba(102, 252, 241, 0.2); padding: 0.75rem; border-radius: 6px; font-size: 0.8rem; margin-bottom: 0.85rem; line-height: 1.4;">
+                    <div style="font-weight: 600; color: var(--color-primary); margin-bottom: 0.2rem;">LinkedIn OAuth Setup requirement:</div>
+                    Make sure your LinkedIn App has this URL added under <strong>Auth → OAuth 2.0 settings → Authorized redirect URLs for your app</strong>:
+                    <div style="display: flex; gap: 0.4rem; align-items: center; margin-top: 0.35rem;">
+                        <code id="redirectUrlDisplay" style="font-family: var(--font-mono); color: var(--color-primary); font-size: 0.75rem; word-break: break-all;">...</code>
+                        <button class="btn btn-secondary btn-xs" onclick="navigator.clipboard.writeText(window.location.origin + window.location.pathname); showToast('Redirect URL copied!', 'success');">Copy</button>
+                    </div>
                 </div>
-
-                <p style="font-size: 0.8rem; color: var(--color-text-muted); margin-bottom: 1rem; line-height: 1.4;">
-                    Generate a fresh 60-day access token directly from your browser. Make sure your LinkedIn App has <strong>http://localhost:8765/callback</strong> added under <em>Auth → OAuth 2.0 settings</em>.
-                </p>
 
                 <div class="form-group" style="margin-bottom: 0.75rem;">
                     <label for="tokClientId">LinkedIn Client ID</label>
@@ -2455,6 +2456,7 @@
         fetchStatus();
         fetchLogs();
         fetchTokenInfo();
+        handleOAuthCallback();
         
         // Poll console logs / runs every 10 seconds
         setInterval(fetchLogs, 10000);
@@ -2599,18 +2601,21 @@
             document.getElementById('tokenSecretsBox').style.display = 'none';
             document.getElementById('tokenAuthStatusNotice').style.display = 'none';
             
-            const isVercel = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
-            const vercelNotice = document.getElementById('vercelNoticeAuto');
-            if (vercelNotice) {
-                vercelNotice.style.display = isVercel ? 'block' : 'none';
-            }
-            
-            if (isVercel) {
-                switchTokenTab(2); // Auto-select Vercel / CLI tab on Vercel host
-            } else {
-                switchTokenTab(1);
+            const redirectDisplay = document.getElementById('redirectUrlDisplay');
+            if (redirectDisplay) {
+                redirectDisplay.innerText = window.location.origin + window.location.pathname;
             }
 
+            const savedClientId = localStorage.getItem('tok_client_id');
+            const savedSecret = localStorage.getItem('tok_client_secret');
+            if (savedClientId && document.getElementById('tokClientId')) {
+                document.getElementById('tokClientId').value = savedClientId;
+            }
+            if (savedSecret && document.getElementById('tokClientSecret')) {
+                document.getElementById('tokClientSecret').value = savedSecret;
+            }
+
+            switchTokenTab(1);
             await fetchTokenInfo();
         }
 
@@ -2627,231 +2632,88 @@
             }
         }
 
-        function getDaysRemaining(expiryStr) {
-            if (!expiryStr) return null;
-            try {
-                const expiryDate = new Date(expiryStr);
-                const now = new Date();
-                const diffTime = expiryDate - now;
-                return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            } catch (e) {
-                return null;
-            }
-        }
-
-        function updateStoredTokenExpiry(dateVal) {
-            if (!dateVal) return;
-            const iso = new Date(dateVal).toISOString();
-            localStorage.setItem('gh_token_expiry', iso);
-            showToast(`Token expiry tracked to ${new Date(dateVal).toLocaleDateString()}`, 'success');
-            fetchTokenInfo();
-        }
-
-        function setExpiryDays(days = 60) {
-            const date = new Date();
-            date.setDate(date.getDate() + days);
-            const yyyy = date.getFullYear();
-            const mm = String(date.getMonth() + 1).padStart(2, '0');
-            const dd = String(date.getDate()).padStart(2, '0');
-            const dateStr = `${yyyy}-${mm}-${dd}`;
-            
-            const dateInput = document.getElementById('tokExpiryInput');
-            if (dateInput) dateInput.value = dateStr;
-            updateStoredTokenExpiry(dateStr);
-        }
-
-        async function fetchTokenInfo() {
-            const badge = document.getElementById('tokenBadge');
-            const details = document.getElementById('tokenDetailsText');
-            const statusLabel = document.getElementById('statusTokenLabel');
-            const dateInput = document.getElementById('tokExpiryInput');
-            const isVercel = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
-
-            let storedExpiry = localStorage.getItem('gh_token_expiry') || '';
-            let daysLeft = getDaysRemaining(storedExpiry);
-
-            if (storedExpiry && dateInput && !dateInput.value) {
-                try {
-                    const d = new Date(storedExpiry);
-                    const yyyy = d.getFullYear();
-                    const mm = String(d.getMonth() + 1).padStart(2, '0');
-                    const dd = String(d.getDate()).padStart(2, '0');
-                    dateInput.value = `${yyyy}-${mm}-${dd}`;
-                } catch(e) {}
-            }
-
-            if (isVercel || storageProvider.isCloud) {
-                if (daysLeft !== null) {
-                    const isExpired = daysLeft <= 0;
-                    const isWarning = daysLeft <= 14;
-                    const bg = isExpired ? 'rgba(255, 71, 87, 0.2)' : (isWarning ? 'rgba(255, 165, 2, 0.2)' : 'rgba(46, 213, 115, 0.2)');
-                    const color = isExpired ? 'var(--color-danger)' : (isWarning ? 'var(--color-warning)' : 'var(--color-success)');
-
-                    if (badge) {
-                        badge.style.background = bg;
-                        badge.style.color = color;
-                        badge.innerText = isExpired ? 'Expired!' : `Active (${daysLeft}d left)`;
-                    }
-                    if (statusLabel) {
-                        statusLabel.innerText = isExpired ? 'Expired!' : `Active (${daysLeft}d left)`;
-                        statusLabel.style.color = color;
-                    }
-                    if (details) {
-                        details.innerHTML = `
-                            <div><strong>Token Expiry:</strong> ${new Date(storedExpiry).toLocaleDateString()}</div>
-                            <div><strong>Days Remaining:</strong> <span style="color: ${color}; font-weight: bold;">${daysLeft} days left</span></div>
-                            <div style="margin-top: 0.3rem; font-size: 0.78rem; color: var(--color-text-muted);">Managed via GitHub Actions & Secrets</div>
-                        `;
-                    }
-                } else {
-                    if (badge) {
-                        badge.style.background = 'rgba(102, 252, 241, 0.15)';
-                        badge.style.color = 'var(--color-primary)';
-                        badge.innerText = 'Managed in Cloud';
-                    }
-                    if (statusLabel) {
-                        statusLabel.innerText = 'Track Expiry (+60d)';
-                        statusLabel.style.color = 'var(--color-primary)';
-                    }
-                    if (details) {
-                        details.innerHTML = `<div><strong>Cloud Mode:</strong> Set your token expiry date below or click <strong>+60 Days</strong> to track days remaining!</div>`;
-                    }
-                }
-                return;
-            }
-
-            try {
-                const data = await safeApiCall('/api/token/info');
-                const clientIdInput = document.getElementById('tokClientId');
-                
-                if (data.client_id && clientIdInput) {
-                    clientIdInput.value = data.client_id;
-                }
-
-                if (data.token_expiry) {
-                    localStorage.setItem('gh_token_expiry', data.token_expiry);
-                    storedExpiry = data.token_expiry;
-                    daysLeft = data.days_left;
-                }
-
-                if (data.has_access_token && !data.is_expired) {
-                    if (badge) {
-                        badge.style.background = 'rgba(46, 213, 115, 0.2)';
-                        badge.style.color = 'var(--color-success)';
-                        badge.innerText = `Active (${data.days_left}d left)`;
-                    }
-                    
-                    if (statusLabel) {
-                        statusLabel.innerText = `Active (${data.days_left}d left)`;
-                        statusLabel.style.color = 'var(--color-success)';
-                    }
-                    
-                    if (details) {
-                        details.innerHTML = `
-                            <div><strong>Token:</strong> <code>${data.masked_access_token}</code></div>
-                            <div><strong>Expires:</strong> ${new Date(data.token_expiry).toLocaleDateString()} (${data.days_left} days left)</div>
-                            <div><strong>Member URN:</strong> <code>${data.member_urn || 'Not set'}</code></div>
-                        `;
-                    }
-                } else if (data.has_access_token && data.is_expired) {
-                    if (badge) {
-                        badge.style.background = 'rgba(255, 71, 87, 0.2)';
-                        badge.style.color = 'var(--color-danger)';
-                        badge.innerText = 'Expired';
-                    }
-                    if (statusLabel) {
-                        statusLabel.innerText = 'Expired!';
-                        statusLabel.style.color = 'var(--color-danger)';
-                    }
-                    if (details) {
-                        details.innerHTML = `<span style="color: var(--color-danger);">Your LinkedIn token has expired. Launch remote OAuth below to renew.</span>`;
-                    }
-                } else {
-                    if (badge) {
-                        badge.style.background = 'rgba(255, 165, 2, 0.2)';
-                        badge.style.color = 'var(--color-warning)';
-                        badge.innerText = 'Not Configured';
-                    }
-                    if (statusLabel) {
-                        statusLabel.innerText = 'Not Configured';
-                        statusLabel.style.color = 'var(--color-warning)';
-                    }
-                    if (details) {
-                        details.innerText = 'No active access token found in local .env configuration.';
-                    }
-                }
-            } catch (e) {
-                if (daysLeft !== null) {
-                    const isExpired = daysLeft <= 0;
-                    const isWarning = daysLeft <= 14;
-                    const bg = isExpired ? 'rgba(255, 71, 87, 0.2)' : (isWarning ? 'rgba(255, 165, 2, 0.2)' : 'rgba(46, 213, 115, 0.2)');
-                    const color = isExpired ? 'var(--color-danger)' : (isWarning ? 'var(--color-warning)' : 'var(--color-success)');
-
-                    if (badge) {
-                        badge.style.background = bg;
-                        badge.style.color = color;
-                        badge.innerText = isExpired ? 'Expired!' : `Active (${daysLeft}d left)`;
-                    }
-                    if (statusLabel) {
-                        statusLabel.innerText = isExpired ? 'Expired!' : `Active (${daysLeft}d left)`;
-                        statusLabel.style.color = color;
-                    }
-                    if (details) {
-                        details.innerHTML = `<div><strong>Days Remaining:</strong> <span style="color: ${color}; font-weight: bold;">${daysLeft} days left</span></div>`;
-                    }
-                }
-            }
-        }
-
         async function startTokenAuth() {
             const clientId = document.getElementById('tokClientId').value.trim();
             const clientSecret = document.getElementById('tokClientSecret').value.trim();
             const notice = document.getElementById('tokenAuthStatusNotice');
-            const btn = document.getElementById('btnStartAuth');
 
-            if (!clientId) {
-                showToast('Please enter your LinkedIn Client ID', 'error');
+            if (!clientId || !clientSecret) {
+                showToast('Please enter both Client ID and Client Secret', 'error');
                 return;
             }
 
-            btn.disabled = true;
-            notice.style.display = 'block';
-            notice.style.background = 'rgba(102, 252, 241, 0.1)';
-            notice.style.border = '1px solid rgba(102, 252, 241, 0.3)';
-            notice.style.color = 'var(--color-primary)';
-            notice.innerHTML = 'Starting callback server on port 8765 and opening browser...';
+            localStorage.setItem('tok_client_id', clientId);
+            localStorage.setItem('tok_client_secret', clientSecret);
+
+            const isVercel = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+            const redirectUri = window.location.origin + window.location.pathname;
+
+            showLoader('Redirecting to LinkedIn for authorization...');
+
+            const scope = encodeURIComponent('w_member_social openid profile');
+            const authUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&state=vercel_oauth&scope=${scope}`;
+            
+            window.location.href = authUrl;
+        }
+
+        async function handleOAuthCallback() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const code = urlParams.get('code');
+            const error = urlParams.get('error');
+
+            if (error) {
+                showToast(`LinkedIn OAuth Error: ${error}`, 'error');
+                window.history.replaceState({}, document.title, window.location.pathname);
+                return;
+            }
+
+            if (!code) return;
+
+            openTokenModal();
+            showLoader('Exchanging code for LinkedIn Access Token...');
+
+            const clientId = localStorage.getItem('tok_client_id') || document.getElementById('tokClientId')?.value.trim();
+            const clientSecret = localStorage.getItem('tok_client_secret') || document.getElementById('tokClientSecret')?.value.trim();
+            const redirectUri = window.location.origin + window.location.pathname;
 
             try {
-                const data = await safeApiCall('/api/token/start', {
+                const res = await fetch('/api/oauth', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ client_id: clientId, client_secret: clientSecret })
+                    body: JSON.stringify({
+                        code: code,
+                        client_id: clientId,
+                        client_secret: clientSecret,
+                        redirect_uri: redirectUri
+                    })
                 });
 
-                if (data.auth_url) {
-                    window.open(data.auth_url, '_blank');
+                let data = await res.json();
+
+                if (!res.ok || data.error) {
+                    throw new Error(data.error || 'Failed to exchange OAuth code with LinkedIn.');
                 }
 
-                notice.innerHTML = `
-                    <div style="font-weight: bold;">Browser Opened for LinkedIn Authorization</div>
-                    <div style="font-size: 0.8rem; margin-top: 0.4rem; color: var(--color-text-main);">
-                        Log in and click <strong>Allow</strong> in the LinkedIn popup tab. 
-                        <br>If it didn't open automatically, <a href="${data.auth_url}" target="_blank" style="color: var(--color-primary); text-decoration: underline;">click here to open manually</a>.
-                    </div>
-                    <div style="margin-top: 0.6rem; font-weight: 500; font-size: 0.8rem;">
-                        Status: Listening on http://localhost:8765/callback...
-                    </div>
-                `;
+                showToast('LinkedIn Token Generated Successfully!', 'success');
 
-                if (tokenPollTimer) clearInterval(tokenPollTimer);
-                tokenPollTimer = setInterval(pollTokenAuth, 1500);
+                if (data.token_expiry) {
+                    localStorage.setItem('gh_token_expiry', data.token_expiry);
+                }
 
+                const secretsBox = document.getElementById('tokenSecretsBox');
+                const secretsPre = document.getElementById('tokenSecretsPre');
+                if (secretsBox && secretsPre) {
+                    let secretsText = `LINKEDIN_ACCESS_TOKEN=${data.access_token}\nLINKEDIN_MEMBER_URN=${data.member_urn || 'urn:li:person:YOUR_MEMBER_URN'}\nLINKEDIN_TOKEN_EXPIRY=${data.token_expiry}\nLINKEDIN_REFRESH_TOKEN=${data.refresh_token || data.access_token}`;
+                    secretsPre.innerText = secretsText;
+                    secretsBox.style.display = 'block';
+                }
+
+                await fetchTokenInfo();
             } catch (err) {
-                btn.disabled = false;
-                notice.style.background = 'rgba(255, 71, 87, 0.1)';
-                notice.style.border = '1px solid rgba(255, 71, 87, 0.3)';
-                notice.style.color = 'var(--color-danger)';
-                notice.innerHTML = `Error: ${err.message}`;
+                showToast(`OAuth Exchange Failed: ${err.message}`, 'error');
+            } finally {
+                hideLoader();
+                window.history.replaceState({}, document.title, window.location.pathname);
             }
         }
 
