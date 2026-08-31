@@ -1015,27 +1015,51 @@
 
             <!-- Tab 2: Vercel / GitHub Actions & CLI Setup -->
             <div id="tokTabContent2" style="display: none; flex-direction: column; gap: 0.85rem;">
-                <!-- Option A: Remote GitHub Action Trigger -->
-                <div style="background: rgba(102, 252, 241, 0.05); border: 1px solid rgba(102, 252, 241, 0.2); padding: 0.85rem; border-radius: 8px;">
-                    <h4 style="color: var(--color-primary); font-size: 0.9rem; margin-bottom: 0.3rem;">Option A: 1-Click Refresh via GitHub Action</h4>
-                    <p style="font-size: 0.78rem; color: var(--color-text-muted); margin-bottom: 0.6rem; line-height: 1.4;">
-                        Trigger GitHub Actions directly from Vercel to check and auto-refresh your token in the cloud. Uses your GitHub PAT in Settings.
+
+                <!-- Inline PAT + Repo config for quick trigger -->
+                <div style="background: #0f121d; border: 1px solid var(--color-card-border); padding: 0.85rem; border-radius: 8px; display: flex; flex-direction: column; gap: 0.5rem;">
+                    <div style="font-size: 0.78rem; color: var(--color-text-muted); line-height: 1.4;">
+                        Enter your GitHub PAT and Repo to trigger token operations from here. Or save them in <strong>Settings</strong> so they auto-fill.
+                    </div>
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <input type="password" id="vercelPatInput" class="form-input" style="flex: 1; min-width: 140px; font-size: 0.8rem; padding: 0.4rem 0.6rem;" placeholder="GitHub PAT (ghp_...)">
+                        <input type="text" id="vercelRepoInput" class="form-input" style="flex: 1; min-width: 140px; font-size: 0.8rem; padding: 0.4rem 0.6rem;" placeholder="owner/repo (e.g. Deeptanil/linkedin-poster)">
+                    </div>
+                </div>
+
+                <!-- Action A: Refresh Token (uses refresh_token in Secrets) -->
+                <div style="background: rgba(102, 252, 241, 0.05); border: 1px solid rgba(102, 252, 241, 0.25); padding: 0.85rem; border-radius: 8px;">
+                    <h4 style="color: var(--color-primary); font-size: 0.88rem; margin-bottom: 0.3rem;">Refresh LinkedIn Token</h4>
+                    <p style="font-size: 0.78rem; color: var(--color-text-muted); margin-bottom: 0.65rem; line-height: 1.4;">
+                        Uses your <code>LINKEDIN_REFRESH_TOKEN</code> GitHub Secret to silently get a new 60-day access token — no browser login needed.
                     </p>
-                    <button class="btn btn-primary btn-sm" style="width: 100%; min-height: 40px;" onclick="triggerGitHubTokenRefresh()">
+                    <button class="btn btn-primary" style="width: 100%; min-height: 42px; font-size: 0.87rem;" onclick="triggerGitHubTokenRefresh()">
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
-                        Trigger GitHub Action Token Refresh
+                        Refresh Token via GitHub Action
                     </button>
                 </div>
 
-                <!-- Option B: Initial Setup CLI Command -->
-                <div style="background: #0f121d; border: 1px solid var(--color-card-border); padding: 0.85rem; border-radius: 8px;">
-                    <h4 style="color: var(--color-text-main); font-size: 0.88rem; margin-bottom: 0.3rem;">Option B: Initial OAuth Setup Script</h4>
-                    <p style="font-size: 0.78rem; color: var(--color-text-muted); margin-bottom: 0.5rem; line-height: 1.4;">
-                        For initial setup on a new LinkedIn App, run this command in terminal on your computer:
+                <!-- Action B: Force Replenish (sets force_refresh=true) -->
+                <div style="background: rgba(255, 165, 2, 0.05); border: 1px solid rgba(255, 165, 2, 0.2); padding: 0.85rem; border-radius: 8px;">
+                    <h4 style="color: var(--color-warning); font-size: 0.88rem; margin-bottom: 0.3rem;">Force Token Replenish</h4>
+                    <p style="font-size: 0.78rem; color: var(--color-text-muted); margin-bottom: 0.65rem; line-height: 1.4;">
+                        Forces a full token refresh even if not near expiry. Use this if your token is broken or rejected by LinkedIn.
                     </p>
-                    <div style="background: var(--bg-console); border: 1px solid var(--color-card-border); padding: 0.6rem 0.8rem; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
-                        <code style="font-family: var(--font-mono); color: var(--color-primary); font-size: 0.82rem;">python scripts/setup_token.py</code>
-                        <button class="btn btn-secondary btn-xs" onclick="navigator.clipboard.writeText('python scripts/setup_token.py'); showToast('CLI command copied!', 'success');">Copy Command</button>
+                    <button class="btn btn-secondary" style="width: 100%; min-height: 42px; font-size: 0.87rem; border-color: rgba(255,165,2,0.4);" onclick="triggerGitHubTokenRefresh(true)">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+                        Force Replenish Now
+                    </button>
+                </div>
+
+                <!-- Option C: Initial Setup CLI -->
+                <div style="background: #0f121d; border: 1px solid var(--color-card-border); padding: 0.85rem; border-radius: 8px;">
+                    <h4 style="color: var(--color-text-main); font-size: 0.85rem; margin-bottom: 0.3rem;">First-Time Setup (Terminal)</h4>
+                    <p style="font-size: 0.78rem; color: var(--color-text-muted); margin-bottom: 0.5rem; line-height: 1.4;">
+                        Run this once on your PC to create all 4 required GitHub Secrets:
+                    </p>
+                    <div style="background: var(--bg-console); border: 1px solid var(--color-card-border); padding: 0.5rem 0.8rem; border-radius: 6px; display: flex; justify-content: space-between; align-items: center;">
+                        <code style="font-family: var(--font-mono); color: var(--color-primary); font-size: 0.8rem;">python scripts/setup_token.py</code>
+                        <button class="btn btn-secondary btn-xs" onclick="navigator.clipboard.writeText('python scripts/setup_token.py'); showToast('Copied!', 'success');">Copy</button>
                     </div>
                 </div>
             </div>
@@ -2504,18 +2528,27 @@
             }
         }
 
-        async function triggerGitHubTokenRefresh() {
-            const token = storageProvider.ghToken || localStorage.getItem('gh_token') || (document.getElementById('cfgToken') ? document.getElementById('cfgToken').value.trim() : '');
-            const repo = storageProvider.ghRepo || localStorage.getItem('gh_repo') || (document.getElementById('cfgRepo') ? document.getElementById('cfgRepo').value.trim() : '');
+        async function triggerGitHubTokenRefresh(force = false) {
+            // Priority: inline fields in Vercel tab > storageProvider > localStorage > Settings modal
+            const inlinePat = document.getElementById('vercelPatInput');
+            const inlineRepo = document.getElementById('vercelRepoInput');
+
+            const token = (inlinePat && inlinePat.value.trim())
+                || storageProvider.ghToken
+                || localStorage.getItem('gh_token')
+                || (document.getElementById('cfgToken') ? document.getElementById('cfgToken').value.trim() : '');
+            const repo = (inlineRepo && inlineRepo.value.trim())
+                || storageProvider.ghRepo
+                || localStorage.getItem('gh_repo')
+                || (document.getElementById('cfgRepo') ? document.getElementById('cfgRepo').value.trim() : '');
 
             if (!token || !repo) {
-                showToast('Please configure your GitHub PAT and Repo Path in Dashboard Settings first.', 'error');
-                toggleTokenModal();
-                toggleSettingsModal();
+                showToast('Enter your GitHub PAT and Repo Path above, or save them in Settings first.', 'error');
                 return;
             }
 
-            showLoader('Triggering GitHub Action token refresh...');
+            const label = force ? 'Force Replenish' : 'Token Refresh';
+            showLoader(`Triggering GitHub Action: ${label}...`);
             try {
                 const url = `https://api.github.com/repos/${repo}/actions/workflows/refresh-token.yml/dispatches`;
                 const res = await fetch(url, {
@@ -2528,20 +2561,20 @@
                     body: JSON.stringify({
                         ref: 'main',
                         inputs: {
-                            force_refresh: 'true'
+                            force_refresh: force ? 'true' : 'false'
                         }
                     })
                 });
 
                 if (res.status === 204) {
-                    showToast('GitHub Action triggered! Streaming live logs in System Console Logs...', 'success');
+                    showToast(`GitHub Action triggered (${label})! Streaming live logs below...`, 'success');
                     
-                    // Start fast log polling for 45 seconds to stream live execution steps
+                    // Fast log polling for 60 seconds to stream live execution steps
                     let pollCount = 0;
                     const fastPoll = setInterval(async () => {
                         await fetchLogs();
                         pollCount++;
-                        if (pollCount >= 18) clearInterval(fastPoll);
+                        if (pollCount >= 24) clearInterval(fastPoll);
                     }, 2500);
                     await fetchLogs();
                 } else {
@@ -2611,6 +2644,14 @@
             if (vercelNotice) {
                 vercelNotice.style.display = isVercel ? 'block' : 'none';
             }
+
+            // Pre-fill inline PAT/Repo from localStorage
+            const savedPat = localStorage.getItem('gh_token') || '';
+            const savedRepo = localStorage.getItem('gh_repo') || '';
+            const patEl = document.getElementById('vercelPatInput');
+            const repoEl = document.getElementById('vercelRepoInput');
+            if (patEl && savedPat && !patEl.value) patEl.value = savedPat;
+            if (repoEl && savedRepo && !repoEl.value) repoEl.value = savedRepo;
             
             if (isVercel) {
                 switchTokenTab(2); // Auto-select Vercel / CLI tab on Vercel host
