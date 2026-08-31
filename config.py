@@ -40,7 +40,7 @@ DISCORD_WEBHOOK_URL = os.getenv("DISCORD_WEBHOOK_URL", "")
 # ─── Automation Settings ──────────────────────────────────────────────────────
 # Days before token expiry to start warning
 WARN_DAYS_BEFORE_EXPIRY         = int(os.getenv("WARN_DAYS_BEFORE_EXPIRY", "14"))
-REFRESH_DAYS_BEFORE_EXPIRY      = int(os.getenv("REFRESH_DAYS_BEFORE_EXPIRY", "10"))
+REFRESH_DAYS_BEFORE_EXPIRY      = int(os.getenv("REFRESH_DAYS_BEFORE_EXPIRY", "20"))
 WARN_DAYS_BEFORE_REFRESH_EXPIRY = int(os.getenv("WARN_DAYS_BEFORE_REFRESH_EXPIRY", "30"))
 
 # ─── Validation Helpers ───────────────────────────────────────────────────────

@@ -2729,42 +2729,97 @@
             }
 
             if (isVercel || storageProvider.isCloud) {
-                if (daysLeft !== null) {
-                    const isExpired = daysLeft <= 0;
-                    const isWarning = daysLeft <= 14;
+                // Try to pull actual expiry from latest GitHub Actions run log
+                const ghToken = localStorage.getItem('gh_token') || storageProvider.ghToken || '';
+                const ghRepo = localStorage.getItem('gh_repo') || storageProvider.ghRepo || '';
+
+                if (ghToken && ghRepo && !storedExpiry) {
+                    try {
+                        const runsRes = await fetch(
+                            `https://api.github.com/repos/${ghRepo}/actions/runs?per_page=10`,
+                            { headers: { 'Authorization': `Bearer ${ghToken}`, 'Accept': 'application/vnd.github+json' } }
+                        );
+                        if (runsRes.ok) {
+                            const runs = await runsRes.json();
+                            // Find a completed token-check run
+                            const tokenRun = (runs.workflow_runs || []).find(r =>
+                                r.name && r.name.toLowerCase().includes('token') && r.conclusion === 'success'
+                            );
+                            if (tokenRun) {
+                                // Fetch jobs for the run to get step logs URL
+                                const jobsRes = await fetch(tokenRun.jobs_url, {
+                                    headers: { 'Authorization': `Bearer ${ghToken}`, 'Accept': 'application/vnd.github+json' }
+                                });
+                                if (jobsRes.ok) {
+                                    const jobsData = await jobsRes.json();
+                                    const job = jobsData.jobs && jobsData.jobs[0];
+                                    if (job) {
+                                        // Try to get log text
+                                        const logRes = await fetch(
+                                            `https://api.github.com/repos/${ghRepo}/actions/jobs/${job.id}/logs`,
+                                            { headers: { 'Authorization': `Bearer ${ghToken}`, 'Accept': 'application/vnd.github+json' } }
+                                        );
+                                        if (logRes.ok) {
+                                            const logText = await logRes.text();
+                                            // Parse "Days until expiry:  12" from log
+                                            const match = logText.match(/Days until expiry:\s*(\d+)/);
+                                            if (match) {
+                                                const daysFromLog = parseInt(match[1]);
+                                                // Calculate expiry date from days
+                                                const expDate = new Date();
+                                                expDate.setDate(expDate.getDate() + daysFromLog);
+                                                const expISO = expDate.toISOString();
+                                                localStorage.setItem('gh_token_expiry', expISO);
+                                                storedExpiry = expISO;
+                                                daysLeft = daysFromLog;
+                                                // Update date input
+                                                if (dateInput) {
+                                                    const d = expDate;
+                                                    dateInput.value = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    } catch(e) { /* silent — fall through to cached/manual */ }
+                }
+
+                const renderTokenStatus = (days, expiry) => {
+                    if (days === null) {
+                        if (badge) {
+                            badge.style.background = 'rgba(102, 252, 241, 0.15)';
+                            badge.style.color = 'var(--color-primary)';
+                            badge.innerText = 'Unknown';
+                        }
+                        if (statusLabel) {
+                            statusLabel.innerText = 'Set Expiry Date';
+                            statusLabel.style.color = 'var(--color-primary)';
+                        }
+                        if (details) {
+                            details.innerHTML = `<div>Click <strong>LinkedIn Token</strong> and use the <strong>Track Expiry</strong> field or <strong>+60 Days</strong> button to set when your token expires.</div>`;
+                        }
+                        return;
+                    }
+                    const isExpired = days <= 0;
+                    const isWarning = days <= 14;
                     const bg = isExpired ? 'rgba(255, 71, 87, 0.2)' : (isWarning ? 'rgba(255, 165, 2, 0.2)' : 'rgba(46, 213, 115, 0.2)');
                     const color = isExpired ? 'var(--color-danger)' : (isWarning ? 'var(--color-warning)' : 'var(--color-success)');
+                    const label = isExpired ? 'Expired!' : `Active — ${days}d left`;
 
-                    if (badge) {
-                        badge.style.background = bg;
-                        badge.style.color = color;
-                        badge.innerText = isExpired ? 'Expired!' : `Active (${daysLeft}d left)`;
-                    }
-                    if (statusLabel) {
-                        statusLabel.innerText = isExpired ? 'Expired!' : `Active (${daysLeft}d left)`;
-                        statusLabel.style.color = color;
-                    }
-                    if (details) {
+                    if (badge) { badge.style.background = bg; badge.style.color = color; badge.innerText = label; }
+                    if (statusLabel) { statusLabel.innerText = label; statusLabel.style.color = color; }
+                    if (details && expiry) {
                         details.innerHTML = `
-                            <div><strong>Token Expiry:</strong> ${new Date(storedExpiry).toLocaleDateString()}</div>
-                            <div><strong>Days Remaining:</strong> <span style="color: ${color}; font-weight: bold;">${daysLeft} days left</span></div>
-                            <div style="margin-top: 0.3rem; font-size: 0.78rem; color: var(--color-text-muted);">Managed via GitHub Actions & Secrets</div>
+                            <div><strong>Token Expiry:</strong> ${new Date(expiry).toLocaleDateString('en-US', {day:'numeric', month:'short', year:'numeric'})}</div>
+                            <div><strong>Days Remaining:</strong> <span style="color:${color}; font-weight:700;">${days} days</span></div>
+                            <div style="margin-top:0.3rem; font-size:0.76rem; color:var(--color-text-muted);">Managed via GitHub Actions &amp; Secrets${isWarning && !isExpired ? ' — refresh recommended!' : ''}</div>
                         `;
                     }
-                } else {
-                    if (badge) {
-                        badge.style.background = 'rgba(102, 252, 241, 0.15)';
-                        badge.style.color = 'var(--color-primary)';
-                        badge.innerText = 'Managed in Cloud';
-                    }
-                    if (statusLabel) {
-                        statusLabel.innerText = 'Track Expiry (+60d)';
-                        statusLabel.style.color = 'var(--color-primary)';
-                    }
-                    if (details) {
-                        details.innerHTML = `<div><strong>Cloud Mode:</strong> Set your token expiry date below or click <strong>+60 Days</strong> to track days remaining!</div>`;
-                    }
-                }
+                };
+
+                renderTokenStatus(daysLeft, storedExpiry);
                 return;
             }
 
