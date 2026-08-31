@@ -2564,8 +2564,8 @@
         }
 
         async function triggerGitHubTokenRefresh() {
-            const token = getConfig('pat');
-            const repo = getConfig('repo');
+            const token = storageProvider.ghToken || localStorage.getItem('gh_token') || (document.getElementById('cfgToken') ? document.getElementById('cfgToken').value.trim() : '');
+            const repo = storageProvider.ghRepo || localStorage.getItem('gh_repo') || (document.getElementById('cfgRepo') ? document.getElementById('cfgRepo').value.trim() : '');
 
             if (!token || !repo) {
                 showToast('Please configure your GitHub PAT and Repo Path in Dashboard Settings first.', 'error');
@@ -2593,7 +2593,7 @@
                 });
 
                 if (res.status === 204) {
-                    showToast('GitHub Action triggered! Check Actions tab in 1-2 mins.', 'success');
+                    showToast('GitHub Action triggered! Check your GitHub Actions tab in 1-2 minutes.', 'success');
                 } else {
                     let errorMsg = `HTTP ${res.status}`;
                     try {
@@ -2685,12 +2685,29 @@
         }
 
         async function fetchTokenInfo() {
+            const badge = document.getElementById('tokenBadge');
+            const details = document.getElementById('tokenDetailsText');
+            const statusLabel = document.getElementById('statusTokenLabel');
+            const isVercel = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+
+            if (isVercel || storageProvider.isCloud) {
+                if (badge) {
+                    badge.style.background = 'rgba(102, 252, 241, 0.15)';
+                    badge.style.color = 'var(--color-primary)';
+                    badge.innerText = 'Managed in Cloud';
+                }
+                if (statusLabel) {
+                    statusLabel.innerText = 'Managed in Cloud';
+                    statusLabel.style.color = 'var(--color-primary)';
+                }
+                if (details) {
+                    details.innerHTML = `<div><strong>Cloud Mode:</strong> Token execution & scheduled posts run via GitHub Actions. Use <strong>Vercel / CLI</strong> tab to trigger token refresh!</div>`;
+                }
+                return;
+            }
+
             try {
                 const data = await safeApiCall('/api/token/info');
-                
-                const badge = document.getElementById('tokenBadge');
-                const details = document.getElementById('tokenDetailsText');
-                const statusLabel = document.getElementById('statusTokenLabel');
                 const clientIdInput = document.getElementById('tokClientId');
                 
                 if (data.client_id && clientIdInput) {
@@ -2748,7 +2765,18 @@
                     }
                 }
             } catch (e) {
-                console.warn('Failed to fetch token info:', e);
+                if (badge) {
+                    badge.style.background = 'rgba(102, 252, 241, 0.15)';
+                    badge.style.color = 'var(--color-primary)';
+                    badge.innerText = 'Managed in Cloud';
+                }
+                if (statusLabel) {
+                    statusLabel.innerText = 'Managed in Cloud';
+                    statusLabel.style.color = 'var(--color-primary)';
+                }
+                if (details) {
+                    details.innerHTML = `<div><strong>Cloud Mode:</strong> Token execution & scheduled posts run via GitHub Actions. Use <strong>Vercel / CLI</strong> tab to trigger token refresh!</div>`;
+                }
             }
         }
 
