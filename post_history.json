@@ -385,5 +385,14 @@
     "context_date": null,
     "dry_run": false,
     "preview": "The hardest part of building my portfolio wasn't the code.\n\nIt was figuring out what I actually wanted it to be.\n\nI knew I didn't want to make another portfolio with a few sections, some project cards…"
+  },
+  {
+    "id": 44,
+    "posted_at": "2026-09-03T08:57:18.487634+00:00",
+    "post_urn": "urn:li:ugcPost:7501201598795370497",
+    "tone": "Auto",
+    "context_date": null,
+    "dry_run": false,
+    "preview": "5 developer websites / repos I recently discovered that are WAY cooler than I expected.\n\nI've been spending a lot of time exploring UI, animations, and different ways to make websites feel more intera…"
   }
 ]
