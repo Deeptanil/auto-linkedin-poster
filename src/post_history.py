@@ -71,21 +71,18 @@ class PostHistory:
             return None
 
         try:
-            import zoneinfo
             dt_utc = datetime.fromisoformat(posted_at_str.replace("Z", "+00:00"))
-            tz_ist = zoneinfo.ZoneInfo("Asia/Kolkata")
-            dt_ist = dt_utc.astimezone(tz_ist)
-            
-            today_ist = datetime.now(tz_ist).date()
-            return (today_ist - dt_ist.date()).days
-        except Exception as e:
-            print(f"[post_history] Warning: failed parsing post date '{posted_at_str}': {e}")
             try:
-                dt_utc = datetime.fromisoformat(posted_at_str.replace("Z", "+00:00"))
+                import zoneinfo
+                tz_ist = zoneinfo.ZoneInfo("Asia/Kolkata")
+                dt_ist = dt_utc.astimezone(tz_ist)
+                today_ist = datetime.now(tz_ist).date()
+                return (today_ist - dt_ist.date()).days
+            except Exception:
                 today_utc = datetime.now(timezone.utc).date()
                 return (today_utc - dt_utc.date()).days
-            except Exception:
-                return None
+        except Exception:
+            return None
 
     def already_posted_today(self) -> bool:
         """True if a real (non-dry-run) post was already made today (in Asia/Kolkata timezone)."""
@@ -100,16 +97,17 @@ class PostHistory:
             return False
 
         try:
-            import zoneinfo
-            # Parse UTC timestamp and convert to IST
             dt_utc = datetime.fromisoformat(posted_at_str.replace("Z", "+00:00"))
-            tz_ist = zoneinfo.ZoneInfo("Asia/Kolkata")
-            dt_ist = dt_utc.astimezone(tz_ist)
-            
-            today_ist = datetime.now(tz_ist).date()
-            return dt_ist.date() == today_ist
-        except Exception as e:
-            print(f"[post_history] Warning: failed parsing post date '{posted_at_str}': {e}")
+            try:
+                import zoneinfo
+                tz_ist = zoneinfo.ZoneInfo("Asia/Kolkata")
+                dt_ist = dt_utc.astimezone(tz_ist)
+                today_ist = datetime.now(tz_ist).date()
+                return dt_ist.date() == today_ist
+            except Exception:
+                today_utc = datetime.now(timezone.utc).date()
+                return dt_utc.date() == today_utc
+        except Exception:
             return posted_at_str[:10] == datetime.now(timezone.utc).date().isoformat()
 
     def print_recent(self, n: int = 5) -> None:
