@@ -83,3 +83,19 @@ jobs:
       - name: "📊 Report"
         if: always()
         run: echo "Token health check complete. Check logs above for details."
+
+      - name: "🔔 Notify Discord on action failure"
+        if: failure()
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          python -c "
+          import sys
+          from pathlib import Path
+          sys.path.insert(0, str(Path.cwd()))
+          try:
+              from src.discord_notifier import notify_post_error
+              notify_post_error('GitHub Actions refresh-token workflow failed. Check workflow run logs.')
+          except Exception as e:
+              print(f'Failed sending Discord failure alert: {e}')
+          "

@@ -131,3 +131,20 @@ jobs:
           git config user.email "linkedin-poster[bot]@users.noreply.github.com"
           git add .
           git diff --quiet && git diff --staged --quiet || (git commit -m "chore: update post history & queue [skip ci]" && git push)
+
+      # 6. Fallback Discord failure notification
+      - name: "🔔 Notify Discord on action failure"
+        if: failure()
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          python -c "
+          import sys
+          from pathlib import Path
+          sys.path.insert(0, str(Path.cwd()))
+          try:
+              from src.discord_notifier import notify_post_error
+              notify_post_error('GitHub Actions daily-post workflow encountered an execution failure. Check workflow run logs for details.')
+          except Exception as e:
+              print(f'Failed sending Discord failure alert: {e}')
+          "

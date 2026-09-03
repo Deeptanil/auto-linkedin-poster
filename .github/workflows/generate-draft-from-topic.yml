@@ -112,3 +112,19 @@ jobs:
           git config user.email "linkedin-poster[bot]@users.noreply.github.com"
           git add posts_queue.json
           git diff --quiet && git diff --staged --quiet || (git commit -m "chore: generate draft from topic [skip ci]" && git push)
+
+      - name: "🔔 Notify Discord on action failure"
+        if: failure()
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          python -c "
+          import sys
+          from pathlib import Path
+          sys.path.insert(0, str(Path.cwd()))
+          try:
+              from src.discord_notifier import notify_post_error
+              notify_post_error('GitHub Actions generate-draft-from-topic workflow failed. Check workflow run logs.')
+          except Exception as e:
+              print(f'Failed sending Discord failure alert: {e}')
+          "

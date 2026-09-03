@@ -394,5 +394,14 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as e:
+        error_msg = f"Fatal pipeline crash: {e}"
+        print(f"[ERROR] {error_msg}", file=sys.stderr)
+        try:
+            notify_post_error(error_msg)
+        except Exception as notify_err:
+            print(f"[ERROR] Failed to send Discord notification: {notify_err}", file=sys.stderr)
+        sys.exit(1)
 
