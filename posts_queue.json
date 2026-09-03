@@ -1,22 +1,6 @@
 {
   "approved": [
     {
-      "post_text": "I almost quit Karate after 8 years.\n\nI started learning Karate when I was around 10 years old.\n\nFor years, every Tuesday and Thursday, I'd show up to training. I went from a white belt, all the way to brown.\n\nBut somewhere along the way, I started losing interest.\n\nAs I got older, Karate just didn't feel as exciting anymore. I wanted to stop.\n\nBut my parents encouraged me to keep going.\n\nAnd I remember thinking:\n\n\"If I stop now, what do I have to show for all these years?\"\n\nSo I kept going.\n\nFor another year and a half, I pushed through. I eventually switched to a much more intensive training session once a week and started putting in more effort than I had before.\n\nAfter around 10 years of training, I finally earned my Black Belt. 🥋\n\nLooking back, getting the Black Belt wasn't the hardest part.\n\nThe hardest part was continuing when I didn't want to.\n\nKarate taught me something I've found myself using in almost everything I do now:\n\nMotivation gets you started. Commitment keeps you going.\n\nSometimes you don't need to love what you're doing every day.\n\nYou just need to keep showing up.",
-      "reasoning": "Custom draft added directly from dashboard.",
-      "image_paths": [
-        "memory/images/1787999127759_1000157678.mp4"
-      ]
-    },
-    {
-      "post_text": "You don't need to know how you're going to achieve your goal. You just need to believe it's possible.\n\nI've started to realize this more and more over the years.\n\nBefore starting my clothing brands, I knew almost nothing about running a business.\n\nI didn't know how to find manufacturers. I didn't know how to source products. I didn't know how to build a brand.\n\nI just had an idea and wanted to see if I could make it work.\n\nWhen we started working on STRAYED, I didn't even know how I was going to build the website from scratch with the limitations we had.\n\nSo I figured it out.\n\nWith Prettiva & Co., we initially tried Amazon because it seemed like the easiest way to get started. Eventually, we realized it wasn't the right fit for what we wanted to do.\n\nSo we looked for other options.\n\nWe tried things, changed our approach, found solutions that worked for us, and kept moving.\n\nAnd that's probably one of the biggest things I've learned from all of this:\n\nYou don't always need the answer before you start.\n\nSometimes you just need a goal big enough that you're willing to figure out the rest along the way.\n\nThere will be things you don't know.\nThere will be things that don't work.\nThere will be times when you have no idea what to do next.\n\nBut there's almost always another way forward.\n\nIt might take weeks. It might take months.\n\nBut if you keep looking, keep learning, and don't give up, you'll eventually find a way.\n\nSo dream big.\n\nDon't limit your goals based on what you think is possible today.\n\nSet the goal first.\n\nFigure out the how along the way.",
-      "reasoning": "Custom draft added directly from dashboard.",
-      "image_paths": [
-        "memory/images/1788017460589_1000157680.png"
-      ]
-    }
-  ],
-  "pending": [
-    {
       "post_text": "I shipped my first e-commerce store with zero budget for premium plugins.\n\nMost people think starting a brand requires a massive investment in software or a ready-made suite of tools. When we started Prettiva and Co, we had literally nothing but an idea and a laptop.\n\nI ended up writing custom scripts to handle simple inventory logic because the available paid plugins were either too expensive or overkill for what we needed.\n\nThat limitation turned into a massive advantage. I learned exactly how the data flow works behind the checkout screen instead of just clicking install on a dashboard.\n\nSometimes having access to everything from day one actually prevents you from understanding how the engine works.\n\nWhat is one piece of expensive software you think people rely on too much?",
       "reasoning": "Focuses on the early days of his e-commerce ventures, emphasizing the 'scrappy' student-founder mindset of learning by doing."
     },
@@ -49,14 +33,21 @@
       "reasoning": "Addresses the common developer struggle of balancing clean code with product deadlines."
     },
     {
-      "post_text": "Learning to say no to new ideas is harder than saying yes.\n\nWhen you are running your own projects, every day brings a new opportunity. A new product line, a new feature request, or a new marketing channel. It is tempting to chase all of them.\n\nI had to learn that every new idea takes time away from the things that are already working. If I am building something new, I am not iterating on what we already have.\n\nI keep a list of all these ideas in a private file, but I only pick one to work on when the current project hits a milestone. It keeps me sane and focused.\n\nHow do you decide which ideas to kill and which ones to pursue?",
-      "reasoning": "Discusses productivity and the founder's dilemma of focus."
+      "post_text": "I almost quit Karate after 8 years.\n\nI started learning Karate when I was around 10 years old.\n\nFor years, every Tuesday and Thursday, I'd show up to training. I went from a white belt, all the way to brown.\n\nBut somewhere along the way, I started losing interest.\n\nAs I got older, Karate just didn't feel as exciting anymore. I wanted to stop.\n\nBut my parents encouraged me to keep going.\n\nAnd I remember thinking:\n\n\"If I stop now, what do I have to show for all these years?\"\n\nSo I kept going.\n\nFor another year and a half, I pushed through. I eventually switched to a much more intensive training session once a week and started putting in more effort than I had before.\n\nAfter around 10 years of training, I finally earned my Black Belt. 🥋\n\nLooking back, getting the Black Belt wasn't the hardest part.\n\nThe hardest part was continuing when I didn't want to.\n\nKarate taught me something I've found myself using in almost everything I do now:\n\nMotivation gets you started. Commitment keeps you going.\n\nSometimes you don't need to love what you're doing every day.\n\nYou just need to keep showing up.",
+      "reasoning": "Custom draft added directly from dashboard.",
+      "image_paths": [
+        "memory/images/1787999127759_1000157678.mp4"
+      ]
     },
     {
-      "post_text": "My best technical decisions came from necessity, not research.\n\nI spent weeks watching tutorials on how to scale infrastructure, thinking I needed a complex setup. When the actual traffic hit, I realized I was over-engineering for a problem I did not even have.\n\nI simplified everything back to basics. The site became faster, easier to debug, and cheaper to maintain. I was trying to build a rocket ship when all I needed was a reliable bicycle.\n\nDon't build for the company you want to be five years from now. Build for the company you are today.\n\nWhat is a time you over-engineered something for no real reason?",
-      "reasoning": "A down-to-earth perspective on the tendency of young developers to over-engineer solutions."
+      "post_text": "You don't need to know how you're going to achieve your goal. You just need to believe it's possible.\n\nI've started to realize this more and more over the years.\n\nBefore starting my clothing brands, I knew almost nothing about running a business.\n\nI didn't know how to find manufacturers. I didn't know how to source products. I didn't know how to build a brand.\n\nI just had an idea and wanted to see if I could make it work.\n\nWhen we started working on STRAYED, I didn't even know how I was going to build the website from scratch with the limitations we had.\n\nSo I figured it out.\n\nWith Prettiva & Co., we initially tried Amazon because it seemed like the easiest way to get started. Eventually, we realized it wasn't the right fit for what we wanted to do.\n\nSo we looked for other options.\n\nWe tried things, changed our approach, found solutions that worked for us, and kept moving.\n\nAnd that's probably one of the biggest things I've learned from all of this:\n\nYou don't always need the answer before you start.\n\nSometimes you just need a goal big enough that you're willing to figure out the rest along the way.\n\nThere will be things you don't know.\nThere will be things that don't work.\nThere will be times when you have no idea what to do next.\n\nBut there's almost always another way forward.\n\nIt might take weeks. It might take months.\n\nBut if you keep looking, keep learning, and don't give up, you'll eventually find a way.\n\nSo dream big.\n\nDon't limit your goals based on what you think is possible today.\n\nSet the goal first.\n\nFigure out the how along the way.",
+      "reasoning": "Custom draft added directly from dashboard.",
+      "image_paths": [
+        "memory/images/1788017460589_1000157680.png"
+      ]
     }
   ],
+  "pending": [],
   "last_posted_at": "2026-09-03T08:57:18.486880+00:00",
   "settings": {
     "post_interval_days": 3
