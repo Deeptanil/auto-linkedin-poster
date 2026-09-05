@@ -885,6 +885,91 @@
     <!-- Notification Toast -->
     <div id="toast" class="toast">Action Success!</div>
 
+    <!-- Generate Post with LinkedIn-Skills Modal -->
+    <div id="generateModal" class="modal" style="display: none;" onclick="handleModalOverlayClick(event)">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3 id="genModalTitle" style="font-size: 1.15rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275Z"/><path d="m5 3 1 2.5L8.5 6 6 7 5 9.5 4 7 1.5 6 4 5.5Z"/></svg>
+                    Generate Post (LinkedIn-Skills Framework)
+                </h3>
+                <button class="modal-close" onclick="toggleGenerateModal()">&times;</button>
+            </div>
+
+            <div class="form-group">
+                <label for="genTopicText">Topic, Story, or Raw Incident</label>
+                <textarea id="genTopicText" class="form-input" style="min-height: 100px; resize: vertical;" placeholder="Describe what happened, a recent tech bug, a founder milestone, or an opinion..."></textarea>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label for="genToneSelect">Post Tone</label>
+                    <select id="genToneSelect" class="form-input">
+                        <option value="Auto">Auto (Smart Match)</option>
+                        <option value="Casual/Conversational">Casual / Conversational</option>
+                        <option value="Technical">Technical / Developer</option>
+                        <option value="Thought Leadership">Thought Leadership</option>
+                        <option value="Storytelling">Storytelling</option>
+                        <option value="Professional">Professional</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="genFounderAngleSelect">Founder Strategy Angle</label>
+                    <select id="genFounderAngleSelect" class="form-input">
+                        <option value="None">None (General Audience)</option>
+                        <option value="Reprice Category">Reprice the Category</option>
+                        <option value="Content to Pipeline">Content-to-Pipeline</option>
+                        <option value="Audience of One">Audience of One</option>
+                        <option value="Scarce Shots Math">The Scarce-Shots Math</option>
+                        <option value="Unglamorous Bet">The Unglamorous Bet</option>
+                        <option value="Limit of Delegation">Limit of Delegation</option>
+                        <option value="Designed Serendipity">Designed Serendipity</option>
+                        <option value="Evasive Sentence Test">Evasive-Sentence Test</option>
+                        <option value="Learning Gate">The Learning Gate</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="genHookFormulaSelect">Viral Hook Formula (F1–F20)</label>
+                <select id="genHookFormulaSelect" class="form-input" onchange="updateHookPreview()">
+                    <option value="None">None (Standard Organic Hook)</option>
+                    <option value="F1">F1 — Platform Risk Anaphora (Comments & Reposts)</option>
+                    <option value="F2">F2 — R.I.P. Category Obituary (Reposts & Likes)</option>
+                    <option value="F3">F3 — Year-over-Year Pivot (Comments)</option>
+                    <option value="F4">F4 — Time-Anchor Confession (Comments & Saves)</option>
+                    <option value="F5">F5 — Self-Proving Meta (Comments)</option>
+                    <option value="F6">F6 — Comment-Gate Lead Magnet (Lead Gen)</option>
+                    <option value="F7">F7 — Odd-Precision Money Ledger (Saves & Reposts)</option>
+                    <option value="F8">F8 — Paid-vs-Free Reversal (Saves & Likes)</option>
+                    <option value="F9">F9 — Curiosity-Gap Teaser (Dwell Time)</option>
+                    <option value="F10">F10 — Contrarian + Historical Receipts (Comments)</option>
+                    <option value="F11">F11 — Emotional Cold-Open (Likes & Reach)</option>
+                    <option value="F12">F12 — Permission Slip (Reposts & Saves)</option>
+                    <option value="F13">F13 — Bait-and-Switch Reversal (Likes & Comments)</option>
+                    <option value="F14">F14 — Named Gratitude / Tribute (Likes & Reposts)</option>
+                    <option value="F15">F15 — Explain-to-Kids Simplification (Saves)</option>
+                    <option value="F16">F16 — Status-Strip Humility (Likes & Comments)</option>
+                    <option value="F17">F17 — Controlled A/B Anecdote (Saves & Reposts)</option>
+                    <option value="F18">F18 — False-Binary Dissolve (Comments & Reposts)</option>
+                    <option value="F19">F19 — Anecdote-Meets-Evidence Bridge (Saves)</option>
+                    <option value="F20">F20 — Diverging-Curves Close (Reposts & Saves)</option>
+                </select>
+            </div>
+
+            <div id="hookFormulaPreview" style="display: none; background: rgba(102, 252, 241, 0.05); border: 1px solid rgba(102, 252, 241, 0.2); padding: 0.75rem; border-radius: 6px; font-size: 0.8rem; line-height: 1.4; color: var(--color-text-muted);">
+            </div>
+
+            <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                <button class="btn btn-secondary" style="flex: 1;" onclick="toggleGenerateModal()">Cancel</button>
+                <button id="btnConfirmGenerate" class="btn btn-primary" style="flex: 1; min-height: 42px;" onclick="submitGenerateModal()">
+                    🚀 Generate Post Draft
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Settings Modal -->
     <div id="settingsModal" class="modal" style="display: none;" onclick="handleModalOverlayClick(event)">
         <div class="modal-content">
@@ -1604,7 +1689,7 @@
                 }
             },
 
-            async generatePostFromTopic(topicText, index) {
+            async generatePostFromTopic(topicText, index, hookFormula = "None", founderAngle = "None", tone = "Auto") {
                 if (this.isCloud) {
                     const url = `https://api.github.com/repos/${this.ghRepo}/actions/workflows/generate-draft-from-topic.yml/dispatches`;
                     const res = await fetch(url, {
@@ -1614,7 +1699,7 @@
                             'Accept': 'application/vnd.github+json',
                             'Content-Type': 'application/json'
                         },
-                        body: JSON.stringify({ ref: 'main', inputs: { topic: topicText, index: String(index) } })
+                        body: JSON.stringify({ ref: 'main', inputs: { topic: topicText, index: String(index), hook_formula: hookFormula, founder_angle: founderAngle, tone } })
                     });
                     if (!res.ok) throw new Error((await res.json()).message || res.statusText);
                     return { status: 'success', message: "Draft generation workflow triggered." };
@@ -1622,7 +1707,7 @@
                 const res = await fetch('/api/post/generate_from_topic', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ topic: topicText, index })
+                    body: JSON.stringify({ topic: topicText, index, hook_formula: hookFormula, founder_angle: founderAngle, tone })
                 });
                 return await safeJson(res);
             },
@@ -1929,7 +2014,7 @@
                 const attachLabel = `Attach Media (${paths.length}/9)`;
 
                 let actionButtons = `
-                    <button class="btn btn-primary btn-sm" onclick="generateAIDraft(${index})" title="Polish or rewrite this post using Gemini AI">
+                    <button class="btn btn-primary btn-sm" onclick="openPolishModal(${index})" title="Polish or rewrite this post using Gemini AI & LinkedIn-Skills">
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275Z"/><path d="m5 3 1 2.5L8.5 6 6 7 5 9.5 4 7 1.5 6 4 5.5Z"/></svg>
                         AI Polish
                     </button>
@@ -2144,25 +2229,109 @@
             showToast("New post draft added! Type your content — auto-saves in real-time.", "success");
         }
 
-        async function promptGeneratePost() {
-            const topic = prompt("Enter a topic, incident, or text (what happened) for Gemini to write a LinkedIn post about:");
-            if (!topic || !topic.trim()) return;
+        let skillsData = null;
 
-            const newDraft = {
-                post_text: topic.trim(),
-                reasoning: 'Generating draft with Gemini...'
-            };
-
-            if (!queueData.approved) queueData.approved = [];
-            queueData.approved.unshift(newDraft);
-            updateCountsDisplay();
-            renderPosts();
-
+        async function fetchSkillsInfo() {
             try {
-                await storageProvider.saveQueue(queueData, "chore: add topic draft [skip ci]");
-            } catch (err) {}
+                const res = await fetch('/api/skills');
+                if (res.ok) {
+                    skillsData = await res.json();
+                }
+            } catch (e) {
+                console.warn("Could not fetch skills info:", e);
+            }
+        }
+        fetchSkillsInfo();
 
-            await generateAIDraft(0);
+        function openPolishModal(index) {
+            const textarea = document.getElementById(`text-${index}`);
+            const currentText = textarea ? textarea.value.trim() : "";
+            toggleGenerateModal(currentText, index);
+        }
+
+        function toggleGenerateModal(prefillTopic = "", targetIndex = null) {
+            const modal = document.getElementById('generateModal');
+            if (modal.style.display === 'flex') {
+                modal.style.display = 'none';
+            } else {
+                modal.style.display = 'flex';
+                const topicInput = document.getElementById('genTopicText');
+                const titleEl = document.getElementById('genModalTitle');
+                const btnEl = document.getElementById('btnConfirmGenerate');
+
+                if (topicInput) {
+                    topicInput.value = prefillTopic;
+                    topicInput.dataset.targetIndex = targetIndex !== null ? String(targetIndex) : "";
+                }
+                if (titleEl) {
+                    titleEl.innerHTML = targetIndex !== null ? 
+                        `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275Z"/><path d="m5 3 1 2.5L8.5 6 6 7 5 9.5 4 7 1.5 6 4 5.5Z"/></svg> ✨ Polish Draft #${targetIndex + 1} with LinkedIn-Skills` : 
+                        `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275Z"/><path d="m5 3 1 2.5L8.5 6 6 7 5 9.5 4 7 1.5 6 4 5.5Z"/></svg> Generate Post (LinkedIn-Skills Framework)`;
+                }
+                if (btnEl) {
+                    btnEl.innerText = targetIndex !== null ? `🚀 Apply Skills & Polish Draft #${targetIndex + 1}` : "🚀 Generate Post Draft";
+                }
+                updateHookPreview();
+            }
+        }
+
+        function updateHookPreview() {
+            const selectEl = document.getElementById('genHookFormulaSelect');
+            if (!selectEl) return;
+            const hookVal = selectEl.value;
+            const previewEl = document.getElementById('hookFormulaPreview');
+            if (!previewEl) return;
+            
+            if (hookVal === 'None' || !skillsData || !skillsData.hooks || !skillsData.hooks[hookVal]) {
+                previewEl.style.display = 'none';
+                return;
+            }
+            
+            const hook = skillsData.hooks[hookVal];
+            previewEl.style.display = 'block';
+            previewEl.innerHTML = `
+                <div><strong>Goal:</strong> ${hook.goal}</div>
+                <div style="margin-top:0.25rem;"><strong>Skeleton:</strong> <em>${hook.skeleton}</em></div>
+            `;
+        }
+
+        async function promptGeneratePost() {
+            toggleGenerateModal("", null);
+        }
+
+        async function submitGenerateModal() {
+            const topicInput = document.getElementById('genTopicText');
+            const topicText = topicInput ? topicInput.value.trim() : "";
+            const tone = document.getElementById('genToneSelect').value;
+            const founderAngle = document.getElementById('genFounderAngleSelect').value;
+            const hookFormula = document.getElementById('genHookFormulaSelect').value;
+            const targetIndexStr = topicInput ? topicInput.dataset.targetIndex : "";
+
+            if (!topicText) {
+                showToast("Please enter a topic or incident description.", "warning");
+                return;
+            }
+
+            toggleGenerateModal();
+
+            let targetIndex = targetIndexStr !== "" ? parseInt(targetIndexStr) : null;
+
+            if (targetIndex === null) {
+                const newDraft = {
+                    post_text: topicText,
+                    reasoning: 'Generating draft with LinkedIn-Skills...'
+                };
+                if (!queueData.approved) queueData.approved = [];
+                queueData.approved.unshift(newDraft);
+                targetIndex = 0;
+                updateCountsDisplay();
+                renderPosts();
+                try {
+                    await storageProvider.saveQueue(queueData, "chore: add topic draft [skip ci]");
+                } catch (err) {}
+            }
+
+            await generateAIDraft(targetIndex, hookFormula, founderAngle, tone);
         }
 
         let _saveQueueTimeout = null;
@@ -2192,7 +2361,7 @@
             }, 1000);
         }
 
-        async function generateAIDraft(index) {
+        async function generateAIDraft(index, hookFormula = "None", founderAngle = "None", tone = "Auto") {
             const textarea = document.getElementById(`text-${index}`);
             const topicText = textarea ? textarea.value.trim() : "";
             if (!topicText) {
@@ -2216,10 +2385,10 @@
                 textarea.placeholder = "🤖 Gemini is generating your post based on your input...";
             }
             
-            showToast("Generating post with Gemini...", "info");
+            showToast("Generating post with Gemini (LinkedIn-Skills Framework)...", "info");
 
             try {
-                const result = await storageProvider.generatePostFromTopic(topicText, index);
+                const result = await storageProvider.generatePostFromTopic(topicText, index, hookFormula, founderAngle, tone);
                 if (result.status === 'success') {
                     queueData.approved[index].post_text = result.post_text;
                     queueData.approved[index].reasoning = result.reasoning || "Generated from prompt";
@@ -3054,7 +3223,7 @@
 
         // ─── Modal Management & Keyboard / Click-Outside Listener ──────────
         function closeAllModals() {
-            const modals = ['settingsModal', 'tokenModal', 'helpModal'];
+            const modals = ['settingsModal', 'tokenModal', 'helpModal', 'generateModal'];
             modals.forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.style.display = 'none';

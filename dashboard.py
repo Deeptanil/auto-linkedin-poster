@@ -153,6 +153,19 @@ def trigger_background_sync():
     threading.Thread(target=sync_to_github_api, daemon=True).start()
 
 
+@app.route("/api/skills", methods=["GET"])
+def get_skills():
+    """Returns available viral hooks, founder angles, and tones for UI controls."""
+    from src.skills_library import HOOK_FORMULAS, FOUNDER_ANGLES
+    from src.ai_generator import TONE_GUIDELINES
+    return jsonify({
+        "status": "success",
+        "hooks": HOOK_FORMULAS,
+        "founder_angles": FOUNDER_ANGLES,
+        "tones": TONE_GUIDELINES,
+    })
+
+
 @app.route("/api/post/generate_from_topic", methods=["POST"])
 def generate_from_topic():
     """
@@ -161,6 +174,9 @@ def generate_from_topic():
     data = request.json or {}
     topic = data.get("topic", "").strip()
     target_index = data.get("index")
+    hook_formula = data.get("hook_formula", "None")
+    founder_angle = data.get("founder_angle", "None")
+    tone = data.get("tone", "Auto")
     
     if not topic:
         return jsonify({"status": "error", "message": "No topic or prompt text provided."}), 400
@@ -173,10 +189,12 @@ def generate_from_topic():
         ai = AIGenerator()
         batch = ai.generate_post_batch(
             topic=topic,
-            tone="Auto",
+            tone=tone,
             past_posts=blacklist_posts,
             batch_size=1,
             topic_is_source_of_truth=True,
+            hook_formula=hook_formula,
+            founder_angle=founder_angle,
         )
         
         if not batch:
@@ -193,6 +211,7 @@ def generate_from_topic():
         import traceback
         traceback.print_exc()
         return jsonify({"status": "error", "message": f"Failed to generate post: {e}"}), 500
+
 
 
 @app.route("/api/github/sync", methods=["POST"])

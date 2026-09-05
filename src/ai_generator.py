@@ -15,6 +15,12 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import config
+from src.skills_library import (
+    AI_BANNED_WORDS,
+    ANTI_AI_HUMANIZER_INSTRUCTIONS,
+    FOUNDER_ANGLES,
+    HOOK_FORMULAS,
+)
 
 try:
     from google import genai
@@ -23,19 +29,6 @@ except ImportError:
     genai = None
     genai_errors = None
 
-
-AI_BANNED_WORDS = [
-    "delve", "tapestry", "leverage", "leveraging", "seamless", "seamlessly",
-    "game-changer", "game changer", "landscape", "unlock", "unlocking",
-    "navigate", "navigating", "in today's fast-paced", "in the ever-evolving",
-    "it's no secret", "cutting-edge", "at the forefront", "paradigm", "synergy",
-    "holistic", "robust", "empower", "empowering", "transformative", "innovative",
-    "revolutionize", "revolutionizing", "unprecedented", "elevate", "elevating",
-    "skyrocket", "game plan", "thought leader", "thought leadership",
-    "in conclusion", "to summarize", "as we know", "needless to say",
-    "it goes without saying", "at the end of the day", "move the needle",
-    "circle back", "low-hanging fruit", "bandwidth", "ping me",
-]
 
 TONE_GUIDELINES = {
     "Auto": (
@@ -90,8 +83,10 @@ class AIGenerator:
         past_posts: list[str] = None,
         batch_size: int = 5,
         topic_is_source_of_truth: bool = False,
+        hook_formula: str = "None",
+        founder_angle: str = "None",
     ) -> list[dict]:
-        print(f"[ai_generator] Starting batch generation. Batch size: {batch_size}, Tone: {tone}")
+        print(f"[ai_generator] Starting batch generation. Batch size: {batch_size}, Tone: {tone}, Hook: {hook_formula}, Founder Angle: {founder_angle}")
         if not self.client:
             print("[ai_generator] ERROR: Gemini API key is missing.")
             raise ValueError("Gemini API client not configured. Set GEMINI_API_KEY.")
@@ -108,6 +103,8 @@ class AIGenerator:
             compact_profile, recent_context,
             history_blacklist, batch_size,
             topic_is_source_of_truth=topic_is_source_of_truth,
+            hook_formula=hook_formula,
+            founder_angle=founder_angle,
         )
 
         try:
@@ -140,7 +137,7 @@ class AIGenerator:
             if not isinstance(item, dict) or "post_text" not in item:
                 continue
             
-            post_text = item["post_text"].strip()
+            post_text = self._clean_ai_tells(item["post_text"].strip())
             
             contains_url = any(pat in post_text.lower() for pat in url_patterns)
             if contains_url:
@@ -165,6 +162,19 @@ class AIGenerator:
             })
 
         return filtered_batch
+
+    @staticmethod
+    def _clean_ai_tells(text: str) -> str:
+        """Strip lingering banned AI words or AI structural tells."""
+        for word in AI_BANNED_WORDS:
+            # Case-insensitive replacement of standalone banned phrases
+            pattern = re.compile(rf"\b{re.escape(word)}\b", re.IGNORECASE)
+            text = pattern.sub("", text)
+
+        # Fix double spaces caused by removal
+        text = re.sub(r" +", " ", text)
+        text = re.sub(r"\n{3,}", "\n\n", text)
+        return text.strip()
 
     @staticmethod
     def _contains_emoji(text: str) -> bool:
@@ -204,6 +214,8 @@ class AIGenerator:
         voice_profile: str = "",
         achievements: str = "",
         recent_context: str = "",
+        hook_formula: str = "None",
+        founder_angle: str = "None",
     ) -> str:
         from src.memory_manager import MemoryManager
         mem = MemoryManager()
@@ -215,7 +227,9 @@ class AIGenerator:
             extra_instructions=extra_instructions,
             compact_profile=compact,
             recent_context=recent_context,
-            batch_size=1
+            batch_size=1,
+            hook_formula=hook_formula,
+            founder_angle=founder_angle,
         )
         if batch:
             return batch[0]["post_text"]
@@ -234,6 +248,7 @@ class AIGenerator:
             "  • No links in the post body\n"
             "  • No emojis (STRICT CONSTRAINT — keep it 100% plain text, no emojis)\n"
             "  • 1–3 hashtags at the very end\n\n"
+            f"{ANTI_AI_HUMANIZER_INSTRUCTIONS}\n\n"
             f"=== ORIGINAL DRAFT ===\n{original_post}\n\n"
             f"=== REVISION INSTRUCTIONS ===\n{revision_instructions}\n\n"
             "Rewrite and output ONLY the revised post. "
@@ -252,6 +267,8 @@ class AIGenerator:
         history_blacklist: str,
         batch_size: int,
         topic_is_source_of_truth: bool = False,
+        hook_formula: str = "None",
+        founder_angle: str = "None",
     ) -> str:
         tone_desc = TONE_GUIDELINES.get(tone, TONE_GUIDELINES["Auto"])
         banned_str = ", ".join(f'"{w}"' for w in AI_BANNED_WORDS)
@@ -264,7 +281,8 @@ class AIGenerator:
             "CRITICAL TONE & IDENTITY GUIDELINES:\n"
             "- Tone: Casual, honest, down-to-earth Indian college student & founder in Bangalore. Sounds like a normal guy who builds tech, rather than a corporate executive.\n"
             "- Language: Use plain English with natural contractions. You can use casual phrases like 'tbh' or 'actually' but keep it professional. NEVER use formal corporate PR phrases.\n"
-            "- STRICT FACTUAL CONSTRAINT: NEVER make up stories, events, financial numbers, or investment details from thin air. Build posts ONLY around real provided facts."
+            "- STRICT FACTUAL CONSTRAINT: NEVER make up stories, events, financial numbers, or investment details from thin air. Build posts ONLY around real provided facts.\n"
+            f"{ANTI_AI_HUMANIZER_INSTRUCTIONS}"
         )
 
         if compact_profile:
@@ -281,6 +299,25 @@ class AIGenerator:
                 f"Backlog of Key Achievements & Experiences:\n{facts}"
             )
             parts.append(profile_block)
+
+        # Founder Angle Integration
+        if founder_angle and founder_angle in FOUNDER_ANGLES and founder_angle != "None":
+            angle_info = FOUNDER_ANGLES[founder_angle]
+            parts.append(
+                f"=== SELECTED FOUNDER ANGLE & POSITIONING STRATEGY ===\n"
+                f"Strategy: {angle_info['title']} ({angle_info['description']})\n"
+                f"Instruction: {angle_info['prompt_instruction']}"
+            )
+
+        # Hook Formula Integration
+        if hook_formula and hook_formula in HOOK_FORMULAS and hook_formula != "None":
+            hook_info = HOOK_FORMULAS[hook_formula]
+            parts.append(
+                f"=== SELECTED VIRAL HOOK FORMULA ===\n"
+                f"Formula: {hook_info['name']} (Goal: {hook_info['goal']})\n"
+                f"Skeleton: {hook_info['skeleton']}\n"
+                f"Instruction: {hook_info['instruction']}"
+            )
 
         # 3. Recent context & Anti-repetition
         if recent_context:
@@ -305,22 +342,16 @@ class AIGenerator:
             "1. Must be under 15 words and followed immediately by a blank line (\\n\\n).\n"
             "2. NEVER start with a question (e.g. 'Have you ever wondered...?').\n"
             "3. NEVER use generic AI intros (e.g. 'I've been thinking about...', 'In today's landscape...').\n"
-            "4. USE ONE OF THESE PROVEN HOOK PATTERNS:\n"
-            "   • Bold Result / Metric: 'We cut checkout latency by 90% without paying a dollar for new servers.'\n"
-            "   • Counter-Intuitive Insight: 'The worst mistake with early e-commerce users isn't asking for feedback.'\n"
-            "   • Direct Incident/Struggle: 'I spent 3 days hunting a bug that only appeared on mobile web in India.'\n"
-            "   • Strong Contrarian Stance: 'Most advice about scaling MedusaJS stores is completely wrong.'\n"
-            "   • High-Stakes Action: 'We ripped out 4,000 lines of custom code right before our Friday deployment.'\n\n"
-            "FORMATTING & TONE CONSTRAINTS:\n"
-            "1. SPACING: Every paragraph is 1–3 sentences. You MUST leave exactly one blank line between each paragraph (using escape sequence \\n\\n in the JSON string). Do NOT combine everything into a single wall of text.\n"
-            "2. LINKS: NEVER put any URL, domain name, or link in the post body. Mention 'link in comments' if you need to reference something.\n"
-            "3. HASHTAGS: Include 1–3 relevant hashtags at the very end of the post, on a new line (\\n\\n#hashtag1 #hashtag2).\n"
-            "4. EMOJIS: STRICT CONSTRAINT: NEVER use any emojis in the post. Do not include a single emoji. Keep the text 100% plain text.\n"
-            "5. NO MARKDOWN: Do not use **bold**, *italic*, or ``` code blocks. LinkedIn does not render markdown. Keep everything as raw text.\n"
-            "6. LENGTH: 150–400 words per post. Enough to be substantial, not a wall of text.\n"
-            "7. CTA: End with one specific, open-ended question that invites real replies — not 'What do you think?' or 'Drop a comment below'.\n"
-            f"8. BANNED WORDS: NEVER use any of these: {banned_str}.\n"
-            "9. BURSTINESS: Mix short punchy sentences with longer descriptive ones. Include specific real details."
+            "4. FORMATTING & TONE CONSTRAINTS:\n"
+            "   • SPACING: Every paragraph is 1–3 sentences. You MUST leave exactly one blank line between each paragraph (using escape sequence \\n\\n in the JSON string). Do NOT combine everything into a single wall of text.\n"
+            "   • LINKS: NEVER put any URL, domain name, or link in the post body. Mention 'link in comments' if you need to reference something.\n"
+            "   • HASHTAGS: Include 1–3 relevant hashtags at the very end of the post, on a new line (\\n\\n#hashtag1 #hashtag2).\n"
+            "   • EMOJIS: STRICT CONSTRAINT: NEVER use any emojis in the post. Keep the text 100% plain text.\n"
+            "   • NO MARKDOWN: Do not use **bold**, *italic*, or ``` code blocks. LinkedIn does not render markdown. Keep everything as raw text.\n"
+            "   • LENGTH: 150–400 words per post. Enough to be substantial, not a wall of text.\n"
+            "   • CTA: End with one specific, open-ended question that invites real replies — not 'What do you think?' or 'Drop a comment below'.\n"
+            f"   • BANNED WORDS: NEVER use any of these: {banned_str}.\n"
+            "   • BURSTINESS: Mix short punchy sentences with longer descriptive ones. Include specific real details."
         )
 
         # 5. Task & JSON wrapper instructions

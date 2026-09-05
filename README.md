@@ -23,7 +23,10 @@
 
 - **🛡️ Human-in-the-Loop Safety**: Posts are *never* published without your explicit manual approval.
 - **⚡ Token-Compact Memory**: Compresses voice style and achievements into `memory/compact_profile.json`, cutting AI prompt sizes by **80%+**.
-- **💻 Visual Dashboard**: Easy-to-use local web app (dark mode) to write wins, refine drafts, approve posts, and sync to GitHub with 1 click.
+- **🎯 20 Viral Hook Formulas (F1–F20)**: Built-in library of structural hook frameworks (Platform Risk Anaphora, Paid-vs-Free Reversal, Self-Proving Meta, False-Binary Dissolve, etc.) adapted from `linkedin-skills`.
+- **🚀 10 Founder Positioning Angles**: Dedicated founder strategy mode (Reprice Category, Content-to-Pipeline, Audience of One, Scarce Shots Math, Learning Gate, etc.).
+- **🧹 Anti-AI Fingerprint Stripper**: Removes 40+ banned AI buzzwords ("delve", "tapestry", "seamless", "game-changer") and enforces natural bursty sentence structure.
+- **💻 Visual Dashboard**: Easy-to-use local web app (dark mode) to write wins, select viral hooks, approve posts, and sync to GitHub with 1 click.
 - **📅 Automated Daily Posting**: Scheduled GitHub Actions workflow posts one approved update every morning at 9:00 AM IST (3:30 AM UTC).
 - **🔔 Discord Notifications**: Sends instant alerts for successful posts, empty queues, or token expiry warnings.
 
