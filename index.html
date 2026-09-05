@@ -2238,8 +2238,11 @@
                 }
             }
 
+            const total = (queueData.approved || []).length;
+            const posFromBottom = (total > 0) ? (total - 1 - index) : 0;
+
             const scheduledDate = new Date(nextPostDate);
-            scheduledDate.setDate(nextPostDate.getDate() + index * postInterval);
+            scheduledDate.setDate(nextPostDate.getDate() + posFromBottom * postInterval);
             const opts = { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' };
             return scheduledDate.toLocaleDateString('en-US', opts);
         }

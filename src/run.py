@@ -236,8 +236,8 @@ def main():
     # Instantiate history here for use in logging below.
     history = PostHistory()
 
-    # Pop the first approved post
-    current_item = approved_list[0]
+    # Pop the last approved post (bottom of UI gets posted first)
+    current_item = approved_list[-1]
     post_text = current_item["post_text"]
 
     # Alert if we are posting the last remaining approved post (1 day before running out)
@@ -340,7 +340,7 @@ def main():
     print("[5/5] Updating queues and logging history...")
     
     # Remove the posted item from approved list
-    approved_list.pop(0)
+    approved_list.pop(-1)
     queue["approved"] = approved_list
 
     # Ensure pending queue maintains at least 10 items
