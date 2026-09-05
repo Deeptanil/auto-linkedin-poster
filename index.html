@@ -2419,8 +2419,8 @@
                     reasoning: 'Generating draft with LinkedIn-Skills...'
                 };
                 if (!queueData.approved) queueData.approved = [];
-                queueData.approved.unshift(newDraft);
-                targetIndex = 0;
+                queueData.approved.push(newDraft);
+                targetIndex = queueData.approved.length - 1;
                 updateCountsDisplay();
                 renderPosts();
                 try {
