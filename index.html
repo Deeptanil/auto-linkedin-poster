@@ -998,7 +998,7 @@
             <div style="display: flex; gap: 1rem; margin-top: 1rem;">
                 <button class="btn btn-secondary" style="flex: 1;" onclick="toggleGenerateModal()">Cancel</button>
                 <button id="btnConfirmGenerate" class="btn btn-primary" style="flex: 1; min-height: 42px;" onclick="submitGenerateModal()">
-                    🚀 Generate Post Draft
+                    Generate Post Draft
                 </button>
             </div>
         </div>
@@ -2049,7 +2049,7 @@
                 listContainer.innerHTML = `
                     <div style="text-align: center; padding: 3.5rem; color: var(--color-text-muted);">
                         <p style="font-size: 1.15rem; margin-bottom: 0.5rem; color: var(--color-text-main);">No posts in queue.</p>
-                        <p style="font-size: 0.9rem;">Click <strong>"+ Add Post Draft"</strong> to write a post manually, or <strong>"✨ Generate from Topic"</strong> to use AI.</p>
+                        <p style="font-size: 0.9rem;">Click <strong>"+ Add Post Draft"</strong> to write a post manually, or <strong>"Generate from Topic"</strong> to use AI.</p>
                     </div>
                 `;
                 return;
@@ -2344,11 +2344,11 @@
                 }
                 if (titleEl) {
                     titleEl.innerHTML = targetIndex !== null ? 
-                        `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275Z"/><path d="m5 3 1 2.5L8.5 6 6 7 5 9.5 4 7 1.5 6 4 5.5Z"/></svg> ✨ Polish Draft #${targetIndex + 1} with LinkedIn-Skills` : 
+                        `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275Z"/><path d="m5 3 1 2.5L8.5 6 6 7 5 9.5 4 7 1.5 6 4 5.5Z"/></svg> Polish Draft #${targetIndex + 1} with LinkedIn-Skills` : 
                         `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275Z"/><path d="m5 3 1 2.5L8.5 6 6 7 5 9.5 4 7 1.5 6 4 5.5Z"/></svg> Generate Post (LinkedIn-Skills Framework)`;
                 }
                 if (btnEl) {
-                    btnEl.innerText = targetIndex !== null ? `🚀 Apply Skills & Polish Draft #${targetIndex + 1}` : "🚀 Generate Post Draft";
+                    btnEl.innerText = targetIndex !== null ? `Apply Skills & Polish Draft #${targetIndex + 1}` : "Generate Post Draft";
                 }
                 updateHookPreview();
             }
@@ -2451,7 +2451,7 @@
             const card = textarea ? textarea.closest('.post-card') : null;
             const genBtn = card ? card.querySelector(`button[onclick^="generateAIDraft"]`) : null;
             
-            const originalBtnHtml = genBtn ? genBtn.innerHTML : "✨ AI Polish";
+            const originalBtnHtml = genBtn ? genBtn.innerHTML : "AI Polish";
             if (genBtn) {
                 genBtn.disabled = true;
                 genBtn.innerHTML = `
@@ -2461,7 +2461,7 @@
             }
             if (textarea) {
                 textarea.disabled = true;
-                textarea.placeholder = "🤖 Gemini is generating your post based on your input...";
+                textarea.placeholder = "Gemini is generating your post based on your input...";
             }
             
             showToast("Generating post with Gemini (LinkedIn-Skills Framework)...", "info");
