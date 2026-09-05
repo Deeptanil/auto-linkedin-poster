@@ -22,6 +22,10 @@
       "image_paths": [
         "memory/images/1788017460589_1000157680.png"
       ]
+    },
+    {
+      "post_text": "Here are the key points from Shai’s post:\n\n*1. Skiper UI* - His favorite. Best for design-focused components like modern cards, pricing sections, and polished interactions. Think “make your site look more designed than functional.”\n\n*2. Animaster Lib* - Comes with 250+ premium animated components. Covers scroll animations, hover interactions, and WebGL visual effects. Good if you want a lot of ready-made motion elements.\n\n*3. ThreeUI* - Built for 3D and immersive web experiences. Uses WebGL and interactive shaders to create landing pages that feel more spatial and dynamic.\n\n*The overall angle*: All three let you build premium animated websites without starting from scratch — you can copy the components straight into your project code.\n\n*Bonus*: He’s calling this “Claude for Designers EP 15,” and he’s using Claude AI as part of the workflow. If you comment “Library” he’ll DM you the links.\n\nWant me to compare which one’s best for a portfolio site vs. a SaaS landing page?",
+      "reasoning": "Generating draft with LinkedIn-Skills..."
     }
   ],
   "pending": [],
