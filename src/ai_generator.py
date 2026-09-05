@@ -131,7 +131,7 @@ class AIGenerator:
             return []
 
         filtered_batch = []
-        url_patterns = [".co", ".in", ".com", "http", "link in bio", "check the site", "www.", ".org", ".net"]
+        url_patterns = ["http://", "https://", "www.", ".com/", ".org/", ".net/", ".io/", ".co/", ".in/", "link in bio", "check out"]
         
         for idx, item in enumerate(batch):
             if not isinstance(item, dict) or "post_text" not in item:
@@ -152,9 +152,10 @@ class AIGenerator:
             if self._contains_emoji(post_text):
                 continue
 
-            overlap_score = self._max_similarity(post_text, comparison_posts + [entry["post_text"] for entry in filtered_batch])
-            if overlap_score >= 0.55:
-                continue
+            if not topic_is_source_of_truth:
+                overlap_score = self._max_similarity(post_text, comparison_posts + [entry["post_text"] for entry in filtered_batch])
+                if overlap_score >= 0.55:
+                    continue
 
             filtered_batch.append({
                 "post_text": post_text,

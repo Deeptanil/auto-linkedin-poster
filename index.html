@@ -2374,6 +2374,12 @@
             `;
         }
 
+        function openPolishModal(index) {
+            const item = (queueData.approved && queueData.approved[index]) ? queueData.approved[index] : null;
+            const text = item ? (item.post_text || "") : "";
+            toggleGenerateModal(text, index);
+        }
+
         async function promptGeneratePost() {
             toggleGenerateModal("", null);
         }
@@ -2449,7 +2455,7 @@
             }
 
             const card = textarea ? textarea.closest('.post-card') : null;
-            const genBtn = card ? card.querySelector(`button[onclick^="generateAIDraft"]`) : null;
+            const genBtn = card ? (card.querySelector(`button[onclick^="openPolishModal"]`) || card.querySelector(`button[onclick^="generateAIDraft"]`)) : null;
             
             const originalBtnHtml = genBtn ? genBtn.innerHTML : "AI Polish";
             if (genBtn) {
@@ -2469,25 +2475,32 @@
             try {
                 const result = await storageProvider.generatePostFromTopic(topicText, index, hookFormula, founderAngle, tone);
                 if (result.status === 'success') {
-                    queueData.approved[index].post_text = result.post_text;
-                    queueData.approved[index].reasoning = result.reasoning || "Generated from prompt";
-
-                    renderPosts();
-                    showToast("Post draft successfully generated with AI!", "success");
-                    queueSaveDebounced(`chore: save generated post [skip ci]`);
+                    if (result.post_text) {
+                        queueData.approved[index].post_text = result.post_text;
+                        queueData.approved[index].reasoning = result.reasoning || "Generated from prompt";
+                        renderPosts();
+                        showToast("Post draft successfully generated with AI!", "success");
+                        queueSaveDebounced(`chore: save generated post [skip ci]`);
+                    } else {
+                        showToast(result.message || "GitHub Action dispatched! AI is generating your draft in the cloud (~30-60s). Refresh soon.", "info");
+                        renderPosts();
+                    }
                 } else {
                     throw new Error(result.message || "Generation error");
                 }
             } catch (err) {
                 showToast("Generation failed: " + err.message, "error");
             } finally {
-                if (genBtn) {
-                    genBtn.disabled = false;
-                    genBtn.innerHTML = originalBtnHtml;
+                const curTextarea = document.getElementById(`text-${index}`);
+                if (curTextarea) {
+                    curTextarea.disabled = false;
+                    curTextarea.placeholder = "Type your LinkedIn post content here...";
                 }
-                if (textarea) {
-                    textarea.disabled = false;
-                    textarea.placeholder = "Type your LinkedIn post content here...";
+                const curCard = curTextarea ? curTextarea.closest('.post-card') : null;
+                const curBtn = curCard ? (curCard.querySelector(`button[onclick^="openPolishModal"]`) || curCard.querySelector(`button[onclick^="generateAIDraft"]`)) : null;
+                if (curBtn) {
+                    curBtn.disabled = false;
+                    curBtn.innerHTML = originalBtnHtml;
                 }
             }
         }
