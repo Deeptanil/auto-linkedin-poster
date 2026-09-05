@@ -131,7 +131,7 @@ jobs:
           if 0 <= index < len(approved):
               approved[index] = new_post
           else:
-              approved.append(new_post)
+              approved.insert(0, new_post)
 
           queue['approved'] = approved
           mem.save_posts_queue(queue)
