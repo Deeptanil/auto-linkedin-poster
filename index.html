@@ -1725,6 +1725,9 @@
 
             async generatePostFromTopic(topicText, index, hookFormula = "None", founderAngle = "None", tone = "Auto") {
                 if (this.isCloud) {
+                    if (!this.ghToken || !this.ghRepo) {
+                        throw new Error("Missing GitHub PAT Token or Repo. Open Settings (⚙️) to enter your GitHub Token & Repo (e.g. owner/repo).");
+                    }
                     const url = `https://api.github.com/repos/${this.ghRepo}/actions/workflows/generate-draft-from-topic.yml/dispatches`;
                     const res = await fetch(url, {
                         method: 'POST',
@@ -1750,16 +1753,26 @@
                             const errJson = await res.json();
                             if (errJson.message) errText = errJson.message;
                         } catch(e){}
-                        throw new Error(`GitHub Workflow Dispatch Error (${res.status}): ${errText}`);
+                        if (res.status === 422) {
+                            errText = "GitHub API 422: Verify your GitHub PAT token has 'workflow' scope & Repo format is 'owner/repo'.";
+                        }
+                        throw new Error(`GitHub Action Dispatch Failed (${res.status}): ${errText}`);
                     }
-                    return { status: 'success', message: "Draft generation workflow triggered." };
+                    return { status: 'success', message: "Draft generation workflow triggered on GitHub Actions." };
                 }
-                const res = await fetch('/api/post/generate_from_topic', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ topic: topicText, index, hook_formula: hookFormula, founder_angle: founderAngle, tone })
-                });
-                return await safeJson(res);
+                try {
+                    const res = await fetch('/api/post/generate_from_topic', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ topic: topicText, index, hook_formula: hookFormula, founder_angle: founderAngle, tone })
+                    });
+                    return await safeJson(res);
+                } catch (err) {
+                    if (err.message && (err.message.includes("Failed to fetch") || err.message.includes("NetworkError"))) {
+                        throw new Error("Local Flask server is not running on http://localhost:5000. Run 'run_dashboard.bat' or enable 'Cloud Mode' in Settings.");
+                    }
+                    throw err;
+                }
             },
 
             async replenishQueue() {
