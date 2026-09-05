@@ -2679,6 +2679,16 @@
         async function loadImagePreview(imagePath, imgElementId) {
             const el = document.getElementById(imgElementId);
             if (!el) return;
+
+            if (!imagePath) {
+                el.src = "";
+                return;
+            }
+
+            if (imagePath.startsWith('data:') || imagePath.startsWith('blob:') || imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+                el.src = imagePath;
+                return;
+            }
             
             if (storageProvider.isCloud) {
                 try {
@@ -2697,17 +2707,35 @@
                     const ext = imagePath.split('.').pop().toLowerCase();
                     let mime = 'image/jpeg';
                     if (ext === 'png') mime = 'image/png';
+                    else if (ext === 'webp') mime = 'image/webp';
+                    else if (ext === 'gif') mime = 'image/gif';
+                    else if (ext === 'svg') mime = 'image/svg+xml';
+                    else if (ext === 'bmp') mime = 'image/bmp';
                     else if (ext === 'mp4') mime = 'video/mp4';
                     else if (ext === 'webm') mime = 'video/webm';
                     else if (ext === 'mov') mime = 'video/quicktime';
                     
                     el.src = `data:${mime};base64,${cleanBase64}`;
                 } catch (err) {
-                    console.error("Preview load error", err);
-                    el.src = "";
+                    console.error("Preview load error, falling back to raw URL:", err);
+                    const cleanPath = imagePath.startsWith('memory/') ? imagePath.substring(7) : imagePath;
+                    el.src = `https://raw.githubusercontent.com/${storageProvider.ghRepo}/state/${cleanPath}`;
                 }
             } else {
-                el.src = `/${imagePath}`;
+                let srcPath = imagePath.startsWith('/') ? imagePath : `/${imagePath}`;
+                el.src = srcPath;
+                el.onerror = function() {
+                    if (!this.dataset.retried) {
+                        this.dataset.retried = "true";
+                        if (srcPath.startsWith('/memory/')) {
+                            this.src = srcPath.replace('/memory/', '/');
+                        } else if (srcPath.startsWith('/images/')) {
+                            this.src = `/memory${srcPath}`;
+                        } else {
+                            this.src = `/memory/${srcPath.replace(/^\//, '')}`;
+                        }
+                    }
+                };
             }
         }
 

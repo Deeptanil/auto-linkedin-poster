@@ -279,6 +279,7 @@ def upload_image():
 
 
 @app.route("/memory/images/<path:filename>")
+@app.route("/images/<path:filename>")
 def serve_image(filename):
     """Serves uploaded images/videos statically for card previews in local mode."""
     return send_from_directory("memory/images", filename)
