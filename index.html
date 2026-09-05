@@ -1733,9 +1733,25 @@
                             'Accept': 'application/vnd.github+json',
                             'Content-Type': 'application/json'
                         },
-                        body: JSON.stringify({ ref: 'main', inputs: { topic: topicText, index: String(index), hook_formula: hookFormula, founder_angle: founderAngle, tone } })
+                        body: JSON.stringify({
+                            ref: 'main',
+                            inputs: {
+                                topic: String(topicText || ""),
+                                index: String(index !== null && index !== undefined ? index : 0),
+                                hook_formula: String(hookFormula || "None"),
+                                founder_angle: String(founderAngle || "None"),
+                                tone: String(tone || "Auto")
+                            }
+                        })
                     });
-                    if (!res.ok) throw new Error((await res.json()).message || res.statusText);
+                    if (!res.ok) {
+                        let errText = res.statusText;
+                        try {
+                            const errJson = await res.json();
+                            if (errJson.message) errText = errJson.message;
+                        } catch(e){}
+                        throw new Error(`GitHub Workflow Dispatch Error (${res.status}): ${errText}`);
+                    }
                     return { status: 'success', message: "Draft generation workflow triggered." };
                 }
                 const res = await fetch('/api/post/generate_from_topic', {
@@ -2265,15 +2281,44 @@
 
         let skillsData = null;
 
+        function getFallbackSkillsData() {
+            return {
+                hooks: {
+                    "None": { goal: "Balanced", skeleton: "Open with a direct, intriguing statement." },
+                    "F1": { goal: "Comments & Reposts", skeleton: "{Platform1} can throttle you... {Platform2} can change terms... Concrete horror anecdote with real numbers + solution." },
+                    "F2": { goal: "Reposts & Likes", skeleton: "R.I.P. {category}. Cause of death: {mechanism + stats}. Evidence paragraphs + pivot to new winners." },
+                    "F3": { goal: "Comments", skeleton: "In {last year}, I {humble benchmark}. In {this year}, I'm {transformational goal}. Here is what changed..." },
+                    "F4": { goal: "Comments & Saves", skeleton: "{N} months ago, I stopped {common behavior}. Here is what happened..." },
+                    "F5": { goal: "Comments", skeleton: "Most LinkedIn posts die because {X}. Not because Y, but because Z. Here is the live test..." },
+                    "F6": { goal: "Lead Gen & Comments", skeleton: "[Authority stat] -> Turned workflow into [N named assets] -> Drop key takeaways -> Comment '{keyword}'." },
+                    "F7": { goal: "Saves & Reposts", skeleton: "Odd specific dollar amount ($873.47). Line-item breakdown of exact spend vs legacy cost." },
+                    "F8": { goal: "Saves & Likes", skeleton: "I charge clients $X for Y. Today it's free. Here is the exact N-step framework..." },
+                    "F9": { goal: "Dwell Time & Likes", skeleton: "Yesterday, our system did something we didn't program it to do..." },
+                    "F10": { goal: "Comments & Reposts", skeleton: "Everyone is wrong about {topic}. In 2018, X happened. In 2022, Y happened. Here is what comes next..." },
+                    "F11": { goal: "Likes & Reach", skeleton: "I almost quit {project} last Tuesday. Here is the raw truth..." },
+                    "F12": { goal: "Reposts & Saves", skeleton: "You don't need {popular requirement} to achieve {desirable outcome}. Here is what actually matters..." },
+                    "F13": { goal: "Likes & Comments", skeleton: "We just fired our top performing X. Best decision of 2026..." },
+                    "F14": { goal: "Likes & Reposts", skeleton: "The best advice I received didn't come from a textbook. It came from {Name/Role}..." },
+                    "F15": { goal: "Saves & Reposts", skeleton: "How to explain {complex technical concept} to a 10-year-old..." },
+                    "F16": { goal: "Likes & Comments", skeleton: "Title doesn't protect you from {basic mistake}. I just spent 4 hours fixing..." },
+                    "F17": { goal: "Saves & Reposts", skeleton: "Team A did X. Team B did Y. 6 months later, here are the results..." },
+                    "F18": { goal: "Comments & Reposts", skeleton: "People argue whether you should do A or B. Both are missing the real engine: C." },
+                    "F19": { goal: "Saves & Comments", skeleton: "I thought X was just my personal experience. Then I analyzed 500 cases..." },
+                    "F20": { goal: "Reposts & Saves", skeleton: "In 2024, path A and path B looked identical. By 2026, the gap is unbridgeable..." }
+                }
+            };
+        }
+
         async function fetchSkillsInfo() {
             try {
                 const res = await fetch('/api/skills');
-                if (res.ok) {
+                const contentType = res.headers.get("content-type");
+                if (res.ok && contentType && contentType.includes("application/json")) {
                     skillsData = await res.json();
+                    return;
                 }
-            } catch (e) {
-                console.warn("Could not fetch skills info:", e);
-            }
+            } catch (e) {}
+            skillsData = getFallbackSkillsData();
         }
         fetchSkillsInfo();
 

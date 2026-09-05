@@ -8,8 +8,24 @@ on:
         required: true
         type: string
       index:
-        description: "Pending draft index to replace"
-        required: true
+        description: "Draft index to replace or generate (default 0)"
+        required: false
+        default: "0"
+        type: string
+      hook_formula:
+        description: "Viral Hook Formula (F1-F20 or None)"
+        required: false
+        default: "None"
+        type: string
+      founder_angle:
+        description: "Founder Strategy Angle"
+        required: false
+        default: "None"
+        type: string
+      tone:
+        description: "Post tone"
+        required: false
+        default: "Auto"
         type: string
 
 permissions:
@@ -51,6 +67,9 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           TOPIC_INPUT: ${{ github.event.inputs.topic }}
           TARGET_INDEX: ${{ github.event.inputs.index }}
+          HOOK_FORMULA: ${{ github.event.inputs.hook_formula }}
+          FOUNDER_ANGLE: ${{ github.event.inputs.founder_angle }}
+          TONE_INPUT: ${{ github.event.inputs.tone }}
         run: |
           python -c "
           import os
@@ -62,47 +81,61 @@ jobs:
           from src.ai_generator import AIGenerator
           from src.memory_manager import MemoryManager
 
-          topic = os.environ['TOPIC_INPUT'].strip()
-          index = int(os.environ['TARGET_INDEX'])
+          topic = os.environ.get('TOPIC_INPUT', '').strip()
+          raw_idx = os.environ.get('TARGET_INDEX', '0').strip()
+          try:
+              index = int(raw_idx)
+          except ValueError:
+              index = 0
+
+          hook_formula = os.environ.get('HOOK_FORMULA', 'None').strip() or 'None'
+          founder_angle = os.environ.get('FOUNDER_ANGLE', 'None').strip() or 'None'
+          tone = os.environ.get('TONE_INPUT', 'Auto').strip() or 'Auto'
 
           mem = MemoryManager()
           queue = mem.load_posts_queue()
-          pending = queue.get('pending', [])
-
-          if index < 0 or index >= len(pending):
-              raise IndexError(f'Pending draft index out of range: {index}')
+          approved = queue.get('approved', [])
 
           summary = mem.build_full_context_summary()
           compact = mem.load_compact_profile()
 
           blacklist = mem.load_recent_posts_history_text(limit=15)
-          for section_name, items in (('approved', queue.get('approved', [])), ('pending', pending)):
-              for idx, item in enumerate(items):
-                  if section_name == 'pending' and idx == index:
-                      continue
-                  text = item.get('post_text', '').strip()
-                  if text:
-                      blacklist.append(text)
+          for idx, item in enumerate(approved):
+              if idx == index:
+                  continue
+              text = item.get('post_text', '').strip()
+              if text:
+                  blacklist.append(text)
 
           ai = AIGenerator()
           batch = ai.generate_post_batch(
               topic=topic,
-              tone='Auto',
+              tone=tone,
               compact_profile=compact,
               recent_context=summary.get('recent_context', ''),
               past_posts=blacklist,
               batch_size=1,
               topic_is_source_of_truth=True,
+              hook_formula=hook_formula,
+              founder_angle=founder_angle,
           )
 
           if not batch:
               raise RuntimeError('Gemini generation returned 0 valid drafts.')
 
-          pending[index]['post_text'] = batch[0]['post_text']
-          pending[index]['reasoning'] = batch[0].get('reasoning', 'Generated from dashboard topic prompt.')
-          queue['pending'] = pending
+          new_post = {
+              'post_text': batch[0]['post_text'],
+              'reasoning': batch[0].get('reasoning', 'Generated from dashboard topic prompt.')
+          }
+
+          if 0 <= index < len(approved):
+              approved[index] = new_post
+          else:
+              approved.unshift(new_post) if hasattr(approved, 'unshift') else approved.insert(0, new_post)
+
+          queue['approved'] = approved
           mem.save_posts_queue(queue)
-          print(f'[generate-topic] Updated pending draft at index {index}.')
+          print(f'[generate-topic] Updated approved draft at index {index}.')
           "
 
       - name: "💾 Commit updated queue"
