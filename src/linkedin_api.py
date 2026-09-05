@@ -205,12 +205,29 @@ class LinkedInAPI:
     def upload_image(self, image_path_or_bytes: Path | bytes | str) -> str:
         """
         Initialize and upload an image to LinkedIn.
+        Auto-converts WebP, BMP, TIFF, HEIC to PNG format if needed.
         """
         if isinstance(image_path_or_bytes, (str, Path)):
-            with open(image_path_or_bytes, "rb") as f:
+            path_obj = Path(image_path_or_bytes)
+            with open(path_obj, "rb") as f:
                 image_bytes = f.read()
+            ext = path_obj.suffix.lower()
         else:
             image_bytes = image_path_or_bytes
+            ext = ".png"
+
+        # Auto-convert formats like WebP to PNG for full LinkedIn compatibility
+        if ext in [".webp", ".bmp", ".tiff", ".tif", ".heic", ".heif"]:
+            try:
+                import io
+                from PIL import Image
+                img = Image.open(io.BytesIO(image_bytes))
+                buf = io.BytesIO()
+                img.save(buf, format="PNG")
+                image_bytes = buf.getvalue()
+                print(f"  [linkedin_api] Auto-converted {ext} image to PNG ({len(image_bytes)} bytes)")
+            except Exception as conv_err:
+                print(f"  [linkedin_api] Warning: image format conversion failed: {conv_err}")
 
         author_urn = self.get_member_urn()
         
