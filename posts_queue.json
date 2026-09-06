@@ -1,7 +1,7 @@
 {
   "approved": [
     {
-      "post_text": "",
+      "post_text": "I have spent two years building with AI, and the honeymoon phase is over.\n\nMost people think vibe coding is about prompting until the code works. But I realized that if you are just patching AI-generated errors, you are not building, you are just fixing someone else's mess.\n\nHere is what I learned about building apps fast without losing my mind.\n\nContext is everything. Do not dump your entire project into the prompt. Break it down. Give the AI specific files and clear constraints. If you cannot describe the problem, the AI cannot solve it.\n\nKnow when to walk away. If I have asked for a fix three times and it is still broken, I delete it. Trying to untangle AI-generated spaghetti code is a trap. Sometimes, the cleanest solution is a fresh start.\n\nSecurity is not an optional add-on. The AI will write code that runs perfectly but leaves your database wide open. Authentication, API keys, and validation are your job, not the machine's.\n\nMost importantly, vibe coding did not stop me from learning. It shifted my mindset from saying I do not know how to build something, to admitting I do not know how to build it yet. That slight change in perspective is why I ship more projects today than I did two years ago.\n\nYou still have to be the engineer. AI is just a tool that makes the process faster, not a replacement for your technical judgment.\n\nWhat is the one thing you refuse to let AI handle when you are building?\n\n#vibecoding #developer #softwaredevelopment #buildinginpublic",
       "reasoning": "Custom post added from dashboard."
     },
     {
