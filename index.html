@@ -682,7 +682,47 @@
             font-family: var(--font-sans);
             font-size: 0.95rem;
             outline: none;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
             transition: var(--transition-smooth);
+        }
+
+        select.form-input {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2366fcf1' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.85rem center;
+            background-size: 1rem;
+            padding-right: 2.5rem;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        select.form-input option {
+            background: #131a27;
+            color: var(--color-text-main);
+            padding: 0.5rem;
+        }
+
+        .form-row-2col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .form-actions-row {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .form-input:focus {
@@ -876,10 +916,41 @@
                 grid-column: span 2;
             }
 
+            .modal {
+                padding: 0.5rem;
+                align-items: flex-start;
+                padding-top: max(1rem, env(safe-area-inset-top));
+                padding-bottom: max(1rem, env(safe-area-inset-bottom));
+                overflow-y: auto;
+            }
+
             .modal-content {
-                padding: 1.25rem;
-                width: 92%;
-                gap: 1rem;
+                padding: 1rem;
+                width: 100% !important;
+                max-width: 100% !important;
+                max-height: 88vh;
+                gap: 0.85rem;
+                border-radius: 12px;
+                box-sizing: border-box;
+            }
+
+            .form-row-2col {
+                grid-template-columns: 1fr;
+                gap: 0.75rem;
+            }
+
+            .form-actions-row {
+                gap: 0.6rem;
+            }
+
+            .form-input, select.form-input {
+                font-size: 16px; /* Prevents auto-zoom on iOS */
+                padding: 0.65rem 0.85rem;
+            }
+
+            select.form-input {
+                padding-right: 2.2rem;
+                background-position: right 0.65rem center;
             }
 
             .modal-header {
@@ -887,7 +958,7 @@
             }
 
             .modal-header h3 {
-                font-size: 1.1rem;
+                font-size: 1.05rem;
             }
 
             .console-card {
@@ -936,7 +1007,7 @@
                 <textarea id="genTopicText" class="form-input" style="min-height: 100px; resize: vertical;" placeholder="Describe what happened, a recent tech bug, a founder milestone, or an opinion..."></textarea>
             </div>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-row-2col">
                 <div class="form-group">
                     <label for="genToneSelect">Post Tone</label>
                     <select id="genToneSelect" class="form-input">
@@ -970,33 +1041,33 @@
                 <label for="genHookFormulaSelect">Viral Hook Formula (F1–F20)</label>
                 <select id="genHookFormulaSelect" class="form-input" onchange="updateHookPreview()">
                     <option value="None">None (Standard Organic Hook)</option>
-                    <option value="F1">F1 — Platform Risk Anaphora (Comments & Reposts)</option>
-                    <option value="F2">F2 — R.I.P. Category Obituary (Reposts & Likes)</option>
-                    <option value="F3">F3 — Year-over-Year Pivot (Comments)</option>
-                    <option value="F4">F4 — Time-Anchor Confession (Comments & Saves)</option>
-                    <option value="F5">F5 — Self-Proving Meta (Comments)</option>
-                    <option value="F6">F6 — Comment-Gate Lead Magnet (Lead Gen)</option>
-                    <option value="F7">F7 — Odd-Precision Money Ledger (Saves & Reposts)</option>
-                    <option value="F8">F8 — Paid-vs-Free Reversal (Saves & Likes)</option>
-                    <option value="F9">F9 — Curiosity-Gap Teaser (Dwell Time)</option>
-                    <option value="F10">F10 — Contrarian + Historical Receipts (Comments)</option>
-                    <option value="F11">F11 — Emotional Cold-Open (Likes & Reach)</option>
-                    <option value="F12">F12 — Permission Slip (Reposts & Saves)</option>
-                    <option value="F13">F13 — Bait-and-Switch Reversal (Likes & Comments)</option>
-                    <option value="F14">F14 — Named Gratitude / Tribute (Likes & Reposts)</option>
-                    <option value="F15">F15 — Explain-to-Kids Simplification (Saves)</option>
-                    <option value="F16">F16 — Status-Strip Humility (Likes & Comments)</option>
-                    <option value="F17">F17 — Controlled A/B Anecdote (Saves & Reposts)</option>
-                    <option value="F18">F18 — False-Binary Dissolve (Comments & Reposts)</option>
-                    <option value="F19">F19 — Anecdote-Meets-Evidence Bridge (Saves)</option>
-                    <option value="F20">F20 — Diverging-Curves Close (Reposts & Saves)</option>
+                    <option value="F1">F1 — Platform Risk Anaphora</option>
+                    <option value="F2">F2 — R.I.P. Category Obituary</option>
+                    <option value="F3">F3 — Year-over-Year Pivot</option>
+                    <option value="F4">F4 — Time-Anchor Confession</option>
+                    <option value="F5">F5 — Self-Proving Meta</option>
+                    <option value="F6">F6 — Comment-Gate Lead Magnet</option>
+                    <option value="F7">F7 — Odd-Precision Money Ledger</option>
+                    <option value="F8">F8 — Paid-vs-Free Reversal</option>
+                    <option value="F9">F9 — Curiosity-Gap Teaser</option>
+                    <option value="F10">F10 — Contrarian + Historical Receipts</option>
+                    <option value="F11">F11 — Emotional Cold-Open</option>
+                    <option value="F12">F12 — Permission Slip</option>
+                    <option value="F13">F13 — Bait-and-Switch Reversal</option>
+                    <option value="F14">F14 — Named Gratitude / Tribute</option>
+                    <option value="F15">F15 — Explain-to-Kids Simplification</option>
+                    <option value="F16">F16 — Status-Strip Humility</option>
+                    <option value="F17">F17 — Controlled A/B Anecdote</option>
+                    <option value="F18">F18 — False-Binary Dissolve</option>
+                    <option value="F19">F19 — Anecdote-Meets-Evidence Bridge</option>
+                    <option value="F20">F20 — Diverging-Curves Close</option>
                 </select>
             </div>
 
             <div id="hookFormulaPreview" style="display: none; background: rgba(102, 252, 241, 0.05); border: 1px solid rgba(102, 252, 241, 0.2); padding: 0.75rem; border-radius: 6px; font-size: 0.8rem; line-height: 1.4; color: var(--color-text-muted);">
             </div>
 
-            <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+            <div class="form-actions-row">
                 <button class="btn btn-secondary" style="flex: 1;" onclick="toggleGenerateModal()">Cancel</button>
                 <button id="btnConfirmGenerate" class="btn btn-primary" style="flex: 1; min-height: 42px;" onclick="submitGenerateModal()">
                     Generate Post Draft
@@ -1043,7 +1114,7 @@
                 </p>
             </div>
 
-            <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+            <div class="form-actions-row">
                 <button class="btn btn-secondary" style="flex: 1;" onclick="toggleSettingsModal()">Cancel</button>
                 <button class="btn btn-primary" style="flex: 1;" onclick="saveSettings()">Save Configs</button>
             </div>
