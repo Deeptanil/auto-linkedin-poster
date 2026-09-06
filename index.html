@@ -1775,25 +1775,6 @@
                 }
             },
 
-            async replenishQueue() {
-                if (this.isCloud) {
-                    const url = `https://api.github.com/repos/${this.ghRepo}/actions/workflows/replenish-drafts.yml/dispatches`;
-                    const res = await fetch(url, {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${this.ghToken}`,
-                            'Accept': 'application/vnd.github+json',
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ ref: 'main' })
-                    });
-                    if (!res.ok) throw new Error((await res.json()).message || res.statusText);
-                    return { status: 'success', message: "Replenishment workflow triggered." };
-                } else {
-                    const res = await fetch('/api/post/replenish', { method: 'POST' });
-                    return await safeJson(res);
-                }
-            },
 
             async addMemory(rawText) {
                 if (this.isCloud) {

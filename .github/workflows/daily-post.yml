@@ -49,11 +49,6 @@ on:
         required: false
         type: boolean
         default: false
-      replenish_only:
-        description: "Only replenish pending drafts, do not publish"
-        required: false
-        type: boolean
-        default: false
 
 # ─── Permissions ──────────────────────────────────────────────────────────────
 permissions:
@@ -118,7 +113,6 @@ jobs:
           EXTRA_NOTES: ${{ github.event.inputs.extra_notes }}
           DRY_RUN:     ${{ github.event.inputs.dry_run || 'false' }}
           FORCE:       ${{ github.event.inputs.force || 'false' }}
-          REPLENISH_ONLY: ${{ github.event.inputs.replenish_only || 'false' }}
         run: python src/run.py
 
       # 5. Commit queue and history back to the state branch

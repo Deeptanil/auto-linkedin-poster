@@ -45,16 +45,6 @@ from src.discord_notifier import (
 )
 
 
-def collect_blacklist_posts(mem: MemoryManager, approved_list: list[dict], pending_list: list[dict]) -> list[str]:
-    """Combine recent history and queued drafts to reduce repeated angles."""
-    blacklist_posts = mem.load_recent_posts_history_text(limit=15)
-    for group in (approved_list, pending_list):
-        for item in group:
-            text = item.get("post_text", "").strip()
-            if text:
-                blacklist_posts.append(text)
-    return blacklist_posts
-
 
 class DualLogger:
     def __init__(self, log_path):
@@ -161,34 +151,7 @@ def main():
     pending_list = queue.get("pending", [])
 
     if replenish_only:
-        print("[!] Replenish Only mode active. Skipping publishing logic.")
-        if len(pending_list) < 10:
-            print(f"    Replenishing pending drafts queue (current: {len(pending_list)}, target: 10)...")
-            try:
-                topic = "See the recent context below — extract the most compelling story or insight." if ctx_summary["recent_context"] else "Share an insight from my professional background and achievements."
-                blacklist_posts = collect_blacklist_posts(mem, approved_list, pending_list)
-                
-                compact = mem.load_compact_profile()
-                ai = AIGenerator()
-                needed = 10 - len(pending_list)
-                batch = ai.generate_post_batch(
-                    topic=topic,
-                    tone=tone,
-                    extra_instructions=extra_notes,
-                    compact_profile=compact,
-                    recent_context=ctx_summary["recent_context"],
-                    past_posts=blacklist_posts,
-                    batch_size=needed
-                )
-                if batch:
-                    pending_list.extend(batch)
-                    queue["pending"] = pending_list
-                    mem.save_posts_queue(queue)
-                    print(f"    Added {len(batch)} new drafts to pending queue.")
-            except Exception as e:
-                print(f"    Failed to replenish drafts queue: {e}")
-        else:
-            print("    Pending queue is already full (10 drafts). No action needed.")
+        print("[!] Replenish Only mode active. Automatic draft replenishment is disabled.")
         sys.exit(0)
 
     if not approved_list:
@@ -202,33 +165,6 @@ def main():
         current_utc_hour = datetime.now(timezone.utc).hour
         if current_utc_hour < 6:
             notify_queue_empty_reminder()
-        
-        # If we have less than 10 pending drafts, let's proactively generate some so the user has choices
-        if len(pending_list) < 10:
-            print("    Proactively replenishing pending drafts queue (target: 10)...")
-            try:
-                topic = "See the recent context below — extract the most compelling story or insight." if ctx_summary["recent_context"] else "Share an insight from my professional background and achievements."
-                blacklist_posts = collect_blacklist_posts(mem, approved_list, pending_list)
-                
-                compact = mem.load_compact_profile()
-                ai = AIGenerator()
-                needed = 10 - len(pending_list)
-                batch = ai.generate_post_batch(
-                    topic=topic,
-                    tone=tone,
-                    extra_instructions=extra_notes,
-                    compact_profile=compact,
-                    recent_context=ctx_summary["recent_context"],
-                    past_posts=blacklist_posts,
-                    batch_size=needed
-                )
-                if batch:
-                    pending_list.extend(batch)
-                    queue["pending"] = pending_list
-                    mem.save_posts_queue(queue)
-                    print(f"    Added {len(batch)} new drafts to pending queue.")
-            except Exception as e:
-                print(f"    Failed to replenish drafts queue: {e}")
         
         sys.exit(0)
 
@@ -342,32 +278,6 @@ def main():
     # Remove the posted item from approved list
     approved_list.pop(-1)
     queue["approved"] = approved_list
-
-    # Ensure pending queue maintains at least 10 items
-    if len(pending_list) < 10:
-        print("  Replenishing pending queue back up to 10...")
-        try:
-            topic = "See the recent context below — extract the most compelling story or insight." if ctx_summary["recent_context"] else "Share an insight from my professional background and achievements."
-            blacklist_posts = collect_blacklist_posts(mem, approved_list, pending_list)
-            
-            compact = mem.load_compact_profile()
-            ai = AIGenerator()
-            needed = 10 - len(pending_list)
-            batch = ai.generate_post_batch(
-                topic=topic,
-                tone=tone,
-                extra_instructions=extra_notes,
-                compact_profile=compact,
-                recent_context=ctx_summary["recent_context"],
-                past_posts=blacklist_posts,
-                batch_size=needed
-            )
-            if batch:
-                pending_list.extend(batch)
-                queue["pending"] = pending_list
-                print(f"  Added {len(batch)} new drafts to pending queue.")
-        except Exception as e:
-            print(f"  Could not automatically replenish pending drafts: {e}")
 
     # Stamp the post time so the dashboard coverage-date calculation
     # knows whether today's post has already been sent.
