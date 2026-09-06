@@ -33,17 +33,51 @@
       "image_paths": [
         "memory/images/1787999127759_1000157678.mp4"
       ]
-    },
-    {
-      "post_text": "You don't need to know how you're going to achieve your goal. You just need to believe it's possible.\n\nI've started to realize this more and more over the years.\n\nBefore starting my clothing brands, I knew almost nothing about running a business.\n\nI didn't know how to find manufacturers. I didn't know how to source products. I didn't know how to build a brand.\n\nI just had an idea and wanted to see if I could make it work.\n\nWhen we started working on STRAYED, I didn't even know how I was going to build the website from scratch with the limitations we had.\n\nSo I figured it out.\n\nWith Prettiva & Co., we initially tried Amazon because it seemed like the easiest way to get started. Eventually, we realized it wasn't the right fit for what we wanted to do.\n\nSo we looked for other options.\n\nWe tried things, changed our approach, found solutions that worked for us, and kept moving.\n\nAnd that's probably one of the biggest things I've learned from all of this:\n\nYou don't always need the answer before you start.\n\nSometimes you just need a goal big enough that you're willing to figure out the rest along the way.\n\nThere will be things you don't know.\nThere will be things that don't work.\nThere will be times when you have no idea what to do next.\n\nBut there's almost always another way forward.\n\nIt might take weeks. It might take months.\n\nBut if you keep looking, keep learning, and don't give up, you'll eventually find a way.\n\nSo dream big.\n\nDon't limit your goals based on what you think is possible today.\n\nSet the goal first.\n\nFigure out the how along the way.",
-      "reasoning": "Custom draft added directly from dashboard.",
-      "image_paths": [
-        "memory/images/1788017460589_1000157680.png"
-      ]
     }
   ],
-  "pending": [],
-  "last_posted_at": "2026-09-03T08:57:18.486880+00:00",
+  "pending": [
+    {
+      "post_text": "I used to think being a founder meant having all the answers.\n\nThen I started Prettiva and Co. and realized that being a founder mostly means finding the right questions to ask.\n\nMost days are not spent in high-level strategy meetings. They are spent looking at a failed build or a design choice that just feels wrong.\n\nI stopped trying to look like I knew everything. I started asking my team and my mentors exactly what I did not understand.\n\nThe progress was immediate. My ego was holding back the product, not the code.\n\nWhat is one question you avoided asking because you were afraid of looking inexperienced?\n\n#founder #startup #learning",
+      "reasoning": "Reflects on his experience as a founder while remaining humble and avoiding buzzwords."
+    },
+    {
+      "post_text": "Shipping a product is often just the beginning of the actual work.\n\nWith STRAYED, I learned that the code is the easy part. The real challenge starts when people actually use what you built.\n\nYou spend weeks sweating over pixels and database schema only for someone to tell you the button is in the wrong place.\n\nIt stings at first. Then you realize that feedback is the only way to actually build something people want.\n\nI have learned to hold my designs loosely.\n\nHow do you handle feedback that points out a flaw in a project you spent weeks building?\n\n#product #development #startup",
+      "reasoning": "Focuses on the reality of shipping products and handling user feedback."
+    },
+    {
+      "post_text": "I spent a year building in relative isolation before I realized I was doing it wrong.\n\nI was hoarding my ideas, scared that someone would steal them or tell me they were bad.\n\nOnce I started talking about the projects at Prettiva and Co. with other builders in Bangalore, everything changed.\n\nI got immediate, harsh feedback that saved me months of wasted time.\n\nBuilding in public is not about showing off. It is about getting a reality check before you go too far down the wrong path.\n\nWhat is the main reason you hesitate to share your work with others?\n\n#buildinginpublic #developers #bangalore",
+      "reasoning": "A lesson learned through his time as a student-founder in Bangalore."
+    },
+    {
+      "post_text": "Most tutorials teach you how to write perfect code for perfect conditions.\n\nIn the real world, things never stay perfect. APIs change, servers go down, and users do things you never expected.\n\nMy work on STRAYED taught me that error handling is more important than the actual feature logic.\n\nIf you build something that only works in a controlled lab environment, it will fail the moment it hits the internet.\n\nI started prioritizing robustness over fancy features.\n\nWhat is a simple technical principle that took you way too long to actually implement?\n\n#coding #webdevelopment #softwareengineering",
+      "reasoning": "Discusses technical maturity from the perspective of an active developer."
+    },
+    {
+      "post_text": "Balancing a college degree while running two businesses is a messy process.\n\nI do not have a secret productivity system or a magical morning routine.\n\nI mostly just say no to things that do not for my projects.\n\nIf it is not contributing to my studies or the growth of Prettiva and Co., it usually gets dropped.\n\nIt sounds harsh, but it is the only way to keep my head above water.\n\nHow do you decide which projects to ignore when your plate is already full?\n\n#studentfounder #time-management #entrepreneurship",
+      "reasoning": "Addresses the reality of his dual-life as a student and founder."
+    },
+    {
+      "post_text": "The hardest code I ever wrote was for a project I eventually deleted.\n\nIt was a complex state management system for a dashboard that nobody actually used.\n\nI spent three weeks obsessing over the architecture. I thought the code was beautiful.\n\nBut the product itself was confusing and unnecessary.\n\nI learned that writing great code for a useless feature is just a waste of time.\n\nWhat was the last project you killed, and why did you decide to shut it down?\n\n#coding #ux #productdesign",
+      "reasoning": "Highlights the difference between clean code and useful products."
+    },
+    {
+      "post_text": "I used to be obsessed with having a massive list of features for every launch.\n\nNow I aim to strip everything down to the bare minimum.\n\nIf the core value is not obvious in the first ten seconds, adding five more features will not fix the experience.\n\nWhen we were working on early versions of our brands, we spent too much time adding clutter.\n\nWe were trying to hide the fact that the core idea was not quite there yet.\n\nWhen was the last time you cut a feature because it was distracting from the primary goal?\n\n#productmanagement #design #minimalism",
+      "reasoning": "Discusses the evolution of his approach to product design and feature sets."
+    },
+    {
+      "post_text": "Documentation is often treated as a chore rather than a vital part of the build.\n\nI used to hate writing docs for my repos.\n\nThen I tried to go back and use a project I wrote six months ago, and I had no idea what was going on.\n\nI wasted half a day just figuring out how to run my own local environment.\n\nNow I treat documentation as a message to my future self.\n\nWhat is one habit you developed purely because you were tired of dealing with your own past mistakes?\n\n#devlife #coding #programming",
+      "reasoning": "Relatable developer pain point that shows maturity in his workflow."
+    },
+    {
+      "post_text": "Networking in Bangalore is not about attending fancy conferences.\n\nIt is about finding people who are actually building things and talking to them over coffee.\n\nI met some of the best people for Prettiva and Co. while working from random cafes or library spots.\n\nWe were just two people struggling with a bug or a design layout.\n\nThose conversations led to more growth than any networking event I ever attended.\n\nWhere do you usually meet the people who actually influence your work?\n\n#networking #bangalore #founders",
+      "reasoning": "Captures the local vibe of Bangalore tech culture."
+    },
+    {
+      "post_text": "I stopped comparing my journey to people with funding and teams of fifty.\n\nIt is a fast way to feel like you are failing even when you are making real progress.\n\nMy work on STRAYED is different from a funded company, and that is fine.\n\nWe move slower, but we learn deeper. We do not have the pressure of burn rates, just the joy of building.\n\nStay focused on your own lane.\n\nHow do you filter out the noise of what everyone else is doing in your space?\n\n#startup #founder #growth",
+      "reasoning": "Reflects on the founder experience without the typical VC-funded bias."
+    }
+  ],
+  "last_posted_at": "2026-09-06T06:49:07.657028+00:00",
   "settings": {
     "post_interval_days": 3
   }
