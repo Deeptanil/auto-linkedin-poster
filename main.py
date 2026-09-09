@@ -18,8 +18,8 @@ console = Console()
 def display_header():
     console.clear()
     console.print(Panel.fit(
-        "[bold cyan]🚀 LINKEDIN AI POSTER TOOL[/bold cyan]\n"
-        "[dim]Powered by Gemini 2.5 Flash & Playwright[/dim]",
+        "[bold cyan]🚀 LINKEDIN POST PUBLISHER & MANAGER[/bold cyan]\n"
+        "[dim]Powered by Gemini & LinkedIn REST API[/dim]",
         border_style="cyan"
     ))
 

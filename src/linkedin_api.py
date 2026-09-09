@@ -183,8 +183,8 @@ class LinkedInAPI:
                 "thirdPartyDistributionChannels": []
             },
             "content": {
-                "singleVideo": {
-                    "video": video_urn,
+                "media": {
+                    "id": video_urn,
                     "title": title
                 }
             },

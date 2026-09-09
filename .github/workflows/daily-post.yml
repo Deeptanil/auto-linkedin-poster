@@ -1,4 +1,4 @@
-name: "📅 Daily LinkedIn Post"
+name: "📅 Publish Approved LinkedIn Post"
 
 # ─── Triggers ─────────────────────────────────────────────────────────────────
 on:
@@ -19,33 +19,13 @@ on:
   # Manual: trigger with optional overrides from GitHub UI
   workflow_dispatch:
     inputs:
-      context:
-        description: "What happened recently? (raw thoughts, wins, learnings)"
-        required: false
-        type: string
-      tone:
-        description: "Post tone"
-        required: false
-        type: choice
-        default: "Auto"
-        options:
-          - Auto
-          - Storytelling
-          - Technical
-          - Professional
-          - "Thought Leadership"
-          - "Casual/Conversational"
-      extra_notes:
-        description: "Extra instructions (e.g. 'keep it under 200 words', 'mention the product launch')"
-        required: false
-        type: string
       dry_run:
-        description: "Dry run — generate post but don't publish it"
+        description: "Dry run — test publish process without posting to LinkedIn"
         required: false
         type: boolean
         default: false
       force:
-        description: "Force post even if no context file exists"
+        description: "Force post even if interval check would skip"
         required: false
         type: boolean
         default: false
@@ -57,7 +37,7 @@ permissions:
 # ─── Jobs ─────────────────────────────────────────────────────────────────────
 jobs:
   post:
-    name: "Generate & Post"
+    name: "Publish Approved Post"
     runs-on: ubuntu-latest
     timeout-minutes: 15
     defaults:
@@ -90,7 +70,7 @@ jobs:
         run: pip install -r requirements.txt
 
       # 4. Run the posting script
-      - name: "🚀 Generate & publish post"
+      - name: "🚀 Publish approved post"
         env:
           # Gemini
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
@@ -108,9 +88,6 @@ jobs:
           GITHUB_TOKEN:      ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           # Workflow inputs
-          CONTEXT:     ${{ github.event.inputs.context }}
-          TONE:        ${{ github.event.inputs.tone || 'Auto' }}
-          EXTRA_NOTES: ${{ github.event.inputs.extra_notes }}
           DRY_RUN:     ${{ github.event.inputs.dry_run || 'false' }}
           FORCE:       ${{ github.event.inputs.force || 'false' }}
         run: python src/run.py

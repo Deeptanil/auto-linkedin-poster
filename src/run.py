@@ -6,19 +6,16 @@ It orchestrates the full pipeline:
 
   1. Parse inputs from environment variables set by the workflow
   2. Check / refresh the LinkedIn access token
-  3. Load memory (voice profile, achievements, context)
-  4. Guard: skip if no context and not forced
-  5. Generate post via Gemini
+  3. Load memory and user approved post queue
+  4. Guard: skip if post interval not reached
+  5. Pop next approved post provided by user
   6. Post to LinkedIn (unless DRY_RUN=true)
   7. Log to post_history.json and commit it back
   8. Notify via Discord
 
 Environment variables (set by the GitHub Actions workflow):
-  CONTEXT          — raw context text (from workflow_dispatch input)
-  TONE             — post tone (default: Auto)
-  EXTRA_NOTES      — additional instructions
   DRY_RUN          — 'true' to skip actual posting (print only)
-  FORCE            — 'true' to post even without context
+  FORCE            — 'true' to post ignoring interval check
   SKIP_TOKEN_CHECK — 'true' to skip token refresh logic
   + All secrets from config.py
 """
@@ -81,7 +78,7 @@ def main():
     sys.stderr = sys.stdout
 
     print("=" * 60)
-    print("  LinkedIn AI Auto-Poster (Batch Queue & Memory Engine)")
+    print("  LinkedIn Post Publisher (Batch Queue & Memory Engine)")
     print("=" * 60)
 
     # ── Fast-exit: already posted today? (IST) ────────────────────────────────

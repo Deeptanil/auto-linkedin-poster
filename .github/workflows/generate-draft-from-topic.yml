@@ -1,4 +1,4 @@
-name: "✍️ Generate Draft From Topic"
+name: "✍️ Create Draft From Topic"
 
 on:
   workflow_dispatch:
@@ -33,7 +33,7 @@ permissions:
 
 jobs:
   generate:
-    name: "Generate Draft"
+    name: "Create Draft"
     runs-on: ubuntu-latest
     timeout-minutes: 10
     defaults:

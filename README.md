@@ -1,6 +1,6 @@
-# 🚀 LinkedIn AI Auto-Poster (Human-in-the-Loop & Memory Compactor)
+# 🚀 LinkedIn Post Publisher (Human-in-the-Loop Queue)
 
-> Post authentic, high-impact LinkedIn updates daily. AI generates posts tailored to your voice, which you review, edit, or approve in a local visual dashboard. GitHub Actions automatically publishes approved posts every day—100% free with no monthly subscriptions.
+> Post authentic, high-impact LinkedIn updates on schedule. Add, review, edit, and approve posts in your visual dashboard. GitHub Actions automatically publishes your approved posts—100% free with no monthly subscriptions.
 
 ---
 
