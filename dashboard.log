@@ -1,5 +1,65 @@
---- Posting Pipeline Run Started: 2026-09-08 17:04:15.409133 ---
+--- Posting Pipeline Run Started: 2026-09-09 14:00:44.518528 ---
 ============================================================
-  LinkedIn AI Auto-Poster (Batch Queue & Memory Engine)
+  LinkedIn Post Publisher (Batch Queue & Memory Engine)
 ============================================================
-[!] Last post was 2 days ago. Current interval is 3 days. Skipping posting.
+  Tone:     Auto
+  Dry run:  False
+  Force:    False
+  Replenish Only: False
+
+[1/5] Token check skipped.
+[2/5] Loading memory...
+  Voice profile:  [OK]
+  Achievements:   [OK]
+  Recent context: [X] (none found)
+  Approved posts: 6
+  Pending drafts: 0
+
+
+────────────────────────────────────────────────────────────
+CURRENT APPROVED POST TO PUBLISH:
+────────────────────────────────────────────────────────────
+I almost quit Karate after 8 years.
+
+I started learning Karate when I was around 10 years old.
+
+For years, every Tuesday and Thursday, I'd show up to training. I went from a white belt, all the way to brown.
+
+But somewhere along the way, I started losing interest.
+
+As I got older, Karate just didn't feel as exciting anymore. I wanted to stop.
+
+But my parents encouraged me to keep going.
+
+And I remember thinking:
+
+"If I stop now, what do I have to show for all these years?"
+
+So I kept going.
+
+For another year and a half, I pushed through. I eventually switched to a much more intensive training session once a week and started putting in more effort than I had before.
+
+After around 10 years of training, I finally earned my Black Belt. 🥋
+
+Looking back, getting the Black Belt wasn't the hardest part.
+
+The hardest part was continuing when I didn't want to.
+
+Karate taught me something I've found myself using in almost everything I do now:
+
+Motivation gets you started. Commitment keeps you going.
+
+Sometimes you don't need to love what you're doing every day.
+
+You just need to keep showing up.
+────────────────────────────────────────────────────────────
+
+[4/5] Posting to LinkedIn...
+  [video] Found video attachment at: /home/runner/work/auto-linkedin-poster/auto-linkedin-poster/code/memory/images/1787999127759_1000157678.mp4
+  [video] Uploading video to LinkedIn...
+  [video] Upload complete. Video URN: urn:li:video:D5610AQGeA7A8beU4nw
+  [video] Creating LinkedIn post with video...
+  [OK] Post published! URN: urn:li:ugcPost:7503452342009266176
+[5/5] Updating queues and logging history...
+
+🎉 All done! Post is live on LinkedIn. Cache queue updated.
