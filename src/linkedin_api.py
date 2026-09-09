@@ -123,7 +123,8 @@ class LinkedInAPI:
         init_url = f"{config.LINKEDIN_API_BASE}/rest/videos?action=initializeUpload"
         init_payload = {
             "initializeUploadRequest": {
-                "owner": author_urn
+                "owner": author_urn,
+                "fileSizeBytes": len(video_bytes)
             }
         }
         
