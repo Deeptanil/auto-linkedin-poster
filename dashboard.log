@@ -1,5 +1,127 @@
---- Posting Pipeline Run Started: 2026-09-11 16:54:53.698189 ---
+--- Posting Pipeline Run Started: 2026-09-12 06:49:51.526641 ---
 ============================================================
   LinkedIn Post Publisher (Batch Queue & Memory Engine)
 ============================================================
-[!] Last post was 2 days ago. Current interval is 3 days. Skipping posting.
+  Tone:     Auto
+  Dry run:  False
+  Force:    False
+  Replenish Only: False
+
+[1/5] Token check skipped.
+[2/5] Loading memory...
+  Voice profile:  [OK]
+  Achievements:   [OK]
+  Recent context: [X] (none found)
+  Approved posts: 5
+  Pending drafts: 0
+
+
+────────────────────────────────────────────────────────────
+CURRENT APPROVED POST TO PUBLISH:
+────────────────────────────────────────────────────────────
+5 apps on my phone that I genuinely use all the time, but barely see anyone talking about.
+
+As someone who spends a lot of time studying, building things, and working on projects, I've ended up collecting a bunch of very specific apps that solve very specific problems.
+
+These 5 have become part of my daily workflow:
+
+1. SwiftSlate
+
+This one is probably my favourite.
+
+Instead of copying text into ChatGPT every time I want to fix or rewrite something, I can do it directly wherever I'm typing.
+
+For example:
+
+"?fix" → fixes the grammar
+"?formal" → makes it formal
+
+So if I'm writing an email and want it to sound more professional, I just add "?formal" and it's done.
+
+No copying. No switching apps. No opening ChatGPT.
+
+https://github.com/Musheer360/SwiftSlate
+
+2. Wispr Flow
+
+I've been using this one constantly.
+
+Sometimes I just don't want to type.
+
+I can talk to my phone normally, even if what I'm saying is messy or full of pauses, and Wispr Flow turns it into properly formatted text.
+
+It removes the gibberish, fixes the sentences, adds punctuation, and actually makes sense of what I'm trying to say.
+
+I use it for messages, emails, LinkedIn posts, prompts, and even while coding.
+
+I'm actually using it to write this post right now. 😂
+
+https://wisprflow.ai/
+
+3. Mark
+
+If you're like me, your gallery is probably full of screenshots you took for 5 minutes and never needed again.
+
+Mark fixes that.
+
+Whenever I take a screenshot, it gives me the option to automatically delete it after a set amount of time.
+
+When I'm building a website or an app, I'll often take a screenshot, set it to delete after 15 minutes, share it to my laptop, and forget about it.
+
+Then it disappears automatically.
+
+No more hundreds of random screenshots clogging up my gallery.
+
+https://play.google.com/store/apps/details?id=com.markOne.ss_app
+
+4. Essentials
+
+This is one of those Android apps where you keep discovering another useful feature.
+
+It has things like Private DNS controls, battery information, automation, USB debugging controls, and a ton of other system-level tools.
+
+The feature I use the most is the automation around developer and accessibility settings.
+
+Because I use accessibility services and USB debugging for development, some banking and UPI apps don't let me use them while those settings are enabled.
+
+Essentials lets me automatically handle those settings when I open certain apps, so I don't have to keep manually turning everything off and back on.
+
+It's a very small thing, but it saves me a lot of frustration.
+
+https://sameerasw.com/essentials
+
+5. Droplert
+
+I only discovered this one recently, but I already love it.
+I use it to track things I want to buy and get notified when the price drops.
+
+What's really cool is that it can track prices from practically any website. I can paste a product link, choose the price I want to track, and let it do the checking for me. It can also show price history and let me set a target price.
+
+I've been using it for everything from products and gifts to things like subscriptions and online services.
+
+And honestly, I had to mention it because the app itself is just really well designed.
+
+https://play.google.com/store/apps/details?id=com.shahzaman.pricetracker
+
+These aren't necessarily the most popular apps on my phone.
+
+They're just apps that solve small problems really well, and those are often the apps I end up using the most.
+
+What's one underrated app on your phone that you think more people should know about?
+
+#Android #Productivity #Apps #DeveloperTools #Technology #StudentLife
+────────────────────────────────────────────────────────────
+
+[4/5] Posting to LinkedIn...
+  [image] Found 3 image attachments.
+  [image] Uploading image 1/3: /home/runner/work/auto-linkedin-poster/auto-linkedin-poster/code/memory/images/1788633352655_commands.png...
+  [image] Image 1 uploaded. URN: urn:li:image:D5610AQET2XIbo_m7Pg
+  [image] Uploading image 2/3: /home/runner/work/auto-linkedin-poster/auto-linkedin-poster/code/memory/images/1788633446987_6a724a4fff322698a57a7d97_dictation-og_(1).jpg...
+  [image] Image 2 uploaded. URN: urn:li:image:D5610AQGyvyvQm4vCcA
+  [image] Uploading image 3/3: /home/runner/work/auto-linkedin-poster/auto-linkedin-poster/code/memory/images/1788633480062_essentials-web-preview.jpeg...
+  [image] Image 3 uploaded. URN: urn:li:image:D5610AQF7xH3ybtZn5w
+  [image] Creating LinkedIn post with multiple images...
+  [OK] Post published! URN: urn:li:ugcPost:7504431076585390080
+[5/5] Updating queues and logging history...
+
+🎉 All done! Post is live on LinkedIn. Cache queue updated.
