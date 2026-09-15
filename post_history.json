@@ -421,5 +421,14 @@
     "context_date": null,
     "dry_run": false,
     "preview": "5 apps on my phone that I genuinely use all the time, but barely see anyone talking about.\n\nAs someone who spends a lot of time studying, building things, and working on projects, I've ended up collec…"
+  },
+  {
+    "id": 48,
+    "posted_at": "2026-09-15T07:08:54.423303+00:00",
+    "post_urn": "urn:li:ugcPost:7505523018270494721",
+    "tone": "Auto",
+    "context_date": null,
+    "dry_run": false,
+    "preview": "Building high-end web experiences from scratch is often a waste of time.\n\nI used to spend entire weekends manually tweaking CSS transitions or fighting with WebGL shaders just to get a simple hover st…"
   }
 ]
