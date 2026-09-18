@@ -1,53 +1,5 @@
---- Posting Pipeline Run Started: 2026-09-18 07:00:45.606955 ---
+--- Posting Pipeline Run Started: 2026-09-18 07:37:11.522630 ---
 ============================================================
   LinkedIn Post Publisher (Batch Queue & Memory Engine)
 ============================================================
-  Tone:     Auto
-  Dry run:  False
-  Force:    False
-  Replenish Only: False
-
-[1/5] Token check skipped.
-[2/5] Loading memory...
-  Voice profile:  [OK]
-  Achievements:   [OK]
-  Recent context: [X] (none found)
-  Approved posts: 3
-  Pending drafts: 0
-
-
-────────────────────────────────────────────────────────────
-CURRENT APPROVED POST TO PUBLISH:
-────────────────────────────────────────────────────────────
-Illegal websites every web designer should know.
-
-Most designers and developers I know get stuck in a loop of trying to reinvent every button, hover effect, or shader they see online. It usually leads to a messy codebase and a site that takes way too long to ship. I found three specific resources that help me skip the manual labor while keeping the final product looking professional.
-
-designprompts.dev is my go-to for sparking ideas. It offers a huge library of styles, from monochrome to clean SaaS layouts, and allows you to copy design prompts with a single click. It saves you from that staring-at-a-blank-screen feeling.
-
-Next is Animmaster Library. It hosts over 200 animated components and a massive collection of portfolio examples. If you need a specific interaction, it is probably already built and ready to drop into your code.
-
-Finally, I have been playing with Aceternity UI. It provides over 300 premium components that are actually easy to integrate. I recently tested their cloud shader, and the result was surprisingly sharp for how little effort it took to set up. You just copy the JavaScript and it works.
-
-I stopped trying to be a hero with every single line of CSS. Now I use these to build faster and spend my energy on the actual product logic.
-
-Which resources do you keep in your bookmarks for when you are stuck on a UI problem?
-
-#webdesign #frontend #developer #productivity
-────────────────────────────────────────────────────────────
-
-[4/5] Posting to LinkedIn...
-  [image] Found 3 image attachments.
-  [image] Uploading image 1/3: /home/runner/work/auto-linkedin-poster/auto-linkedin-poster/code/memory/images/1788636317000_google-gemini.webp...
-  [linkedin_api] Warning: image format conversion failed: No module named 'PIL'
-  [image] Image 1 uploaded. URN: urn:li:image:D5610AQEFY93Z7S4Eyg
-  [image] Uploading image 2/3: /home/runner/work/auto-linkedin-poster/auto-linkedin-poster/code/memory/images/1788636318416_bg-2-500.webp...
-  [linkedin_api] Warning: image format conversion failed: No module named 'PIL'
-  [image] Image 2 uploaded. URN: urn:li:image:D5610AQGnxhU7F9qBOw
-  [image] Uploading image 3/3: /home/runner/work/auto-linkedin-poster/auto-linkedin-poster/code/memory/images/1788636319939_og-image.png...
-  [image] Image 3 uploaded. URN: urn:li:image:D5610AQE_O6Xjw6FJnQ
-  [image] Creating LinkedIn post with multiple images...
-  [OK] Post published! URN: urn:li:ugcPost:7506608146237243393
-[5/5] Updating queues and logging history...
-
-🎉 All done! Post is live on LinkedIn. Cache queue updated.
+[!] Last post was 0 days ago. Current interval is 3 days. Skipping posting.
