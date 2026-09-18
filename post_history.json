@@ -430,5 +430,14 @@
     "context_date": null,
     "dry_run": false,
     "preview": "Building high-end web experiences from scratch is often a waste of time.\n\nI used to spend entire weekends manually tweaking CSS transitions or fighting with WebGL shaders just to get a simple hover st…"
+  },
+  {
+    "id": 49,
+    "posted_at": "2026-09-18T07:00:48.676495+00:00",
+    "post_urn": "urn:li:ugcPost:7506608146237243393",
+    "tone": "Auto",
+    "context_date": null,
+    "dry_run": false,
+    "preview": "Illegal websites every web designer should know.\n\nMost designers and developers I know get stuck in a loop of trying to reinvent every button, hover effect, or shader they see online. It usually leads…"
   }
 ]
