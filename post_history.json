@@ -439,5 +439,14 @@
     "context_date": null,
     "dry_run": false,
     "preview": "Illegal websites every web designer should know.\n\nMost designers and developers I know get stuck in a loop of trying to reinvent every button, hover effect, or shader they see online. It usually leads…"
+  },
+  {
+    "id": 50,
+    "posted_at": "2026-09-21T07:35:32.688047+00:00",
+    "post_urn": "urn:li:ugcPost:7507704048834224128",
+    "tone": "Auto",
+    "context_date": null,
+    "dry_run": false,
+    "preview": "The next 30 seconds will teach you what 2 years of vibe coding taught me.\n\nI've spent the last two years using AI to build apps, websites, and random ideas that probably would've taken me weeks or mon…"
   }
 ]
