@@ -448,5 +448,14 @@
     "context_date": null,
     "dry_run": false,
     "preview": "The next 30 seconds will teach you what 2 years of vibe coding taught me.\n\nI've spent the last two years using AI to build apps, websites, and random ideas that probably would've taken me weeks or mon…"
+  },
+  {
+    "id": 51,
+    "posted_at": "2026-09-24T07:08:01.238213+00:00",
+    "post_urn": "urn:li:ugcPost:7508784285420507137",
+    "tone": "Auto",
+    "context_date": null,
+    "dry_run": false,
+    "preview": "I have spent two years building with AI, and the honeymoon phase is over.\n\nMost people think vibe coding is about prompting until the code works. But I realized that if you are just patching AI-genera…"
   }
 ]

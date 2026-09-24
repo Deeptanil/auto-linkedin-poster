@@ -1,5 +1,55 @@
---- Posting Pipeline Run Started: 2026-09-23 17:42:11.973842 ---
+--- Posting Pipeline Run Started: 2026-09-24 07:07:57.628210 ---
 ============================================================
   LinkedIn Post Publisher (Batch Queue & Memory Engine)
 ============================================================
-[!] Last post was 2 days ago. Current interval is 3 days. Skipping posting.
+  Tone:     Auto
+  Dry run:  False
+  Force:    False
+  Replenish Only: False
+
+[1/5] Token check skipped.
+[2/5] Loading memory...
+  Voice profile:  [OK]
+  Achievements:   [OK]
+  Recent context: [X] (none found)
+  Approved posts: 2
+  Pending drafts: 0
+
+
+────────────────────────────────────────────────────────────
+CURRENT APPROVED POST TO PUBLISH:
+────────────────────────────────────────────────────────────
+I have spent two years building with AI, and the honeymoon phase is over.
+
+Most people think vibe coding is about prompting until the code works. But I realized that if you are just patching AI-generated errors, you are not building, you are just fixing someone else's mess.
+
+Here is what I learned about building apps fast without losing my mind.
+
+Context is everything. Do not dump your entire project into the prompt. Break it down. Give the AI specific files and clear constraints. If you cannot describe the problem, the AI cannot solve it.
+
+Know when to walk away. If I have asked for a fix three times and it is still broken, I delete it. Trying to untangle AI-generated spaghetti code is a trap. Sometimes, the cleanest solution is a fresh start.
+
+Security is not an optional add-on. The AI will write code that runs perfectly but leaves your database wide open. Authentication, API keys, and validation are your job, not the machine's.
+
+Most importantly, vibe coding did not stop me from learning. It shifted my mindset from saying I do not know how to build something, to admitting I do not know how to build it yet. That slight change in perspective is why I ship more projects today than I did two years ago.
+
+You still have to be the engineer. AI is just a tool that makes the process faster, not a replacement for your technical judgment.
+
+What is the one thing you refuse to let AI handle when you are building?
+
+#vibecoding #developer #softwaredevelopment #buildinginpublic
+────────────────────────────────────────────────────────────
+
+[4/5] Posting to LinkedIn...
+  [image] Found 3 image attachments.
+  [image] Uploading image 1/3: /home/runner/work/auto-linkedin-poster/auto-linkedin-poster/code/memory/images/1788710611877_67f3ec3085345dba2f7a2cf7_thumbnail-vibe-coding-1-1000x562.jpg...
+  [image] Image 1 uploaded. URN: urn:li:image:D4D10AQHXY0_Aq6AP5w
+  [image] Uploading image 2/3: /home/runner/work/auto-linkedin-poster/auto-linkedin-poster/code/memory/images/1788710619362_1772466122155.jpg...
+  [image] Image 2 uploaded. URN: urn:li:image:D4D10AQHsIKp1nB3hVA
+  [image] Uploading image 3/3: /home/runner/work/auto-linkedin-poster/auto-linkedin-poster/code/memory/images/1788710620553_1751930690043.png...
+  [image] Image 3 uploaded. URN: urn:li:image:D4D10AQEB9VsKmQTx-Q
+  [image] Creating LinkedIn post with multiple images...
+  [OK] Post published! URN: urn:li:ugcPost:7508784285420507137
+[5/5] Updating queues and logging history...
+
+🎉 All done! Post is live on LinkedIn. Cache queue updated.
