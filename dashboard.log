@@ -1,51 +1,5 @@
---- Posting Pipeline Run Started: 2026-09-27 07:32:51.939016 ---
+--- Posting Pipeline Run Started: 2026-09-27 08:34:10.598263 ---
 ============================================================
   LinkedIn Post Publisher (Batch Queue & Memory Engine)
 ============================================================
-  Tone:     Auto
-  Dry run:  False
-  Force:    False
-  Replenish Only: False
-
-[1/5] Token check skipped.
-[2/5] Loading memory...
-  Voice profile:  [OK]
-  Achievements:   [OK]
-  Recent context: [X] (none found)
-  Approved posts: 1
-  Pending drafts: 0
-
-[!] Only 1 approved post remaining in queue. Alerting Discord...
-
-────────────────────────────────────────────────────────────
-CURRENT APPROVED POST TO PUBLISH:
-────────────────────────────────────────────────────────────
-I found the most unnecessarily suspicious website ever. 😂
-
-It's called CreepyLink.
-
-You give it a normal URL, and it turns it into a link that looks like you're about to download a virus or get your account hacked.
-
-Completely unnecessary.
-
-Absolutely hilarious.
-
-🔗 https://creepylink.com/
-
-Would you click it if a friend sent it to you? 😂
-
-#Internet #Technology #WebDevelopment #Developers
-
-────────────────────────────────────────────────────────────
-
-[4/5] Posting to LinkedIn...
-  [image] Found 2 image attachments.
-  [image] Uploading image 1/2: /home/runner/work/auto-linkedin-poster/auto-linkedin-poster/code/memory/images/1789744486985_Screenshot_2026-09-18_204340.png...
-  [image] Image 1 uploaded. URN: urn:li:image:D5610AQEADFkXXnX74g
-  [image] Uploading image 2/2: /home/runner/work/auto-linkedin-poster/auto-linkedin-poster/code/memory/images/1789744565423_Screenshot_2026-09-18_204556.png...
-  [image] Image 2 uploaded. URN: urn:li:image:D5610AQHHOFiZBTqW2Q
-  [image] Creating LinkedIn post with multiple images...
-  [OK] Post published! URN: urn:li:ugcPost:7509877714477121536
-[5/5] Updating queues and logging history...
-
-🎉 All done! Post is live on LinkedIn. Cache queue updated.
+[!] Last post was 0 days ago. Current interval is 3 days. Skipping posting.
