@@ -1,5 +1,19 @@
---- Posting Pipeline Run Started: 2026-09-29 18:27:17.805728 ---
+--- Posting Pipeline Run Started: 2026-09-30 07:54:52.646497 ---
 ============================================================
   LinkedIn Post Publisher (Batch Queue & Memory Engine)
 ============================================================
-[!] Last post was 2 days ago. Current interval is 3 days. Skipping posting.
+  Tone:     Auto
+  Dry run:  False
+  Force:    False
+  Replenish Only: False
+
+[1/5] Token check skipped.
+[2/5] Loading memory...
+  Voice profile:  [OK]
+  Achievements:   [OK]
+  Recent context: [X] (none found)
+  Approved posts: 0
+  Pending drafts: 0
+
+[!] No approved posts in queue. Skipping schedule execution.
+    Please run the local dashboard, approve some drafts, and sync to GitHub.
