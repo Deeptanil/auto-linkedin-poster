@@ -1,4 +1,4 @@
---- Posting Pipeline Run Started: 2026-10-24 12:49:59.724568 ---
+--- Posting Pipeline Run Started: 2026-10-24 16:25:46.969655 ---
 ============================================================
   LinkedIn Post Publisher (Batch Queue & Memory Engine)
 ============================================================
@@ -12,8 +12,39 @@
   Voice profile:  [OK]
   Achievements:   [OK]
   Recent context: [X] (none found)
-  Approved posts: 0
+  Approved posts: 9
   Pending drafts: 0
 
-[!] No approved posts in queue. Skipping schedule execution.
-    Please run the local dashboard, approve some drafts, and sync to GitHub.
+
+────────────────────────────────────────────────────────────
+CURRENT APPROVED POST TO PUBLISH:
+────────────────────────────────────────────────────────────
+I built a file-sharing tool that puts your files on a timer. ⏳
+
+Meet FileGuard 🔐 — a privacy-focused file-sharing platform I've been building.
+
+What can it do?
+
+📁 Share files and entire folders
+⏳ Automatic 12-hour expiration
+🛡️ SHA-256 file integrity verification
+🚫 No account required
+📊 A forensic testing suite with a bit-flip attack simulator
+
+Built with Python, Flask, Neon PostgreSQL, Backblaze B2, and Vanilla JavaScript.
+
+🔗 Try it: https://files.deeptanil.in
+💻 Explore the code: https://github.com/Deeptanil/FileGuard
+
+I'm sharing this because I want to build things that are more than just another CRUD app.
+
+Try it, break it, review the code, and tell me what I should improve. 👀
+
+#CyberSecurity #OpenSource #SoftwareEngineering
+────────────────────────────────────────────────────────────
+
+[4/5] Posting to LinkedIn...
+  [OK] Post published! URN: urn:li:share:7519796292471152640
+[5/5] Updating queues and logging history...
+
+🎉 All done! Post is live on LinkedIn. Cache queue updated.

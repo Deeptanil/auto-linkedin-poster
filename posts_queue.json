@@ -31,14 +31,10 @@
     {
       "post_text": "Sending someone a file shouldn't require a leap of faith. 💀\n\nYou upload a file, share a link, and hope everything goes as planned.\n\nBut what happens if the file gets tampered with? And does “temporary” really mean temporary?\n\nSo I built FileGuard. 🔐\n\n📁 Share files without creating an account\n⏳ Files expire after 12 hours\n🛡️ SHA-256 integrity checks to detect unexpected changes\n\nThe goal? Make file sharing a little less trust me, bro and a little more secure.\n\nTomorrow: What happens when I deliberately break a file to test the security. 👀\n\n#CyberSecurity #WebDevelopment #BuildInPublic",
       "reasoning": "Custom post added from dashboard."
-    },
-    {
-      "post_text": "I built a file-sharing tool that puts your files on a timer. ⏳\n\nMeet FileGuard 🔐 — a privacy-focused file-sharing platform I've been building.\n\nWhat can it do?\n\n📁 Share files and entire folders\n⏳ Automatic 12-hour expiration\n🛡️ SHA-256 file integrity verification\n🚫 No account required\n📊 A forensic testing suite with a bit-flip attack simulator\n\nBuilt with Python, Flask, Neon PostgreSQL, Backblaze B2, and Vanilla JavaScript.\n\n🔗 Try it: https://files.deeptanil.in\n💻 Explore the code: https://github.com/Deeptanil/FileGuard\n\nI'm sharing this because I want to build things that are more than just another CRUD app.\n\nTry it, break it, review the code, and tell me what I should improve. 👀\n\n#CyberSecurity #OpenSource #SoftwareEngineering",
-      "reasoning": "Custom post added from dashboard."
     }
   ],
   "pending": [],
-  "last_posted_at": "2026-09-27T07:32:54.395984+00:00",
+  "last_posted_at": "2026-10-24T16:25:47.783158+00:00",
   "settings": {
     "post_interval_days": 3
   }
