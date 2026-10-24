@@ -5,6 +5,10 @@
       "reasoning": "Custom post added from dashboard."
     },
     {
+      "post_text": "I've spent the last few days building a food ordering experience that doesn't look like a coupon catalogue.\n\nIt's called Platter 🍽️.\n\nThe idea is simple: ordering food should feel as good as deciding what to eat feels difficult. 😂\n\nHere's what I've built:\n\n✨ Mood-based food discovery\n🫧 A floating frosted-glass navigation dock\n🌗 Light and Dark modes\n🛒 Customisable menus and persistent cart state\n🎉 An interactive checkout experience\n\nBuilt using React Native, Expo, and React.\n\nThe goal wasn't just to make another food delivery UI. It was to explore how thoughtful design and smooth interactions can make an everyday experience feel better.\n\n🔗 Live demo: [Insert your demo link]\n💻 Source code: [Insert your repository link]\n\nTry it, explore it, and tell me what you'd change. I'm especially interested in honest feedback from developers and designers.\n\nAnd yes, I spent an unreasonable amount of time on that floating dock. 😂\n\n#ReactNative #ProductDesign #BuildInPublic #SoftwareEngineering",
+      "reasoning": "Custom post added from dashboard."
+    },
+    {
       "post_text": "I wanted to build a file-sharing website.\n\nNaturally, that turned into a deep dive into cloud storage, database architecture, and IP-based rate limiting. 😂\n\nHere's what's powering FileGuard:\n\n☁️ Backblaze B2 for file storage\n🗄️ Neon PostgreSQL for metadata\n🐍 Python + Flask for the backend\n📦 Dynamic ZIP creation for entire folders\n🛡️ Subnet-based quotas to help limit abuse\n\nAnd yes, files are designed to expire after 12 hours.\n\nNo accounts. No unnecessary friction. Just share, download, and move on.\n\nTomorrow: The actual launch. 🚀\n\n#CloudComputing #BackendDevelopment #BuildInPublic",
       "reasoning": "Custom post added from dashboard."
     },
