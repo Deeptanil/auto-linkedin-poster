@@ -26,7 +26,10 @@
     },
     {
       "post_text": "Sending someone a file shouldn't require a leap of faith. 💀\n\nYou upload a file, share a link, and hope everything goes as planned.\n\nBut what happens if the file gets tampered with? And does “temporary” really mean temporary?\n\nSo I built FileGuard. 🔐\n\n📁 Share files without creating an account\n⏳ Files expire after 12 hours\n🛡️ SHA-256 integrity checks to detect unexpected changes\n\nThe goal? Make file sharing a little less trust me, bro and a little more secure.\n\nTomorrow: What happens when I deliberately break a file to test the security. 👀\n\n#CyberSecurity #WebDevelopment #BuildInPublic",
-      "reasoning": "Custom post added from dashboard."
+      "reasoning": "Custom post added from dashboard.",
+      "image_paths": [
+        "memory/images/1792913492727_Screenshot_2026-10-25_130117.png"
+      ]
     }
   ],
   "pending": [],
