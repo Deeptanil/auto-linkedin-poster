@@ -10,7 +10,11 @@
     },
     {
       "post_text": "Food delivery apps have 47 banners, 12 offers, and somehow still can't decide what I want to eat. 💀\n\nSo I decided to build my own.\n\nMeet Platter 🍽️ — a food ordering experience designed to feel calm, modern, and ridiculously smooth.\n\nThe idea?\n✨ Discover food by mood, not just restaurant names.\n🌗 Clean UI with proper Light and Dark modes.\n🫧 A floating frosted-glass dock that looks way better than a boring navbar.\n\nLess clutter. More cravings.\n\nThis is Day 1 of building Platter. Tomorrow, we get into the tech behind the pretty pixels. 👀\n\nWhat's your biggest pet peeve with food delivery apps?\n\n#UIUX #AppDevelopment #BuildInPublic #ReactNative",
-      "reasoning": "Custom post added from dashboard."
+      "reasoning": "Custom post added from dashboard.",
+      "image_paths": [
+        "memory/images/1793007173487_Screenshot_2026-10-26_143636.png",
+        "memory/images/1793007176500_Screenshot_2026-10-26_143617.png"
+      ]
     },
     {
       "post_text": "I've spent the last few days building a food ordering experience that doesn't look like a coupon catalogue.\n\nIt's called Platter 🍽️.\n\nThe idea is simple: ordering food should feel as good as deciding what to eat feels difficult. 😂\n\nHere's what I've built:\n\n✨ Mood-based food discovery\n🫧 A floating frosted-glass navigation dock\n🌗 Light and Dark modes\n🛒 Customisable menus and persistent cart state\n🎉 An interactive checkout experience\n\nBuilt using React Native, Expo, and React.\n\nThe goal wasn't just to make another food delivery UI. It was to explore how thoughtful design and smooth interactions can make an everyday experience feel better.\n\n🔗 Live demo: [Insert your demo link]\n💻 Source code: [Insert your repository link]\n\nTry it, explore it, and tell me what you'd change. I'm especially interested in honest feedback from developers and designers.\n\nAnd yes, I spent an unreasonable amount of time on that floating dock. 😂\n\n#ReactNative #ProductDesign #BuildInPublic #SoftwareEngineering",
