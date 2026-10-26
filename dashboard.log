@@ -1,5 +1,51 @@
---- Posting Pipeline Run Started: 2026-10-26 15:20:40.209239 ---
+--- Posting Pipeline Run Started: 2026-10-26 19:01:08.959595 ---
 ============================================================
   LinkedIn Post Publisher (Batch Queue & Memory Engine)
 ============================================================
-[!] Last post was 2 days ago. Current interval is 3 days. Skipping posting.
+  Tone:     Auto
+  Dry run:  False
+  Force:    False
+  Replenish Only: False
+
+[1/5] Token check skipped.
+[2/5] Loading memory...
+  Voice profile:  [OK]
+  Achievements:   [OK]
+  Recent context: [X] (none found)
+  Approved posts: 7
+  Pending drafts: 0
+
+
+────────────────────────────────────────────────────────────
+CURRENT APPROVED POST TO PUBLISH:
+────────────────────────────────────────────────────────────
+Sending someone a file shouldn't require a leap of faith. 💀
+
+You upload a file, share a link, and hope everything goes as planned.
+
+But what happens if the file gets tampered with? And does “temporary” really mean temporary?
+
+So I built FileGuard. 🔐
+
+📁 Share files without creating an account
+⏳ Files expire after 12 hours
+🛡️ SHA-256 integrity checks to detect unexpected changes
+
+The goal? Make file sharing a little less trust me, bro and a little more secure.
+
+Tomorrow: What happens when I deliberately break a file to test the security. 👀
+
+#CyberSecurity #WebDevelopment #BuildInPublic
+────────────────────────────────────────────────────────────
+
+[4/5] Posting to LinkedIn...
+  [image] Found 2 image attachments.
+  [image] Uploading image 1/2: /home/runner/work/auto-linkedin-poster/auto-linkedin-poster/code/memory/images/1792913492727_Screenshot_2026-10-25_130117.png...
+  [image] Image 1 uploaded. URN: urn:li:image:D5610AQEk99mjKnCcbw
+  [image] Uploading image 2/2: /home/runner/work/auto-linkedin-poster/auto-linkedin-poster/code/memory/images/1792934102789_Screenshot_2026-10-25_184440.png...
+  [image] Image 2 uploaded. URN: urn:li:image:D5610AQHOjohVs5BVqA
+  [image] Creating LinkedIn post with multiple images...
+  [OK] Post published! URN: urn:li:ugcPost:7520560174764560384
+[5/5] Updating queues and logging history...
+
+🎉 All done! Post is live on LinkedIn. Cache queue updated.
