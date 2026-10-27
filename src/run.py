@@ -22,6 +22,7 @@ Environment variables (set by the GitHub Actions workflow):
 
 import os
 import sys
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
 # Allow imports from project root
@@ -88,15 +89,43 @@ def main():
     force          = os.getenv("FORCE", "false").strip().lower() == "true"
 
     if not replenish_only and not force:
+        # 1. Allowed Time Window Guard (Asia/Kolkata)
+        try:
+            import zoneinfo
+            tz_ist = zoneinfo.ZoneInfo("Asia/Kolkata")
+        except Exception:
+            tz_ist = timezone(timedelta(hours=5, minutes=30))
+
+        now_ist = datetime.now(tz_ist)
+        current_time_str = now_ist.strftime("%H:%M")
+        win_start = getattr(config, "POSTING_WINDOW_START_IST", "07:30")
+        win_end   = getattr(config, "POSTING_WINDOW_END_IST", "12:00")
+
+        if not (win_start <= current_time_str <= win_end):
+            print(f"[!] Current IST time ({current_time_str}) is outside allowed posting window ({win_start} - {win_end} IST). Skipping posting.")
+            sys.exit(0)
+
+        # 2. Already Posted Today Guard
+        history = PostHistory()
+        if history.already_posted_today():
+            print(f"[!] Already posted today ({now_ist.date()} IST). Skipping posting.")
+            sys.exit(0)
+
+        # 3. Post Interval Guard (Days and Elapsed Hours)
         mem = MemoryManager()
         queue = mem.load_posts_queue()
         settings = queue.get("settings", {})
         post_interval_days = int(settings.get("post_interval_days", 3))
 
-        history = PostHistory()
         days_since = history.get_days_since_last_post()
         if days_since is not None and days_since < post_interval_days:
             print(f"[!] Last post was {days_since} days ago. Current interval is {post_interval_days} days. Skipping posting.")
+            sys.exit(0)
+
+        hours_since = history.get_hours_since_last_post()
+        min_hours = (post_interval_days - 1) * 24 + 12
+        if hours_since is not None and hours_since < min_hours:
+            print(f"[!] Only {hours_since:.1f} hours elapsed since last post (minimum {min_hours}h required for {post_interval_days}-day interval). Skipping posting.")
             sys.exit(0)
 
     # ── Read inputs from environment ──────────────────────────────────────────
@@ -158,7 +187,6 @@ def main():
         # Only send the Discord reminder once per day (on the first morning run only).
         # We detect this by checking if the current UTC hour is in the first morning window
         # (before 6 AM UTC = before ~11:30 AM IST), preventing repeat pings on retries.
-        from datetime import datetime, timezone
         current_utc_hour = datetime.now(timezone.utc).hour
         if current_utc_hour < 6:
             notify_queue_empty_reminder()
@@ -278,7 +306,6 @@ def main():
 
     # Stamp the post time so the dashboard coverage-date calculation
     # knows whether today's post has already been sent.
-    from datetime import datetime, timezone
     queue["last_posted_at"] = datetime.now(timezone.utc).isoformat()
 
     # Save queues

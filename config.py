@@ -43,6 +43,10 @@ WARN_DAYS_BEFORE_EXPIRY         = int(os.getenv("WARN_DAYS_BEFORE_EXPIRY", "14")
 REFRESH_DAYS_BEFORE_EXPIRY      = int(os.getenv("REFRESH_DAYS_BEFORE_EXPIRY", "20"))
 WARN_DAYS_BEFORE_REFRESH_EXPIRY = int(os.getenv("WARN_DAYS_BEFORE_REFRESH_EXPIRY", "30"))
 
+# Allowed posting window in IST (HH:MM 24-hr format)
+POSTING_WINDOW_START_IST = os.getenv("POSTING_WINDOW_START_IST", "07:30")
+POSTING_WINDOW_END_IST   = os.getenv("POSTING_WINDOW_END_IST", "12:00")
+
 # ─── Validation Helpers ───────────────────────────────────────────────────────
 def is_gemini_configured() -> bool:
     return bool(GEMINI_API_KEY and GEMINI_API_KEY.strip() and GEMINI_API_KEY != "your_gemini_api_key_here")

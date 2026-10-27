@@ -58,6 +58,25 @@ class PostHistory:
             return None
         return last[-1].get("posted_at", "")[:10]  # YYYY-MM-DD
 
+    def get_hours_since_last_post(self) -> float | None:
+        """Return the number of hours elapsed since the last real post."""
+        history = self.memory.load_post_history()
+        real = [e for e in history if not e.get("dry_run")]
+        if not real:
+            return None
+
+        last_entry = real[-1]
+        posted_at_str = last_entry.get("posted_at")
+        if not posted_at_str:
+            return None
+
+        try:
+            dt_utc = datetime.fromisoformat(posted_at_str.replace("Z", "+00:00"))
+            now_utc = datetime.now(timezone.utc)
+            return (now_utc - dt_utc).total_seconds() / 3600.0
+        except Exception:
+            return None
+
     def get_days_since_last_post(self) -> int | None:
         """Return the number of days since the last real post in Asia/Kolkata timezone."""
         history = self.memory.load_post_history()

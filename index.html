@@ -2221,6 +2221,41 @@
             updateCoverageDate(count, queueData.last_posted_at);
         }
 
+        function getNextScheduledDate(lastPostedAt) {
+            const postInterval = (queueData.settings && queueData.settings.post_interval_days) || 3;
+            const now = new Date();
+            const todayIST = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+
+            // If today's morning posting window has already passed (12:00 PM IST),
+            // skip today completely — do not schedule for past hours or yesterday.
+            const windowPassedToday = (todayIST.getHours() >= 12);
+            const earliestAllowed = new Date(todayIST);
+            earliestAllowed.setHours(0, 0, 0, 0);
+            if (windowPassedToday) {
+                earliestAllowed.setDate(earliestAllowed.getDate() + 1);
+            }
+
+            let nextPostDate = new Date(earliestAllowed);
+
+            const lastPosted = lastPostedAt || queueData.last_posted_at;
+            if (lastPosted) {
+                const lastPostedIST = new Date(new Date(lastPosted).toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+                const lastDate = new Date(lastPostedIST);
+                lastDate.setHours(0, 0, 0, 0);
+
+                const intervalDate = new Date(lastDate);
+                intervalDate.setDate(lastDate.getDate() + postInterval);
+
+                // If the next interval date is further in the future than earliestAllowed, use it;
+                // otherwise, stick to earliestAllowed (today or tomorrow morning, never yesterday).
+                if (intervalDate > nextPostDate) {
+                    nextPostDate = intervalDate;
+                }
+            }
+
+            return nextPostDate;
+        }
+
         function updateCoverageDate(approvedCount, lastPostedAt) {
             const elem = document.getElementById('statusCoverageDate');
             if (!elem) return;
@@ -2231,31 +2266,7 @@
             }
 
             const postInterval = (queueData.settings && queueData.settings.post_interval_days) || 3;
-            const now = new Date();
-            const todayIST = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
-
-            let nextPostDate = new Date(todayIST);
-
-            if (lastPostedAt) {
-                const lastPostedIST = new Date(new Date(lastPostedAt).toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
-                const d1 = new Date(todayIST); d1.setHours(0,0,0,0);
-                const d2 = new Date(lastPostedIST); d2.setHours(0,0,0,0);
-                const daysElapsed = Math.round((d1 - d2) / (1000 * 60 * 60 * 24));
-
-                if (daysElapsed < postInterval) {
-                    nextPostDate = new Date(lastPostedIST);
-                    nextPostDate.setDate(lastPostedIST.getDate() + postInterval);
-                } else {
-                    nextPostDate = d1;
-                }
-            } else {
-                const postedTodayAlready = todayIST.getHours() > 9 || (todayIST.getHours() === 9 && todayIST.getMinutes() >= 30);
-                if (postedTodayAlready) {
-                    nextPostDate.setDate(todayIST.getDate() + postInterval);
-                } else {
-                    nextPostDate = new Date(todayIST);
-                }
-            }
+            const nextPostDate = getNextScheduledDate(lastPostedAt);
 
             const runsOutDate = new Date(nextPostDate);
             runsOutDate.setDate(nextPostDate.getDate() + (approvedCount - 1) * postInterval);
@@ -2266,31 +2277,7 @@
 
         function getScheduledDateForIndex(index) {
             const postInterval = (queueData.settings && queueData.settings.post_interval_days) || 3;
-            const now = new Date();
-            const todayIST = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
-
-            let nextPostDate = new Date(todayIST);
-
-            if (queueData.last_posted_at) {
-                const lastPostedIST = new Date(new Date(queueData.last_posted_at).toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
-                const d1 = new Date(todayIST); d1.setHours(0,0,0,0);
-                const d2 = new Date(lastPostedIST); d2.setHours(0,0,0,0);
-                const daysElapsed = Math.round((d1 - d2) / (1000 * 60 * 60 * 24));
-
-                if (daysElapsed < postInterval) {
-                    nextPostDate = new Date(lastPostedIST);
-                    nextPostDate.setDate(lastPostedIST.getDate() + postInterval);
-                } else {
-                    nextPostDate = d1;
-                }
-            } else {
-                const postedTodayAlready = todayIST.getHours() > 9 || (todayIST.getHours() === 9 && todayIST.getMinutes() >= 30);
-                if (postedTodayAlready) {
-                    nextPostDate.setDate(todayIST.getDate() + postInterval);
-                } else {
-                    nextPostDate = new Date(todayIST);
-                }
-            }
+            const nextPostDate = getNextScheduledDate(queueData.last_posted_at);
 
             const total = (queueData.approved || []).length;
             const posFromBottom = (total > 0) ? (total - 1 - index) : 0;
