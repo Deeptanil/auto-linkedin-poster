@@ -42,7 +42,7 @@
       ]
     },
     {
-      "post_text": "I tried to destroy my own app. 💀\n\nSo, I built a Bit-Flip Attack Simulator for FileGuard. \n\nThe idea is simple:\n🧪 Modify a file stored in the system.\n🔍 Run a SHA-256 integrity check.\n🚫 Block the download if the file's contents no longer match the original.\n\nBasically, if someone messes with the file, FileGuard shouldn't just shrug and send it anyway.\n\nBecause “it downloaded successfully” doesn't necessarily mean “it's the right file.”\n\nNext up: The infrastructure behind it. ☁️\n\n#CyberSecurity #Python #SoftwareEngineering",
+      "post_text": "I tried to destroy my own app. 💀\n\nSo, I built a Bit-Flip Attack Simulator for FileGuard. I wanted t\n\nThe idea is simple:\n🧪 Modify a file stored in the system.\n🔍 Run a SHA-256 integrity check.\n🚫 Block the download if the file's contents no longer match the original.\n\nBasically, if someone messes with the file, FileGuard shouldn't just shrug and send it anyway.\n\nBecause “it downloaded successfully” doesn't necessarily mean “it's the right file.”\n\nNext up: The infrastructure behind it. ☁️\n\n#CyberSecurity #Python #SoftwareEngineering",
       "reasoning": "Custom post added from dashboard.",
       "image_paths": [
         "memory/images/1792934179390_Screenshot_2026-10-25_184557.png",
