@@ -33,7 +33,7 @@
       ]
     },
     {
-      "post_text": "File Sharing = Cl\n\nNaturally, that turned into a deep dive into cloud storage, database architecture, and IP-based rate limiting. 😂\n\nHere's what's powering FileGuard:\n\n☁️ Backblaze B2 for file storage\n🗄️ Neon PostgreSQL for metadata\n🐍 Python + Flask for the backend\n📦 Dynamic ZIP creation for entire folders\n🛡️ Subnet-based quotas to help limit abuse\n\nAnd yes, files are designed to expire after 12 hours.\n\nNo accounts. No unnecessary friction. Just share, download, and move on.\n\nTomorrow: The actual launch. 🚀\n\n#CloudComputing #BackendDevelopment #BuildInPublic",
+      "post_text": "File Sharing = Cloud storage = \n\nNaturally, that turned into a deep dive into cloud storage, database architecture, and IP-based rate limiting. 😂\n\nHere's what's powering FileGuard:\n\n☁️ Backblaze B2 for file storage\n🗄️ Neon PostgreSQL for metadata\n🐍 Python + Flask for the backend\n📦 Dynamic ZIP creation for entire folders\n🛡️ Subnet-based quotas to help limit abuse\n\nAnd yes, files are designed to expire after 12 hours.\n\nNo accounts. No unnecessary friction. Just share, download, and move on.\n\nTomorrow: The actual launch. 🚀\n\n#CloudComputing #BackendDevelopment #BuildInPublic",
       "reasoning": "Custom post added from dashboard.",
       "image_paths": [
         "memory/images/1792934279820_Screenshot_2026-10-25_184749.png",
