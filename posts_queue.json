@@ -9,10 +9,6 @@
       ]
     },
     {
-      "post_text": "",
-      "reasoning": "Custom post added from dashboard."
-    },
-    {
       "post_text": "Making an app look smooth in a screenshot is easy.\n\nMaking it feel smooth while everything is moving? That's where things get interesting. 😂\n\nDay 2 of Platter 🍽️: Behind the scenes.\n\n🛠️ React Native + Expo\n⚛️ React 19\n🫧 Frosted-glass effects with Expo Blur\n🎨 React Native Paper\n💾 Persistent state with React Context and AsyncStorage\n\nOne of the trickiest parts was getting the floating glass dock to play nicely with scrolling, navigation, and different screen sizes.\n\nBecause a beautiful UI that stutters is just an expensive slideshow. 💀\n\nTomorrow: Tiny interactions, cart logic, and a little confetti. 🎉\n\nReact Native devs: what's your favourite trick for making an app feel smooth?\n\n#ReactNative #MobileDevelopment #SoftwareEngineering #BuildInPublic",
       "reasoning": "Custom post added from dashboard.",
       "image_paths": [
@@ -27,6 +23,10 @@
         "memory/images/1793007173487_Screenshot_2026-10-26_143636.png",
         "memory/images/1793007176500_Screenshot_2026-10-26_143617.png"
       ]
+    },
+    {
+      "post_text": "",
+      "reasoning": "Custom post added from dashboard."
     },
     {
       "post_text": "I've spent the last few days building a food ordering experience that doesn't look like a coupon catalogue.\n\nIt's called Platter 🍽️.\n\nThe idea is simple: ordering food should feel as good as deciding what to eat feels difficult. 😂\n\nHere's what I've built:\n\n✨ Mood-based food discovery\n🫧 A floating frosted-glass navigation dock\n🌗 Light and Dark modes\n🛒 Customisable menus and persistent cart state\n🎉 An interactive checkout experience\n\nBuilt using React Native, Expo, and React.\n\nThe goal wasn't just to make another food delivery UI. It was to explore how thoughtful design and smooth interactions can make an everyday experience feel better.\n\n🔗 Live demo: [Insert your demo link]\n💻 Source code: [Insert your repository link]\n\nTry it, explore it, and tell me what you'd change. I'm especially interested in honest feedback from developers and designers.\n\nAnd yes, I spent an unreasonable amount of time on that floating dock. 😂\n\n#ReactNative #ProductDesign #BuildInPublic #SoftwareEngineering",
