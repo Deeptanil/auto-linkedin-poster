@@ -9,7 +9,7 @@
       ]
     },
     {
-      "post_text": "Making an app look smooth in a screenshot is easy.\n\nMaking it feel smooth while everything is moving? That's where things get interesting. 😂\n\nDay 2 of Platter 🍽️: Behind the scenes.\n\n🛠️ React Native + Expo\n⚛️ React 19\n🫧 Frosted-glass effects with Expo Blur\n🎨 React Native Paper\n💾 Persistent state with React Context and AsyncStorage\n\nOne of the trickiest parts was getting the floating glass dock to play nicely with scrolling, navigation, and different screen sizes.\n\nBecause a beautiful UI that stutters is just an expensive slideshow. 💀\n\nTomorrow: Tiny interactions, cart logic, and a little confetti. 🎉\n\nReact Native devs: what's your favourite trick for making an app feel smooth?\n\n#ReactNative #MobileDevelopment #SoftwareEngineering #BuildInPublic",
+      "post_text": "Platter is almost done\n\nMaking it feel smooth while everything is moving? That's where things get interesting. 😂\n\nDay 2 of Platter 🍽️: Behind the scenes.\n\n🛠️ React Native + Expo\n⚛️ React 19\n🫧 Frosted-glass effects with Expo Blur\n🎨 React Native Paper\n💾 Persistent state with React Context and AsyncStorage\n\nOne of the trickiest parts was getting the floating glass dock to play nicely with scrolling, navigation, and different screen sizes.\n\nBecause a beautiful UI that stutters is just an expensive slideshow. 💀\n\nTomorrow: Tiny interactions, cart logic, and a little confetti. 🎉\n\nReact Native devs: what's your favourite trick for making an app feel smooth?\n\n#ReactNative #MobileDevelopment #SoftwareEngineering #BuildInPublic",
       "reasoning": "Custom post added from dashboard.",
       "image_paths": [
         "memory/images/1793007313610_Screenshot_2026-10-26_143836.png",
