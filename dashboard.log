@@ -1,5 +1,5 @@
---- Posting Pipeline Run Started: 2026-11-02 11:31:28.593336 ---
+--- Posting Pipeline Run Started: 2026-11-02 12:26:38.989496 ---
 ============================================================
   LinkedIn Post Publisher (Batch Queue & Memory Engine)
 ============================================================
-[!] Current IST time (17:01) is outside allowed posting window (07:30 - 12:00 IST). Skipping posting.
+[!] Current IST time (17:56) is outside allowed posting window (07:30 - 12:00 IST). Skipping posting.
