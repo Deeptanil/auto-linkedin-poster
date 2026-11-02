@@ -45,7 +45,7 @@ WARN_DAYS_BEFORE_REFRESH_EXPIRY = int(os.getenv("WARN_DAYS_BEFORE_REFRESH_EXPIRY
 
 # Allowed posting window in IST (HH:MM 24-hr format)
 POSTING_WINDOW_START_IST = os.getenv("POSTING_WINDOW_START_IST", "07:30")
-POSTING_WINDOW_END_IST   = os.getenv("POSTING_WINDOW_END_IST", "12:00")
+POSTING_WINDOW_END_IST   = os.getenv("POSTING_WINDOW_END_IST", "15:30")
 
 # ─── Validation Helpers ───────────────────────────────────────────────────────
 def is_gemini_configured() -> bool:

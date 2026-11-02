@@ -2,15 +2,17 @@ name: "📅 Publish Approved LinkedIn Post"
 
 # ─── Triggers ─────────────────────────────────────────────────────────────────
 on:
-  # Auto: runs during morning peak window (7:30 AM - 11:15 AM IST) to check and publish
+  # Auto: scheduled in early morning UTC so that with GitHub Actions runner queue delays,
+  # execution lands cleanly during daytime IST posting window (7:30 AM - 3:30 PM IST).
   schedule:
-    # --- Morning Peak/Retry Window (7:30 AM - 11:15 AM IST) ---
+    - cron: "30 1 * * *"   # 7:00 AM IST (early trigger to absorb queue delays)
     - cron: "0 2 * * *"    # 7:30 AM IST
     - cron: "45 2 * * *"   # 8:15 AM IST
     - cron: "30 3 * * *"   # 9:00 AM IST
     - cron: "15 4 * * *"   # 9:45 AM IST
     - cron: "0 5 * * *"    # 10:30 AM IST
     - cron: "45 5 * * *"   # 11:15 AM IST
+    - cron: "30 6 * * *"   # 12:00 PM IST (midday fallback)
     
 
   # Manual: trigger with optional overrides from GitHub UI

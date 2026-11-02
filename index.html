@@ -2228,7 +2228,7 @@
 
             // If today's morning posting window has already passed (12:00 PM IST),
             // skip today completely — do not schedule for past hours or yesterday.
-            const windowPassedToday = (todayIST.getHours() >= 12);
+            const windowPassedToday = (todayIST.getHours() > 15 || (todayIST.getHours() === 15 && todayIST.getMinutes() >= 30));
             const earliestAllowed = new Date(todayIST);
             earliestAllowed.setHours(0, 0, 0, 0);
             if (windowPassedToday) {
