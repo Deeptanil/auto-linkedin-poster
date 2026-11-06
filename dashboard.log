@@ -1,50 +1,5 @@
---- Posting Pipeline Run Started: 2026-11-06 08:54:30.888728 ---
+--- Posting Pipeline Run Started: 2026-11-06 09:55:39.907319 ---
 ============================================================
   LinkedIn Post Publisher (Batch Queue & Memory Engine)
 ============================================================
-  Tone:     Auto
-  Dry run:  False
-  Force:    False
-  Replenish Only: False
-
-[1/5] Token check skipped.
-[2/5] Loading memory...
-  Voice profile:  [OK]
-  Achievements:   [OK]
-  Recent context: [X] (none found)
-  Approved posts: 7
-  Pending drafts: 0
-
-
-────────────────────────────────────────────────────────────
-CURRENT APPROVED POST TO PUBLISH:
-────────────────────────────────────────────────────────────
-I tried to destroy my own app. 💀
-
-So, I built a Bit-Flip Attack Simulator for FileGuard. I wanted to see how the system behaves if someone attacked it. Best way to do that was to attack it myself.
-
-The idea is simple:
-🧪 Modify a file stored in the system.
-🔍 Run a SHA-256 integrity check.
-🚫 Block the download if the file's contents no longer match the original.
-
-Basically, if someone messes with the file, FileGuard shouldn't just shrug and send it anyway.
-
-Because “it downloaded successfully” doesn't necessarily mean “it's the right file.”
-
-Next up: The infrastructure behind it. ☁️
-
-#CyberSecurity #Python #SoftwareEngineering
-────────────────────────────────────────────────────────────
-
-[4/5] Posting to LinkedIn...
-  [image] Found 2 image attachments.
-  [image] Uploading image 1/2: /home/runner/work/auto-linkedin-poster/auto-linkedin-poster/code/memory/images/1792934179390_Screenshot_2026-10-25_184557.png...
-  [image] Image 1 uploaded. URN: urn:li:image:D5610AQHHQ3dlQH8NMQ
-  [image] Uploading image 2/2: /home/runner/work/auto-linkedin-poster/auto-linkedin-poster/code/memory/images/1792934216195_Screenshot_2026-10-25_184642.png...
-  [image] Image 2 uploaded. URN: urn:li:image:D5610AQHSu_V6jEAuxg
-  [image] Creating LinkedIn post with multiple images...
-  [OK] Post published! URN: urn:li:ugcPost:7524393775721349120
-[5/5] Updating queues and logging history...
-
-🎉 All done! Post is live on LinkedIn. Cache queue updated.
+[!] Already posted today (2026-11-06 IST). Skipping posting.
