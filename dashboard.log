@@ -1,5 +1,55 @@
---- Posting Pipeline Run Started: 2026-11-08 14:28:06.307767 ---
+--- Posting Pipeline Run Started: 2026-11-09 09:02:09.693420 ---
 ============================================================
   LinkedIn Post Publisher (Batch Queue & Memory Engine)
 ============================================================
-[!] Current IST time (19:58) is outside allowed posting window (07:30 - 15:30 IST). Skipping posting.
+  Tone:     Auto
+  Dry run:  False
+  Force:    False
+  Replenish Only: False
+
+[1/5] Token check skipped.
+[2/5] Loading memory...
+  Voice profile:  [OK]
+  Achievements:   [OK]
+  Recent context: [X] (none found)
+  Approved posts: 6
+  Pending drafts: 0
+
+
+────────────────────────────────────────────────────────────
+CURRENT APPROVED POST TO PUBLISH:
+────────────────────────────────────────────────────────────
+File Sharing = Cloud storage = EXPENSIVE
+
+Naturally, that turned into a deep dive into cloud storage, database architecture, and IP-based rate limiting. 😂
+
+Here's what's powering FileGuard:
+
+☁️ Backblaze B2 for file storage
+🗄️ Neon PostgreSQL for metadata
+🐍 Python + Flask for the backend
+📦 Dynamic ZIP creation for entire folders
+🛡️ Subnet-based quotas to help limit abuse
+
+And yes, files are designed to expire after 12 hours.
+
+No accounts. No unnecessary friction. Just share, download, and move on.
+
+Tomorrow: The actual launch. 🚀
+
+#CloudComputing #BackendDevelopment #BuildInPublic
+────────────────────────────────────────────────────────────
+
+[4/5] Posting to LinkedIn...
+  [image] Found 3 image attachments.
+  [image] Uploading image 1/3: /home/runner/work/auto-linkedin-poster/auto-linkedin-poster/code/memory/images/1792934279820_Screenshot_2026-10-25_184749.png...
+  [image] Image 1 uploaded. URN: urn:li:image:D5610AQHzoMO20vYN2w
+  [image] Uploading image 2/3: /home/runner/work/auto-linkedin-poster/auto-linkedin-poster/code/memory/images/1792934339128_Screenshot_2026-10-25_184849.png...
+  [image] Image 2 uploaded. URN: urn:li:image:D5610AQE5aMLDNCzd9g
+  [image] Uploading image 3/3: /home/runner/work/auto-linkedin-poster/auto-linkedin-poster/code/memory/images/1792934426511_Screenshot_2026-10-25_185016.png...
+  [image] Image 3 uploaded. URN: urn:li:image:D5610AQGr8ZDBcUoORg
+  [image] Creating LinkedIn post with multiple images...
+  [OK] Post published! URN: urn:li:ugcPost:7525482866005295104
+[5/5] Updating queues and logging history...
+
+🎉 All done! Post is live on LinkedIn. Cache queue updated.
