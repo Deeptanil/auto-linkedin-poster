@@ -511,5 +511,14 @@
     "context_date": null,
     "dry_run": false,
     "preview": "File Sharing = Cloud storage = EXPENSIVE\n\nNaturally, that turned into a deep dive into cloud storage, database architecture, and IP-based rate limiting. 😂\n\nHere's what's powering FileGuard:\n\n☁️ Backbl…"
+  },
+  {
+    "id": 58,
+    "posted_at": "2026-11-12T09:14:06.732572+00:00",
+    "post_urn": "urn:li:ugcPost:7526573024729288704",
+    "tone": "Auto",
+    "context_date": null,
+    "dry_run": false,
+    "preview": "I copied ZOMATO.\n\nIt's called Platter 🍽️.\n\nThe idea is simple: ordering food should feel as good as deciding what to eat feels difficult. 😂\n\nHere's what I've built:\n\n✨ Mood-based food discovery\n🫧 A fl…"
   }
 ]
