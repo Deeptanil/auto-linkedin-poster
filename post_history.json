@@ -520,5 +520,14 @@
     "context_date": null,
     "dry_run": false,
     "preview": "I copied ZOMATO.\n\nIt's called Platter 🍽️.\n\nThe idea is simple: ordering food should feel as good as deciding what to eat feels difficult. 😂\n\nHere's what I've built:\n\n✨ Mood-based food discovery\n🫧 A fl…"
+  },
+  {
+    "id": 59,
+    "posted_at": "2026-11-15T08:47:43.164484+00:00",
+    "post_urn": "urn:li:ugcPost:7527653546876579840",
+    "tone": "Auto",
+    "context_date": null,
+    "dry_run": false,
+    "preview": "ZOMATO + TOING = Platter\n\nSo I decided to build my own.\n\nMeet Platter 🍽️ — a food ordering experience designed to feel calm, modern, and ridiculously smooth.\n\nThe idea?\n✨ Discover food by mood, not ju…"
   }
 ]
