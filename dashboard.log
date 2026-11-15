@@ -1,52 +1,5 @@
---- Posting Pipeline Run Started: 2026-11-15 08:47:41.163411 ---
+--- Posting Pipeline Run Started: 2026-11-15 09:57:12.590206 ---
 ============================================================
   LinkedIn Post Publisher (Batch Queue & Memory Engine)
 ============================================================
-  Tone:     Auto
-  Dry run:  False
-  Force:    False
-  Replenish Only: False
-
-[1/5] Token check skipped.
-[2/5] Loading memory...
-  Voice profile:  [OK]
-  Achievements:   [OK]
-  Recent context: [X] (none found)
-  Approved posts: 4
-  Pending drafts: 0
-
-
-────────────────────────────────────────────────────────────
-CURRENT APPROVED POST TO PUBLISH:
-────────────────────────────────────────────────────────────
-ZOMATO + TOING = Platter
-
-So I decided to build my own.
-
-Meet Platter 🍽️ — a food ordering experience designed to feel calm, modern, and ridiculously smooth.
-
-The idea?
-✨ Discover food by mood, not just restaurant names.
-🌗 Clean UI with proper Light and Dark modes.
-🫧 A floating frosted-glass dock that looks way better than a boring navbar.
-
-Less clutter. More cravings.
-
-This is Day 1 of building Platter. Tomorrow, we get into the tech behind the pretty pixels. 👀
-
-What's your biggest pet peeve with food delivery apps?
-
-#UIUX #AppDevelopment #BuildInPublic #ReactNative
-────────────────────────────────────────────────────────────
-
-[4/5] Posting to LinkedIn...
-  [image] Found 2 image attachments.
-  [image] Uploading image 1/2: /home/runner/work/auto-linkedin-poster/auto-linkedin-poster/code/memory/images/1793007173487_Screenshot_2026-10-26_143636.png...
-  [image] Image 1 uploaded. URN: urn:li:image:D5610AQGrZdDFiAHF2A
-  [image] Uploading image 2/2: /home/runner/work/auto-linkedin-poster/auto-linkedin-poster/code/memory/images/1793007176500_Screenshot_2026-10-26_143617.png...
-  [image] Image 2 uploaded. URN: urn:li:image:D5610AQH_G_mmLDnIJQ
-  [image] Creating LinkedIn post with multiple images...
-  [OK] Post published! URN: urn:li:ugcPost:7527653546876579840
-[5/5] Updating queues and logging history...
-
-🎉 All done! Post is live on LinkedIn. Cache queue updated.
+[!] Already posted today (2026-11-15 IST). Skipping posting.
