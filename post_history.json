@@ -529,5 +529,14 @@
     "context_date": null,
     "dry_run": false,
     "preview": "ZOMATO + TOING = Platter\n\nSo I decided to build my own.\n\nMeet Platter 🍽️ — a food ordering experience designed to feel calm, modern, and ridiculously smooth.\n\nThe idea?\n✨ Discover food by mood, not ju…"
+  },
+  {
+    "id": 60,
+    "posted_at": "2026-11-18T09:41:56.907437+00:00",
+    "post_urn": "urn:li:ugcPost:7528754357278937089",
+    "tone": "Auto",
+    "context_date": null,
+    "dry_run": false,
+    "preview": "Platter is almost done\n\nMaking it feel smooth while everything is moving? That's where things get interesting. 😂\n\nDay 2 of Platter 🍽️: Behind the scenes.\n\n🛠️ React Native + Expo\n⚛️ React 19\n🫧 Frosted-…"
   }
 ]
