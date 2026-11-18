@@ -1,55 +1,5 @@
---- Posting Pipeline Run Started: 2026-11-18 09:41:54.638080 ---
+--- Posting Pipeline Run Started: 2026-11-18 10:46:01.683806 ---
 ============================================================
   LinkedIn Post Publisher (Batch Queue & Memory Engine)
 ============================================================
-  Tone:     Auto
-  Dry run:  False
-  Force:    False
-  Replenish Only: False
-
-[1/5] Token check skipped.
-[2/5] Loading memory...
-  Voice profile:  [OK]
-  Achievements:   [OK]
-  Recent context: [X] (none found)
-  Approved posts: 3
-  Pending drafts: 0
-
-
-────────────────────────────────────────────────────────────
-CURRENT APPROVED POST TO PUBLISH:
-────────────────────────────────────────────────────────────
-Platter is almost done
-
-Making it feel smooth while everything is moving? That's where things get interesting. 😂
-
-Day 2 of Platter 🍽️: Behind the scenes.
-
-🛠️ React Native + Expo
-⚛️ React 19
-🫧 Frosted-glass effects with Expo Blur
-🎨 React Native Paper
-💾 Persistent state with React Context and AsyncStorage
-
-One of the trickiest parts was getting the floating glass dock to play nicely with scrolling, navigation, and different screen sizes.
-
-Because a beautiful UI that stutters is just an expensive slideshow. 💀
-
-Tomorrow: Tiny interactions, cart logic, and a little confetti. 🎉
-
-React Native devs: what's your favourite trick for making an app feel smooth?
-
-#ReactNative #MobileDevelopment #SoftwareEngineering #BuildInPublic
-────────────────────────────────────────────────────────────
-
-[4/5] Posting to LinkedIn...
-  [image] Found 2 image attachments.
-  [image] Uploading image 1/2: /home/runner/work/auto-linkedin-poster/auto-linkedin-poster/code/memory/images/1793007313610_Screenshot_2026-10-26_143836.png...
-  [image] Image 1 uploaded. URN: urn:li:image:D5610AQHz6nP04Qy2wg
-  [image] Uploading image 2/2: /home/runner/work/auto-linkedin-poster/auto-linkedin-poster/code/memory/images/1793007318002_Screenshot_2026-10-26_143654.png...
-  [image] Image 2 uploaded. URN: urn:li:image:D5610AQG4R7jS6qHZIQ
-  [image] Creating LinkedIn post with multiple images...
-  [OK] Post published! URN: urn:li:ugcPost:7528754357278937089
-[5/5] Updating queues and logging history...
-
-🎉 All done! Post is live on LinkedIn. Cache queue updated.
+[!] Current IST time (16:16) is outside allowed posting window (07:30 - 15:30 IST). Skipping posting.
