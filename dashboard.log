@@ -1,56 +1,5 @@
---- Posting Pipeline Run Started: 2026-11-28 09:45:20.183019 ---
+--- Posting Pipeline Run Started: 2026-11-28 10:55:28.110266 ---
 ============================================================
   LinkedIn Post Publisher (Batch Queue & Memory Engine)
 ============================================================
-  Tone:     Auto
-  Dry run:  False
-  Force:    False
-  Replenish Only: False
-
-[1/5] Token check skipped.
-[2/5] Loading memory...
-  Voice profile:  [OK]
-  Achievements:   [OK]
-  Recent context: [X] (none found)
-  Approved posts: 1
-  Pending drafts: 0
-
-[!] Only 1 approved post remaining in queue. Alerting Discord...
-
-────────────────────────────────────────────────────────────
-CURRENT APPROVED POST TO PUBLISH:
-────────────────────────────────────────────────────────────
-you have been LOSING money. there's probably a subscription charging you that you forgot about.
-
-I came across SubIQ, a subscription manager on Google Play, and I think it's a genuinely useful idea.
-
-It helps you:
-💳 Track all your subscriptions in one place.
-⏰ Get reminders before renewals and free trials end.
-📅 See upcoming payments and estimated monthly expenses.
-📩 Scan Gmail to help discover subscriptions you might have forgotten.
-
-Because apparently, remembering to cancel a free trial is a full-time job. 😂
-
-What I particularly like is the idea of combining subscription tracking with renewal reminders. Sometimes, the best apps aren't the ones doing something revolutionary; they're the ones solving an everyday problem well.
-
-🔗 Find it on Google Play: Search Subscription Manager – SubIQ
-
-Be honest: have you ever been charged for a subscription you completely forgot about? 👀
-
-#Tech #Apps #PersonalFinance #ProductDesign #Android
-────────────────────────────────────────────────────────────
-
-[4/5] Posting to LinkedIn...
-  [image] Found 2 image attachments.
-  [image] Uploading image 1/2: /home/runner/work/auto-linkedin-poster/auto-linkedin-poster/code/memory/images/1793112989516_unnamed.webp...
-  [linkedin_api] Warning: image format conversion failed: No module named 'PIL'
-  [image] Image 1 uploaded. URN: urn:li:image:D5610AQGhhcUv6vwygA
-  [image] Uploading image 2/2: /home/runner/work/auto-linkedin-poster/auto-linkedin-poster/code/memory/images/1793112998407_unnamed_(1).webp...
-  [linkedin_api] Warning: image format conversion failed: No module named 'PIL'
-  [image] Image 2 uploaded. URN: urn:li:image:D5610AQGmDPc1xeYgkw
-  [image] Creating LinkedIn post with multiple images...
-  [OK] Post published! URN: urn:li:ugcPost:7532379098061660160
-[5/5] Updating queues and logging history...
-
-🎉 All done! Post is live on LinkedIn. Cache queue updated.
+[!] Current IST time (16:25) is outside allowed posting window (07:30 - 15:30 IST). Skipping posting.
